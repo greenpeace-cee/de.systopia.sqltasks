@@ -14,7 +14,7 @@
     <url desc="Support">https://github.com/systopia/de.systopia.sqltasks/issues</url>
     <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
   </urls>
-  <releaseDate></releaseDate>
+  <releaseDate/>
   <version>2.0-dev</version>
   <develStage>dev</develStage>
   <compatibility>
