@@ -100,7 +100,11 @@ jobs:
     steps:
       - setup
       - checkout
-      - run_all
+      # - run_all
+      - run_all:
+          build_name: civi-5.44
+          version: "5.44"
+          url: http://localhost:8082
       - run_all:
           build_name: civi-5.39
           version: "5.39"
