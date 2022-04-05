@@ -12,6 +12,19 @@
         </label>
     </div>
     <div class="crm-accordion-body" style="display: none;">
+        <div class="sql-task-action-template-wrapper">
+            <action-template-select
+                model='model'
+                action-templates='actionTemplates'
+                action-template='actionTemplate'>
+            </action-template-select>
+            <div class="clear"></div>
+            <action-template-form
+                model='model'
+                action-templates='actionTemplates'
+                action-template='actionTemplate'>
+            </action-template-form>
+        </div>
         <div class="sql-tasks">
             <action-additional-info model='model' fieldPrefix="'api_call'" index='index'></action-additional-info>
 
@@ -41,6 +54,14 @@
 							  isdataloaded="isDataLoaded('handle_api_errors_index_' + index)"
 							  helpaction='onInfoPress("Error Handling", "id-handle-api-errors", "CRM\/Sqltasks\/Action\/APICall")'>
 			</ordinary-select2>
+
+            <check-box
+                model="model['store_api_results']"
+                fieldid="'api_call_store_results' + index"
+                fieldlabel="ts('Store API results')"
+                helpaction="onInfoPress('Store API results', 'id-api-store-results', 'CRM\/Sqltasks\/Action\/APICall')"
+                showHelpIcon="true">
+            </check-box>
 
             <text-area isrequired="getBooleanFromNumber(model['parameters'])" model="model['parameters']"
                        fieldlabel="ts('Parameters')" fieldid="'api_call_parameters' + index" rowsnumber='8' inputMaxWidth="'500px'"
