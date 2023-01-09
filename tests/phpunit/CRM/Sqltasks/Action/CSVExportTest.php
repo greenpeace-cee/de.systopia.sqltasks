@@ -7,6 +7,10 @@
  */
 class CRM_Sqltasks_Action_CSVExportTest extends CRM_Sqltasks_Action_AbstractActionTest {
 
+  /**
+   * @requires PHP < 8
+   * @return void
+   */
   public function testFileExport() {
     $tmp = tempnam(sys_get_temp_dir(), 'csv');
     $data = [
@@ -45,6 +49,10 @@ class CRM_Sqltasks_Action_CSVExportTest extends CRM_Sqltasks_Action_AbstractActi
     $this->assertFileEquals(__DIR__ . '/../../../../fixtures/csvexport.csv', $tmp);
   }
 
+  /**
+   * @requires PHP < 8
+   * @return void
+   */
   public function testFieldEnclosureTypes () {
     $enclosureModes = ["none", "partial", "full"];
 

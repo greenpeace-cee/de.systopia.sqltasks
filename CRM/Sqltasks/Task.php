@@ -409,7 +409,7 @@ class CRM_Sqltasks_Task {
         $this->log("Action '{$action_name}' executed in {$runtime}s.");
       } catch (Exception $e) {
         $this->error_count += 1;
-        $this->log("Error in action '{$action_name}': " . $e -> getMessage());
+        $this->log("Error in action '{$action_name}': " . $e->getMessage());
       }
     }
 
