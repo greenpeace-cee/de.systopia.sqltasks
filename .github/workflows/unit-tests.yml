@@ -1,0 +1,110 @@
+name: "Run unit tests"
+
+on: ["push"]
+
+jobs:
+  install-civicrm:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: ["ubuntu-22.04"]
+        civicore: ["5.57"]
+        mysql: ["8.0"]
+        php: ["7.4", "8.1"]
+    runs-on: "${{ matrix.os }}"
+
+    services:
+      mysql:
+        image: "mysql:${{ matrix.mysql }}"
+        env:
+          MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+        ports:
+          - "3306:3306"
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval="10s"
+          --health-timeout="5s"
+          --health-retries="3"
+
+    steps:
+      - id: "install-deps"
+        name: "Install dependencies"
+        run: |
+          sudo add-apt-repository -y ppa:ondrej/php
+          sudo curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+          sudo apt-get -y install lynx mailutils acl git wget unzip zip mysql-server mysql-client php${{ matrix.php }}-cli php${{ matrix.php }}-imap php${{ matrix.php }}-ldap php${{ matrix.php }}-curl php${{ matrix.php }}-mysql php${{ matrix.php }}-intl php${{ matrix.php }}-gd php${{ matrix.php }}-dev php${{ matrix.php }}-bcmath php${{ matrix.php }}-mbstring php${{ matrix.php }}-soap php${{ matrix.php }}-zip php${{ matrix.php }}-xml apache2 libapache2-mod-php${{ matrix.php }} nodejs php-pear libreadline-dev curl
+          sudo rm /etc/alternatives/php
+          sudo ln -s "/usr/bin/php${{ matrix.php }}" "/etc/alternatives/php"
+          sudo phpenmod bcmath
+          sudo phpenmod curl
+          sudo phpenmod imap
+          sudo phpenmod xml
+          sudo a2enmod rewrite
+          sudo apache2ctl restart
+
+
+      - name: Cache buildkit
+        id: cache-buildkit
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/buildkit
+            !~/buildkit/build
+          key: ${{ matrix.os }}-${{ matrix.mysql }}-${{ matrix.php }}-buildkit
+
+      - id: "install-buildkit"
+        if: steps.cache-buildkit.outputs.cache-hit != 'true'
+        name: "Install CiviCRM buildkit"
+        run: |
+          git clone https://github.com/civicrm/civicrm-buildkit.git ~/buildkit
+          ~/buildkit/bin/civi-download-tools
+
+      - id: "amp-config"
+        name: "Configure amp"
+        run: |
+          PATH="/home/runner/buildkit/bin:$PATH"
+          amp config:set --db_type="mysql_dsn"
+          amp config:set --hosts_type="file"
+          amp config:set --httpd_type="apache24"
+          amp config:set --httpd_restart_command="sudo /usr/sbin/apachectl graceful"
+          amp config:set --mysql_dsn="mysql://root@localhost:3306"
+          amp config:set --perm_type="worldWritable"
+          sudo chmod 666 "/etc/apache2/apache2.conf"
+          echo "IncludeOptional /home/runner/.amp/apache.d/*.conf" >> "/etc/apache2/apache2.conf"
+          amp test
+
+      - id: "build-instance"
+        name: "Build a CiviCRM instance"
+        run: |
+          /home/runner/buildkit/bin/civibuild create "civi" \
+            --civi-ver "${{ matrix.civicore }}" \
+            --title "CiviCRM (${{ matrix.civicore }})" \
+            --type "drupal-clean" \
+            --url "http://civi.test:8080"
+
+      - id: "clone-sqltasks-repo"
+        name: "Clone the sqltasks repository"
+        uses: "actions/checkout@v3"
+        with:
+          # repository: "greenpeace-cee/de.systopia.sqltasks"
+          ref: "${{ github.ref_name }}"
+          # token: "${{ secrets.ACCESS_TOKEN }}"
+          path: "de.systopia.sqltasks"
+
+      - id: "install-extension"
+        name: "Install the de.systopia.sqltasks extension"
+        env:
+          EXT_DIR: "/home/runner/buildkit/build/civi/web/sites/default/files/civicrm/ext"
+        run: |
+          cp -R "$GITHUB_WORKSPACE/de.systopia.sqltasks" "$EXT_DIR/de.systopia.sqltasks"
+          cd "/home/runner/buildkit/build/civi"
+          /home/runner/buildkit/bin/cv en "de.systopia.sqltasks"
+
+      - id: "run-unit-tests"
+        name: "Run unit tests"
+        env:
+          EXT_DIR: "/home/runner/buildkit/build/civi/web/sites/default/files/civicrm/ext"
+        run: |
+          PATH="/home/runner/buildkit/bin:$PATH"
+          cd "$EXT_DIR/de.systopia.sqltasks"
+          CIVICRM_UF="UnitTests" phpunit8
