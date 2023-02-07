@@ -18,11 +18,13 @@
   <version>2.0-beta.gp.23</version>
   <develStage>beta</develStage>
   <compatibility>
-    <ver>4.7</ver>
-    <ver>5.0</ver>
+    <ver>5.39</ver>
   </compatibility>
   <comments>The initial development of this handy tool was funded by Greenpeace Central and Eastern Europe</comments>
   <civix>
     <namespace>CRM/Sqltasks</namespace>
   </civix>
+  <classloader>
+    <psr4 prefix="Civi\" path="Civi"/>
+  </classloader>
 </extension>

@@ -455,6 +455,11 @@ function _sqltasks_civix_civicrm_entityTypes(&$entityTypes) {
       'class' => 'CRM_Sqltasks_DAO_SqltasksActionTemplate',
       'table' => 'civicrm_sqltasks_action_template',
     ],
+    'CRM_Sqltasks_DAO_SqltasksExecution' => [
+      'name' => 'SqltasksExecution',
+      'class' => 'CRM_Sqltasks_DAO_SqltasksExecution',
+      'table' => 'civicrm_sqltasks_execution',
+    ],
     'CRM_Sqltasks_DAO_SqltasksTemplate' => [
       'name' => 'SqltasksTemplate',
       'class' => 'CRM_Sqltasks_DAO_SqltasksTemplate',

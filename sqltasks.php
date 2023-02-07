@@ -196,6 +196,15 @@ function sqltasks_civicrm_navigationMenu(&$menu) {
     'separator'  => 0,
   ));
 
+  _sqltasks_civix_insert_navigation_menu($menu, 'Administer/System Settings/sqltasks_manage', [
+    'label'      => E::ts('Execution Logs'),
+    'name'       => 'sqltasks_execution_list',
+    'url'        => 'civicrm/sqltasks-execution/list',
+    'permission' => 'administer CiviCRM',
+    'operator'   => 'OR',
+    'separator'  => 0,
+  ]);
+
   _sqltasks_civix_navigationMenu($menu);
 }
 
