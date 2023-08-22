@@ -21,6 +21,10 @@
   ]);
 
   angular.module(moduleName).service('loaderService', function() {
+    setTimeout(function() {
+      CRM.$('body').addClass('sql-task-body-page-wrapper');
+    }, 0);
+
     //loader for execution block
     this.executionBlock = {
       'isLoaded' : false,
@@ -86,7 +90,7 @@
 
       $scope.onInfoPress = onInfoPress;
       $scope.fixTaskOptionRunPermissions = function () {
-        if ($scope.taskOptions.run_permissions === '') {
+        if ($scope.taskOptions.run_permissions === '' || $scope.taskOptions.run_permissions === null) {
           $scope.taskOptions.run_permissions = [];
         } else {
           $scope.taskOptions.run_permissions = $scope.taskOptions.run_permissions.split(",");
@@ -1309,6 +1313,7 @@
       scope: {
         model: "=",
         index: "<",
+        taskId: "<",
         actionTemplates: "="
       },
       controller: function($scope, loaderService) {
@@ -1321,6 +1326,23 @@
         };
         $scope.isDataExists = function(array) {
           return Boolean(array && array.length);
+        };
+
+        $scope.refreshSelectSqlTasks = function() {};
+        $scope.refreshSelectSqlTaskCategories = function() {};
+        $scope.executeDisabledTasksOnChange = function(value) {
+          $scope.model['is_execute_disabled_tasks'] = value;
+          $scope.loadTasks(function () {
+            $scope.refreshSelectSqlTaskCategories();
+            $scope.refreshSelectSqlTasks();
+          });
+        };
+
+        $scope.onApplyTemplateCallback = function(value) {
+          $scope.loadTasks(function () {
+            $scope.refreshSelectSqlTaskCategories();
+            $scope.refreshSelectSqlTasks();
+          });
         };
 
         var tasksData = [];
@@ -1342,20 +1364,24 @@
           $scope.$apply();
         });
 
-        CRM.api3("Sqltaskfield", "getexecutiontasks").done(function(result) {
-          tasksData = [];
-          if (!result.is_error) {
-            Object.keys(result.values[0]).map(key => {
-              var task = result.values[0][key];
-              tasksData.push({
-                value: key,
-                name: task
-              });
-            });
-            $scope.tasksData = tasksData;
-            loaderService.setDataLoaded('task_tasks_' + $scope.index);
-            $scope.$apply();
-          }
+        $scope.loadTasks = function(callback) {
+          CRM.api3("Sqltaskfield", "getexecutiontasks", {
+            'is_show_disabled_tasks' : $scope.model['is_execute_disabled_tasks'],
+            'excluded_task_id' : $scope.taskId,
+          }).done(function(result) {
+            tasksData = [];
+            if (!result.is_error) {
+              $scope.tasksData = result.values[0];
+              loaderService.setDataLoaded('task_tasks_' + $scope.index);
+              $scope.$apply();
+              callback();
+            }
+          });
+        }
+
+        $scope.loadTasks(function () {
+          $scope.refreshSelectSqlTaskCategories();
+          $scope.refreshSelectSqlTasks();
         });
       }
     };
@@ -1874,8 +1900,13 @@
         helpAction: "&helpaction",
         showHelpIcon: "<showhelpicon",
         inputMaxWidth: "<inputmaxwidth",
+        refreshSelect: "=?refreshSelect",
       },
       controller: function($scope) {
+        $scope.refreshSelect = function() {
+          $("#" + $scope.fieldId).css(selectStyles).crmSelect2();
+        };
+
         $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "300px";
         var selectStyles = {
           'width' : "100%",
@@ -1885,14 +1916,14 @@
         if (angular.isDefined($scope.isDataLoaded) && $scope.isDataLoaded == false) {
           var timerId = setInterval(function() {
             if ($scope.isDataLoaded) {
-              $("#" + $scope.fieldId).css(selectStyles).select2();
+              $scope.refreshSelect();
               clearInterval(timerId);
             }
           }, 300);
         } else {
           CRM.$(function($) {
             setTimeout(function() {
-              $("#" + $scope.fieldId).css(selectStyles).select2();
+              $scope.refreshSelect();
             }, 1500);
           });
         }
@@ -1964,7 +1995,8 @@
       scope: {
         model: "=",
         actionTemplates: "=",
-        actionTemplate: "="
+        actionTemplate: "=",
+        onApplyTemplateCallback: "=?",
       },
       controller: function ($scope) {
         $scope.ts = CRM.ts();
@@ -1981,6 +2013,10 @@
                 CRM.$('.crm-section .content select.crm-form-select2').select2();
               }, 1500);
             });
+
+            if (angular.isDefined($scope.onApplyTemplateCallback)) {
+              $scope.onApplyTemplateCallback();
+            }
           }
         };
 
