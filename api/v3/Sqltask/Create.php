@@ -139,6 +139,14 @@ function _civicrm_api3_sqltask_create_spec(&$params) {
     'description'  => 'Whether this task requires user input prior to execution',
   ];
 
+  $params['input_spec'] = [
+    'name'         => 'input_spec',
+    'api.required' => 0,
+    'type'         => CRM_Utils_Type::T_TEXT,
+    'title'        => 'Input parameters',
+    'description'  => 'Input parameter specification',
+  ];
+
   $params['enabled'] = [
     'name'         => 'enabled',
     'api.required' => 0,

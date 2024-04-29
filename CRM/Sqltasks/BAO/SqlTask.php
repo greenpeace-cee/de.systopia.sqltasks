@@ -105,25 +105,10 @@ class CRM_Sqltasks_BAO_SqlTask extends CRM_Sqltasks_DAO_SqlTask {
   public function execute($params = []) {
     if (empty($this->id)) return;
 
-    $input_value = $params['input_val'] ?? NULL;
-
-    if (is_array($input_value)) {
-      $input_value = json_encode($input_value);
-    }
-
-    if (empty($params['execution_id'])) {
-      $execution = CRM_Sqltasks_BAO_SqltasksExecution::create([
-        'input'       => $input_value,
-        'log_to_file' => !empty($params['log_to_file']),
-        'sqltask_id'  => $this->id,
-      ]);
-    } else {
-      $exec_props = CRM_Sqltasks_BAO_SqltasksExecution::getById($params['execution_id']);
-      $execution = new CRM_Sqltasks_BAO_SqltasksExecution($exec_props);
-    }
+    $input_value = $this->parseInputValue($params['input_val'] ?? NULL);
+    $execution = $this->getExecution(array_merge($params, [ 'input_val' => $input_value ]));
 
     $execution->start();
-    $execution->logInfo('Start running task!');
 
     if (isset($this->archive_date)) {
       $execution->reportError('Task is archived. Execution skipped.');
@@ -132,18 +117,15 @@ class CRM_Sqltasks_BAO_SqlTask extends CRM_Sqltasks_DAO_SqlTask {
       return $execution->result();
     }
 
-    $parallel_exec_allowed = $this->parallel_exec !== self::PARALLEL_EXEC_ALLOWED;
-
-    if (isset($this->running_since) && !$parallel_exec_allowed) {
+    if (isset($this->running_since) && !$this->parallelExecAllowed()) {
       $execution->reportError('Task is still running. Execution skipped.');
       $execution->stop();
 
       return $execution->result();
     }
 
-    if (!$parallel_exec_allowed) {
-      $lock = new CRM_Core_Lock($this->lockName());
-      $lock->acquire();
+    if (!$this->parallelExecAllowed()) {
+      $lock = $this->acquireLock();
 
       if (!$lock->isAcquired()) {
         $execution->reportError('Task is locked. Execution skipped.');
@@ -165,16 +147,11 @@ class CRM_Sqltasks_BAO_SqlTask extends CRM_Sqltasks_DAO_SqlTask {
 
     $actions = CRM_Sqltasks_Action::getAllActiveActions($this);
 
-    $context = [
-      'actions'   => $actions,
+    $exec_context = $this->getExecutionContext([
+      'actions' => $actions,
       'execution' => $execution,
-      'random'    => CRM_Utils_String::createRandom(16, CRM_Utils_String::ALPHANUMERIC),
-    ];
-
-    if ($this->input_required && !empty($input_value)) {
-      $context['input_val'] = $input_value;
-      $execution->logInfo("Set input val to '$input_value'.");
-    }
+      'input_val' => $input_value,
+    ]);
 
     foreach ($actions as $action) {
       $action_name = $action->getName();
@@ -188,26 +165,16 @@ class CRM_Sqltasks_BAO_SqlTask extends CRM_Sqltasks_DAO_SqlTask {
         continue;
       }
 
-      $timestamp = microtime(TRUE);
-      $action->setContext($context);
+      $action->setContext($exec_context);
 
       try {
-        $action->checkConfiguration();
-      } catch (Exception $e) {
+        $action_result = $action->prepareAndExecute();
+
+        $execution->logInfo(
+          sprintf("Action '%s' executed in %.3fs.", $action_name, $action_result['runtime'])
+        );
+      } catch (CRM_Sqltasks_Action_ConfigError $e) {
         $execution->reportError("Configuration Error '$action_name': " . $e->getMessage());
-        continue;
-      }
-
-      try {
-        $action->execute();
-
-        if (get_class($action) == "CRM_Sqltasks_Action_ReturnValue") {
-          $execution->setReturnValue($action->return_key, $action->return_value);
-        }
-
-        $runtime = microtime(TRUE) - $timestamp;
-        $log_message = sprintf("Action '%s' executed in %.3fs.", $action_name, $runtime);
-        $execution->logInfo($log_message);
       } catch (Exception $e) {
         $execution->reportError("Error in action '$action_name': " . $e->getMessage());
       }
@@ -221,7 +188,7 @@ class CRM_Sqltasks_BAO_SqlTask extends CRM_Sqltasks_DAO_SqlTask {
       'running_since' => NULL,
     ], [ 'update_mod_timestamp' => FALSE ]);
 
-    if (!$parallel_exec_allowed) {
+    if (!$this->parallelExecAllowed()) {
       $lock->release();
     }
 
@@ -270,6 +237,7 @@ class CRM_Sqltasks_BAO_SqlTask extends CRM_Sqltasks_DAO_SqlTask {
       'enabled'         => !empty($this->enabled),
       'id'              => (int) $this->id,
       'input_required'  => (bool) $this->input_required,
+      'input_spec'      => $this->input_spec,
       'last_execution'  => $last_execution,
       'last_modified'   => $last_modified,
       'last_runtime'    => (int) $this->last_runtime,
@@ -542,9 +510,13 @@ class CRM_Sqltasks_BAO_SqlTask extends CRM_Sqltasks_DAO_SqlTask {
     $save = $options['save'] ?? TRUE;
     $update_mod_timestamp = $options['update_mod_timestamp'] ?? TRUE;
 
+    $fields = self::fields();
+    $empty_fields = [];
+
     foreach ($params as $key => $value) {
-      if (in_array($value, [NULL, ''], TRUE) && !self::fields()[$key]['required']) {
-        $this->$key = 'null';
+      if (in_array($value, [NULL, ''], TRUE) && !$fields[$key]['required']) {
+        $this->$key = NULL;
+        $empty_fields[] = $key;
         continue;
       }
 
@@ -612,9 +584,14 @@ class CRM_Sqltasks_BAO_SqlTask extends CRM_Sqltasks_DAO_SqlTask {
         }
 
         case 'config': {
-          $value = is_string($value) ? json_decode($value, TRUE) : $value;
           $config = self::validateConfiguration($value);
           $this->$key = json_encode($config);
+          break;
+        }
+
+        case 'input_spec': {
+          $input_spec = self::validateInputSpec($value);
+          $this->$key = json_encode($input_spec);
           break;
         }
 
@@ -634,7 +611,18 @@ class CRM_Sqltasks_BAO_SqlTask extends CRM_Sqltasks_DAO_SqlTask {
         $this->last_modified = date('Y-m-d H:i:s');
       }
 
+      // Temporarily set empty values to 'null' (string)
+      // so NULL is written to the database
+      foreach($empty_fields as $key) {
+          $this->$key = 'null';
+      }
+
       $this->save();
+
+      // Reset empty fields to the actual NULL value
+      foreach ($empty_fields as $key) {
+        $this->$key = NULL;
+      }
     }
   }
 
@@ -663,20 +651,88 @@ class CRM_Sqltasks_BAO_SqlTask extends CRM_Sqltasks_DAO_SqlTask {
    *
    * @return string
    */
-  private function lockName() {
+  private function acquireLock() {
     $task_id = $this->id ?? '';
-    return "civicrm_de_systopia_sqltasks_task_id_$task_id";
+    $lock = new CRM_Core_Lock("civicrm_de_systopia_sqltasks_task_id_$task_id");
+    $lock->acquire();
+
+    return $lock;
+  }
+
+  /**
+   * Create a new task execution or load an existing one by its ID
+   *
+   * @param array $params
+   * @return CRM_Sqltasks_BAO_SqltasksExecution
+   */
+  private function getExecution($params) {
+    if (empty($params['execution_id'])) {
+      return CRM_Sqltasks_BAO_SqltasksExecution::create([
+        'input'       => $params['input_val'],
+        'log_to_file' => !empty($params['log_to_file']),
+        'sqltask_id'  => $this->id,
+      ]);
+    } else {
+      $exec_props = CRM_Sqltasks_BAO_SqltasksExecution::getById($params['execution_id']);
+
+      return new CRM_Sqltasks_BAO_SqltasksExecution($exec_props);
+    }
+  }
+
+  /**
+   * Complete/modify the execution context that is used by actions
+   *
+   * @param array $params
+   * @return array
+   */
+  private function getExecutionContext($params) {
+    $params['random'] = CRM_Utils_String::createRandom(16, CRM_Utils_String::ALPHANUMERIC);
+
+    if ($this->input_required && !empty($params['input_val'])) {
+      $ival = $params['input_val'];
+      $encoded_ival = is_array($ival) ? json_encode($ival) : $ival;
+      $params['execution']->logInfo("Set input val to '$encoded_ival'.");
+    } else {
+      unset($params['input_val']);
+    }
+
+    return $params;
+  }
+
+  /**
+   * Parse input value for task execution based on the task's input_spec
+   *
+   * @param mixed $input_value
+   * @return mixed
+   */
+  private function parseInputValue($input_value = NULL) {
+     if (empty($this->id) || empty($input_value)) return NULL;
+
+    if (empty($this->input_spec)) {
+       return is_array($input_value) ? json_encode($input_value): $input_value;
+    }
+
+    $input_spec = self::validateInputSpec($this->input_spec);
+    $input_array = json_decode($input_value, TRUE);
+    $result = [];
+
+    foreach ($input_spec as $param_spec) {
+      $param_name = $param_spec['name'];
+      $result[$param_name] = $input_array[$param_name] ?? $param_spec['default'] ?? NULL;
+    }
+
+    return $result;
   }
 
   /**
    * Parse and complete JSON configuration for a task
    *
-   * @param array $config
+   * @param array|string $config
    * @return array
    */
   private static function validateConfiguration($config) {
     if (!is_array($config)) {
-      throw new Exception("Task configuration must be an associative array");
+      throw new Exception("Task configuration must be an array");
     }
 
     $config['version'] = $config['version'] ?? 1;
@@ -707,6 +763,43 @@ class CRM_Sqltasks_BAO_SqlTask extends CRM_Sqltasks_DAO_SqlTask {
     }
 
     return $config;
+  }
+
+  /**
+   * Validate the input parameter specification of a task
+   *
+   * @param array|string $input_spec
+   * @return array
+   */
+  private static function validateInputSpec($input_spec) {
+    $input_spec = is_string($input_spec) ? json_decode($input_spec, TRUE) : $input_spec;
+
+    if (!is_array($input_spec)) {
+      throw new Exception("Input parameter specification must be an array");
+    }
+
+    $result = [];
+
+    foreach ($input_spec as $param_spec) {
+      if (empty($param_spec['name'])) {
+        Civi::log()->warning("Missing input parameter name");
+        continue;
+      }
+
+      $normalized = [
+        'default' => $param_spec['default'] ?? NULL,
+        'name'    => $param_spec['name'],
+        'type'    => $param_spec['type'] ?? 'string',
+      ];
+
+      if (is_null($normalized['default']) || $normalized['default'] === '') {
+        unset($normalized['default']);
+      }
+
+      $result[] = $normalized;
+    }
+
+    return $result;
   }
 
 }

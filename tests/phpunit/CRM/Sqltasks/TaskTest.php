@@ -311,13 +311,14 @@ class CRM_Sqltasks_TaskTest extends CRM_Sqltasks_AbstractTaskTest {
     (CRM_Sqltasks_GlobalToken::singleton())->setValue('test', 'expected_config_value');
 
     // Add context and setting token to file
-    $tmp .= '_{context.input_val}_{setting.lcMessages}.csv';
+    $tmp .= '_{context.input_val.value}_{setting.lcMessages}.csv';
 
     $sql = "
       DROP TABLE IF EXISTS tmp_test_input_value;
       CREATE TABLE tmp_test_input_value AS
         SELECT
-          @input AS foo,
+          @input AS raw_value,
+          '{context.input_val.value}' AS extracted_value,
           '{context.random}' AS random,
           '{setting.lcMessages}' AS language,
           '{config.test}' AS config;
@@ -325,6 +326,9 @@ class CRM_Sqltasks_TaskTest extends CRM_Sqltasks_AbstractTaskTest {
 
     $data = [
       'input_required' => TRUE,
+      'input_spec' => [
+        [ 'name' => 'value' ],
+      ],
       'config' => [
         'version'        => 2,
         'actions'        => [
@@ -339,7 +343,7 @@ class CRM_Sqltasks_TaskTest extends CRM_Sqltasks_AbstractTaskTest {
             'table'          => 'tmp_test_input_value',
             'encoding'       => 'UTF-8',
             'delimiter'      => ';',
-            'headers'        => "foo=foo",
+            'headers'        => "foo=extracted_value",
             'filename'       => basename($tmp),
             'path'           => dirname($tmp),
             'email'          => '',
@@ -350,26 +354,54 @@ class CRM_Sqltasks_TaskTest extends CRM_Sqltasks_AbstractTaskTest {
       ],
     ];
 
-    $this->createAndExecuteTask( $data, [ 'input_val' => 'expected_value' ]);
+    $this->createAndExecuteTask($data, [ 'input_val' => '{"value":"expected_value"}' ]);
 
     $this->assertLogContains("Action 'Run SQL Script' executed in");
     $this->assertLogContains('Written 1 records to', 'Records should have been written to CSV');
     $this->assertLogContains("Action 'CSV Export' executed in", 'CSV Export action should have succeeded');
 
-    $actual_value = CRM_Core_DAO::singleValueQuery("SELECT foo FROM tmp_test_input_value");
-    $this->assertEquals('expected_value', $actual_value, 'Table should contain the value passed via input_value');
+    $raw_value = CRM_Core_DAO::singleValueQuery("SELECT raw_value FROM tmp_test_input_value");
+
+    $this->assertEquals(
+      '{"value":"expected_value"}',
+      $raw_value,
+      'Table should contain the entire JSON object passed via input_val'
+    );
+
+    $extracted_value = CRM_Core_DAO::singleValueQuery("SELECT extracted_value FROM tmp_test_input_value");
+
+    $this->assertEquals(
+      'expected_value',
+      $extracted_value,
+      'Table should contain the extracted value passed via input_val'
+    );
 
     $random = CRM_Core_DAO::singleValueQuery("SELECT random FROM tmp_test_input_value");
-    $this->assertEquals(16, strlen($random), 'Column "random" should contain 16 random characters');
+
+    $this->assertEquals(
+      16,
+      strlen($random),
+      'Column "random" should contain 16 random characters'
+    );
 
     $language = CRM_Core_DAO::singleValueQuery("SELECT language FROM tmp_test_input_value");
-    $this->assertEquals(Civi::settings()->get('lcMessages'), $language, 'Column "language" should match setting');
+
+    $this->assertEquals(
+      Civi::settings()->get('lcMessages'),
+      $language,
+      'Column "language" should match setting'
+    );
 
     $config = CRM_Core_DAO::singleValueQuery("SELECT config FROM tmp_test_input_value");
-    $this->assertEquals((CRM_Sqltasks_GlobalToken::singleton())->getValue('test'), $config, 'Column "config" should match setting in sqltasks_global_tokens');
+
+    $this->assertEquals(
+      (CRM_Sqltasks_GlobalToken::singleton())->getValue('test'),
+      $config,
+      'Column "config" should match setting in sqltasks_global_tokens'
+    );
 
     $tmp = str_replace(
-      ['{context.input_val}', '{setting.lcMessages}'],
+      ['{context.input_val.value}', '{setting.lcMessages}'],
       ['expected_value', Civi::settings()->get('lcMessages')],
       $tmp
     );

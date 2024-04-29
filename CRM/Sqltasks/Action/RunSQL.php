@@ -74,8 +74,13 @@ class CRM_Sqltasks_Action_RunSQL extends CRM_Sqltasks_Action {
       // prepare
       $script = html_entity_decode($this->getConfigValue('script'));
       if (!empty($this->context['input_val'])) {
-        $input_val = CRM_Core_DAO::escapeString($this->context['input_val']);
-        $script = "SET @input = '{$input_val}'; \r\n {$script}";
+        $ctx_val = $this->context['input_val'];
+
+        $input_val = CRM_Core_DAO::escapeString(
+          is_array($ctx_val) ? json_encode($ctx_val) : $ctx_val
+        );
+
+        $script = "SET @input = '$input_val'; \r\n" . $script;
       }
       CRM_Sqltasks_Utils::runSqlQuery($script);
     }
