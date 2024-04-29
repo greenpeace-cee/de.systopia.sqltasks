@@ -46,6 +46,7 @@ CREATE TABLE `civicrm_sqltasks` (
   `running_since` datetime NULL COMMENT 'Start time of the current execution (if the task is running)',
   `run_permissions` varchar(256) NULL COMMENT 'Required permissions to run this task',
   `input_required` int unsigned NOT NULL DEFAULT 0 COMMENT 'Does the task require input data?',
+  `input_spec` text NULL COMMENT 'Input parameter specification (JSON)',
   `archive_date` datetime NULL COMMENT 'Date/time the task was archived',
   `last_runtime` int unsigned NULL COMMENT 'Duration of the last execution in milliseconds',
   `parallel_exec` int unsigned NOT NULL DEFAULT 0 COMMENT 'Should this task be executed in parallel?',
