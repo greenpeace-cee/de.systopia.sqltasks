@@ -375,6 +375,94 @@
                 </div>
             </div>
 
+            <div class="sql-tasks-input-block border-bottom" id="sqlTasksInputBlock" ng-if="taskOptions.input_required == '1'">
+                <h3>{{ts('Input')}}:</h3>
+
+                <div class="crm-section">
+                    <table>
+                        <tr ng-repeat="param in taskOptions.input_spec">
+                            <td>
+                                <label for="param-{{$index}}-name">{{ts('Name')}}:</label>
+
+                                <input
+                                    class="crm-form-text"
+                                    id="param-{{$index}}-name"
+                                    name="name"
+                                    ng-model="taskOptions.input_spec[$index].name"
+                                    required
+                                    type="text"
+                                />
+                            </td>
+
+                            <td>
+                                <label for="param-{{$index}}-type">{{ts('Type')}}:</label>
+
+                                <select
+                                    class="crm-form-select"
+                                    id="param-{{$index}}-type"
+                                    name="type"
+                                    ng-change="resetInputDefault($index)"
+                                    ng-model="taskOptions.input_spec[$index].type"
+                                    required
+                                >
+                                    <option value="string">Text</option>
+                                    <option value="number">Number</option>
+                                    <option value="boolean">Checkbox</option>
+                                </select>
+                            </td>
+
+                            <td>
+                                <label for="param-{{$index}}-default">{{ts('Default')}}:</label>
+
+                                <input
+                                    class="crm-form-text"
+                                    id="param-{{$index}}-value_string"
+                                    name="default"
+                                    ng-if="taskOptions.input_spec[$index].type === 'string'"
+                                    ng-model="taskOptions.input_spec[$index].value_string"
+                                    type="text"
+                                />
+
+                                <input
+                                    class="crm-form-text"
+                                    id="param-{{$index}}-value_number"
+                                    name="default"
+                                    ng-if="taskOptions.input_spec[$index].type === 'number'"
+                                    ng-model="taskOptions.input_spec[$index].value_number"
+                                    type="number"
+                                />
+
+                                <input
+                                    class="crm-form-checkbox"
+                                    id="param-{{$index}}-value_boolean"
+                                    name="default"
+                                    ng-if="taskOptions.input_spec[$index].type === 'boolean'"
+                                    ng-model="taskOptions.input_spec[$index].value_boolean"
+                                    type="checkbox"
+                                />
+                            </td>
+
+                            <td>
+                                <button
+                                    class="delete-input-param"
+                                    ng-click="deleteInputParameter($index)"
+                                >
+                                    <i class="crm-i fa-trash" />
+                                    {{ts('Delete')}}
+                                </button>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+
+                <div class="crm-section">
+                    <a class="button" id="addInputParameter" href="javascript:;" ng-click="addInputParameter()">
+                        <i class="crm-i fa-plus" />
+                        {{ts('Add input parameter')}}
+                    </a>
+                </div>
+            </div>
+
             <div class="sql-tasks-actions-block loading" id="sqlTasksActionsBlock">
                 <h3>{{ts('Actions')}}:</h3>
                 <div class="spacer"></div>

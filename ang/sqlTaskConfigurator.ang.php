@@ -5,8 +5,9 @@
 return [
   'requires' => ['ngRoute', 'ui.sortable'],
   'js' => [
-    0 => 'ang/sqlTaskConfigurator.js',
-    1 => 'ang/actions/*.js',
+    0 => 'js/inputSpec.js',
+    1 => 'ang/sqlTaskConfigurator.js',
+    2 => 'ang/actions/*.js',
   ],
   'css' => [
     0 => 'css/sqlTaskConfigurator.css',

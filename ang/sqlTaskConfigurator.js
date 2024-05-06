@@ -103,11 +103,13 @@
           delete task["config"];
           task.enabled = task.enabled === "" ? false : task.enabled;
           task.input_required = task.input_required === "" ? false : task.input_required;
+          task.input_spec = parseInputSpec(task.input_spec);
           $scope.taskOptions = task;
           $scope.fixTaskOptionRunPermissions();
           $scope.$apply();
         }
       };
+
       $scope.getBooleanFromNumber = getBooleanFromNumber;
 
       $scope.$on("$viewContentLoaded", function() {
@@ -131,6 +133,8 @@
               if (Array.isArray($scope.taskOptions.run_permissions)) {
                 preparedData.run_permissions = $scope.taskOptions.run_permissions.join(",");
               }
+
+              preparedData.input_spec = serializeInputSpec(preparedData.input_spec);
 
               function submitCallback (result) {
                 $scope.handleTaskResponse(result);
@@ -434,6 +438,20 @@
             }
             break;
         }
+      };
+
+      $scope.addInputParameter = () => {
+        $scope.taskOptions.input_spec.push({
+          name: "",
+          type: "string",
+          value_string: "",
+          value_number: 0,
+          value_boolean: false,
+        });
+      }
+
+      $scope.deleteInputParameter = (index) => {
+        $scope.taskOptions.input_spec.splice(index, 1);
       };
 
       $scope.formNameFromType = function(type) {
@@ -1803,7 +1821,7 @@
         $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "300px";
         $scope.textAreaStyles = {
           'width' : $scope.inputMaxWidth,
-          'font-family' : 'monospace, monospace !important',
+          'font-family' : 'monospace',
           'box-sizing' : 'border-box',
         };
       }
