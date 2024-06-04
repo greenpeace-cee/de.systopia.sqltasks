@@ -91,11 +91,11 @@
 
       $scope.inputValue = $scope.inputParams.length < 1
         ? $scope.inputValue
-        : JSON.stringify(
-          Object.fromEntries($scope.inputParams.map(p => [p.name, p[`value_${p.type}`]]))
-        );
-
-      console.debug("$scope.inputValue:", $scope.inputValue);
+        : JSON.stringify($scope.inputParams.reduce(
+          (result, param) =>
+            Object.assign(result, { [param.name]: param[`value_${param.type.toLowerCase()}`] }),
+          {}
+        ));
 
       const taskExecResult = await $scope.api3("Sqltask", "execute", {
         async: $scope.backgroundQueueEnabled,

@@ -405,9 +405,9 @@
                                     ng-model="taskOptions.input_spec[$index].type"
                                     required
                                 >
-                                    <option value="string">Text</option>
-                                    <option value="number">Number</option>
-                                    <option value="boolean">Checkbox</option>
+                                    <option value="String">Text</option>
+                                    <option value="Float">Number</option>
+                                    <option value="Boolean">Checkbox</option>
                                 </select>
                             </td>
 
@@ -418,17 +418,17 @@
                                     class="crm-form-text"
                                     id="param-{{$index}}-value_string"
                                     name="default"
-                                    ng-if="taskOptions.input_spec[$index].type === 'string'"
+                                    ng-if="taskOptions.input_spec[$index].type === 'String'"
                                     ng-model="taskOptions.input_spec[$index].value_string"
                                     type="text"
                                 />
 
                                 <input
                                     class="crm-form-text"
-                                    id="param-{{$index}}-value_number"
+                                    id="param-{{$index}}-value_float"
                                     name="default"
-                                    ng-if="taskOptions.input_spec[$index].type === 'number'"
-                                    ng-model="taskOptions.input_spec[$index].value_number"
+                                    ng-if="taskOptions.input_spec[$index].type === 'Float'"
+                                    ng-model="taskOptions.input_spec[$index].value_float"
                                     type="number"
                                 />
 
@@ -436,7 +436,7 @@
                                     class="crm-form-checkbox"
                                     id="param-{{$index}}-value_boolean"
                                     name="default"
-                                    ng-if="taskOptions.input_spec[$index].type === 'boolean'"
+                                    ng-if="taskOptions.input_spec[$index].type === 'Boolean'"
                                     ng-model="taskOptions.input_spec[$index].value_boolean"
                                     type="checkbox"
                                 />

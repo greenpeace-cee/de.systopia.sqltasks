@@ -318,7 +318,7 @@ class CRM_Sqltasks_TaskTest extends CRM_Sqltasks_AbstractTaskTest {
       CREATE TABLE tmp_test_input_value AS
         SELECT
           @input AS raw_value,
-          '{context.input_val.value}' AS extracted_value,
+          JSON_UNQUOTE(JSON_EXTRACT('{context.input_val}', '$.value')) AS extracted_value,
           '{context.random}' AS random,
           '{setting.lcMessages}' AS language,
           '{config.test}' AS config;

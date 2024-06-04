@@ -199,7 +199,7 @@ abstract class CRM_Sqltasks_Action {
 
       $token = '{' . "$prefix.$token_name" . (empty($token_prop) ? '' : ".$token_prop") . '}';
 
-      if (empty($token_value)) {
+      if (is_null($token_value) || $token_value === '') {
         $this->log("No value found for token $token");
       }
 

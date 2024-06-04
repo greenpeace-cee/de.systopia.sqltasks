@@ -441,16 +441,24 @@
       };
 
       $scope.addInputParameter = () => {
+        if (!Array.isArray($scope.taskOptions.input_spec)) {
+          $scope.taskOptions.input_spec = [];
+        }
+
         $scope.taskOptions.input_spec.push({
           name: "",
-          type: "string",
+          type: "String",
           value_string: "",
-          value_number: 0,
+          value_float: 0,
           value_boolean: false,
         });
       }
 
       $scope.deleteInputParameter = (index) => {
+        if (!Array.isArray($scope.taskOptions.input_spec)) {
+          $scope.taskOptions.input_spec = [];
+        }
+
         $scope.taskOptions.input_spec.splice(index, 1);
       };
 

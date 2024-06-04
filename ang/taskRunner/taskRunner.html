@@ -49,15 +49,15 @@
               class="crm-form-text"
               id="param-{{param.name}}-string"
               ng-model="inputParams[$index].value_string"
-              ng-show="param.type === 'string'"
+              ng-show="param.type === 'String'"
               type="text"
             />
 
             <input
               class="crm-form-text"
               id="param-{{param.name}}-number"
-              ng-model="inputParams[$index].value_number"
-              ng-show="param.type === 'number'"
+              ng-model="inputParams[$index].value_float"
+              ng-show="param.type === 'Float'"
               type="number"
             />
 
@@ -65,7 +65,7 @@
               class="crm-form-checkbox"
               id="param-{{param.name}}-boolean"
               ng-model="inputParams[$index].value_boolean"
-              ng-show="param.type === 'boolean'"
+              ng-show="param.type === 'Boolean'"
               type="checkbox"
             />
           </div>

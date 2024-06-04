@@ -94,4 +94,17 @@ class CRM_Sqltasks_Action_RunSQL extends CRM_Sqltasks_Action {
     }
   }
 
+  protected function resolveGlobalTokens($value) {
+    // Disable substitution of {context.input_val.*} tokens to prevent
+    // SQL injections via input parameters
+    if (preg_match('/\{context\.input_val\.\w+\}/', $value, $matches)) {
+      throw new Exception(E::ts(
+        "Couldn't resolve token {$matches[0]}. " .
+        "Access to specific input parameters is not allowed in SQL statements. " .
+        "Use '@input' or '{context.input_val}' instead."
+      ));
+    }
+
+    return parent::resolveGlobalTokens($value);
+  }
 }
