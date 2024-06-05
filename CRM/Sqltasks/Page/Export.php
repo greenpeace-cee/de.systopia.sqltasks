@@ -33,6 +33,7 @@ class CRM_Sqltasks_Page_Export extends CRM_Core_Page {
         'category',
         'description',
         'input_required',
+        'input_spec',
         'last_modified',
         'parallel_exec',
         'run_permissions',

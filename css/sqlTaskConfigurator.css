@@ -80,7 +80,7 @@ select.pixelInput {
   display: none;
 }
 
-.sql-tasks-actions-block.loading .sql-tasks-actions-wrap, .sql-tasks-execution-block.border-bottom {
+.sql-tasks-actions-block.loading .sql-tasks-actions-wrap, .sql-tasks-execution-block.border-bottom, .sql-tasks-input-block.border-bottom {
   border-bottom: 1px solid #e8eef0;
 }
 
@@ -227,4 +227,36 @@ i.crm-i.fa-toggle-on.fa-flip-horizontal.sql-task-custom-toggle-icon {
 
 .sql-task-help {
   max-width: 810px;
+}
+
+div#sqlTasksInputBlock > div.crm-section > * {
+  margin-left: 19%;
+}
+
+div#sqlTasksInputBlock > div.crm-section > table {
+  border: none;
+  display: block;
+
+  & tr {
+    border: none;
+  }
+
+  & td {
+    padding: 0px 15px 15px 0px;
+    vertical-align: middle;
+
+    & label {
+      margin-right: 5px;
+    }
+
+    & button.delete-input-param {
+      background: none;
+      color: inherit;
+      padding: 0px;
+    }
+  }
+}
+
+div#sqlTasksInputBlock > div.crm-section > a#addInputParameter {
+  float: none;
 }
