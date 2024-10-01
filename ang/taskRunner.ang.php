@@ -6,7 +6,8 @@ return [
   'requires' => ['ngRoute'],
   'js' =>
     [
-      0 => 'ang/taskRunner.js',
+      0 => 'js/inputSpec.js',
+      1 => 'ang/taskRunner.js',
     ],
   'css' => [
     0 => 'css/taskRunner.css',

@@ -40,6 +40,10 @@
 
 .str__input-value-wrap {
   padding: 20px;
+
+  & .crm-section > label {
+    margin-right: 5px;
+  }
 }
 
 .sql-task-task-run-configuration-errors {
