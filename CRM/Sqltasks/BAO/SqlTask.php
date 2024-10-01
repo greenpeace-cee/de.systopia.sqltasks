@@ -210,6 +210,13 @@ class CRM_Sqltasks_BAO_SqlTask extends CRM_Sqltasks_DAO_SqlTask {
         $execution->logInfo($log_message);
       } catch (Exception $e) {
         $execution->reportError("Error in action '$action_name': " . $e->getMessage());
+      } catch (Error $e) {
+        // log internal PHP error
+        $execution->reportError("Fatal Error in action '$action_name': " . $e->getMessage());
+        $execution->logWarning('Task execution has probably crashed');
+        // TODO: decide how to handle internal PHP errors. For now, we just re-throw to trigger the general error handler (and probably exit)
+        //   ideally, we'd want to trigger the task's error handler and continue running, but that could have side-effects
+        throw $e;
       }
     }
 
