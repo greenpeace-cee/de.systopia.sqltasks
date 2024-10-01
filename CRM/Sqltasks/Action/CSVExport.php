@@ -53,7 +53,7 @@ class CRM_Sqltasks_Action_CSVExport extends CRM_Sqltasks_Action {
    *
    * @return int
    */
-  public function getDefaultOrder() {
+  public static function getDefaultOrder() {
     return 400;
   }
 

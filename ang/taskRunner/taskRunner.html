@@ -1,7 +1,7 @@
 <div class="str__sql-task-runner">
   <div class="crm-form-block">
-    <div class="str__content-wrap">
-      <h1>{{ts('Run SQL task:')}} {{task.name}}</h1>
+      <div class="str__content-wrap">
+          <h1 crm-page-title>{{ts('Run SQL task:')}} {{task.name}}</h1>
 
       <div class="str__loader" ng-if="state === 'loading'">
         loading ...
@@ -25,7 +25,8 @@
       </div>
 
       <div class="str__errors crm-error" ng-if="state === 'error'">
-        <ul>
+        <span ng-if="errors.length == 1">{{errors[0].message}}</span>
+        <ul ng-if="errors.length > 1">
           <li ng-repeat="error in errors">{{error.message}}</li>
         </ul>
       </div>

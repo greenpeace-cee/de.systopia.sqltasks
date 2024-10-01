@@ -5,6 +5,12 @@
  */
 class CRM_Sqltasks_Config_Format {
 
+  const LEGACY_FORMAT_HEADER = '/^\/\* ##### SQLTASK VERSION 0.9 ###########\n/';
+  const LEGACY_FORMAT_MAIN_HEADER = "\n*/ ############ MAIN SQL ###############\n";
+  const LEGACY_FORMAT_POST_HEADER = "\n-- ############ POST SQL ###############\n";
+
+  const SCRIPT_SENTINEL = "##### EDITS BELOW THIS LINE WILL BE IGNORED #####\n";
+
   /**
    * Current version of the task configuration format
    */
@@ -46,12 +52,31 @@ class CRM_Sqltasks_Config_Format {
   /**
    * Upgrade a task configuration to the latest version
    *
-   * @param array $config task attributes and configuration
+   * @param string|array $config task attributes and configuration
    *
    * @return array upgraded task configuration
    * @throws \Exception
    */
-  public static function toLatest(array $config) {
+  public static function toLatest($config) {
+    if (!is_array($config)) {
+      if (preg_match(self::LEGACY_FORMAT_HEADER, $config, $match)
+        && strstr($config, self::LEGACY_FORMAT_MAIN_HEADER)
+        && strstr($config, self::LEGACY_FORMAT_POST_HEADER)) {
+        // legacy v1-like format with appended SQL and commented JSON
+        $config = self::extractConfigFromLegacyFormat($config);
+      }
+      elseif ($config[0] == '{' && strstr($config, self::SCRIPT_SENTINEL)) {
+
+        // V2 with appended scripts
+        $config = self::extractConfigFromV2WithAppendedScripts($config);
+      }
+      else {
+        $config = json_decode($config, TRUE);
+        if (is_null($config)) {
+          throw new Exception( 'Invalid task configuration provided: Invalid JSON');
+        }
+      }
+    }
     $version = self::getVersion($config['config']);
     if ($version > self::CURRENT) {
       throw new Exception( 'Incompatible task configuration version: ' . $config['version'] .
@@ -73,6 +98,54 @@ class CRM_Sqltasks_Config_Format {
       // run config through the upgrader
       return self::toLatest($upgrader->convert());
     }
+  }
+
+  /**
+   * Extract V2 configuration from a JSON file with appended scripts
+   *
+   * This format is identified by a leading "{" later followed by this line:
+   * ##### EDITS BELOW THIS LINE WILL BE IGNORED #####
+   *
+   * @param $config
+   *
+   * @return mixed
+   * @throws \Exception
+   */
+  public static function extractConfigFromV2WithAppendedScripts($config) {
+    $jsonPart = substr($config, 0, strpos($config, self::SCRIPT_SENTINEL));
+    $config = json_decode($jsonPart, TRUE);
+    if (is_null($config)) {
+      throw new Exception( 'Invalid task configuration provided: Invalid JSON');
+    }
+    return $config;
+  }
+
+  /**
+   * Import from "legacy" / systopia-style task format
+   *
+   * This format is identified by the following header:
+   * /* ##### SQLTASK VERSION 0.9 ###########
+   *
+   * @param $config
+   *
+   * @return array
+   */
+  public static function extractConfigFromLegacyFormat($config) {
+    preg_match(self::LEGACY_FORMAT_HEADER, $config, $match);
+    $start_main = strpos($config, self::LEGACY_FORMAT_MAIN_HEADER);
+    $start_post = strpos($config, self::LEGACY_FORMAT_POST_HEADER);
+    $len_header = strlen($match[0]);
+    $len_main = strlen(self::LEGACY_FORMAT_MAIN_HEADER);
+    $len_post = strlen(self::LEGACY_FORMAT_POST_HEADER);
+
+    $data = substr($config, $len_header, ($start_main - $len_header));
+    $main_sql = substr($config, ($start_main + $len_main), ($start_post - $start_main - $len_main));
+    $post_sql = substr($config, ($start_post + $len_post));
+
+    return array_merge(json_decode($data, TRUE), [
+      'main_sql' => $main_sql,
+      'post_sql' => $post_sql,
+    ]);
   }
 
 }

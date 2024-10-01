@@ -23,11 +23,11 @@ abstract class CRM_Sqltasks_AbstractTaskTest extends TestCase implements Headles
       ->apply(TRUE);
   }
 
-  public function setUp(): void {
+  public function setUp() : void {
     parent::setUp();
   }
 
-  public function tearDown(): void {
+  public function tearDown() : void {
     parent::tearDown();
   }
 

@@ -242,6 +242,7 @@ class CRM_Sqltasks_Upgrader extends CRM_Extension_Upgrader_Base {
    * @throws \Exception
    */
   public function upgrade_0100() {
+    $this->addLastModifiedColumn();
     $this->ctx->log->info('Adding default values for parallel_exec, input_required');
 
     CRM_Core_DAO::executeQuery("
@@ -442,6 +443,25 @@ class CRM_Sqltasks_Upgrader extends CRM_Extension_Upgrader_Base {
   public function upgrade_0200() {
     $this->createActionTemplatesTable();
     return true;
+  }
+
+  /**
+   * Remove columns main_sql and post_sql
+   *
+   * @return bool
+   */
+  public function upgrade_0201() {
+    $column_exists = CRM_Core_DAO::singleValueQuery("SHOW COLUMNS FROM `civicrm_sqltasks` LIKE 'main_sql';");
+
+    if ($column_exists) {
+      $this->ctx->log->info("Removing column `main_sql` and `post_sql`");
+      CRM_Core_DAO::executeQuery("ALTER TABLE `civicrm_sqltasks` DROP COLUMN `main_sql`, DROP COLUMN `post_sql`");
+
+      $logging = new CRM_Logging_Schema();
+      $logging->fixSchemaDifferences();
+    }
+    CRM_Core_Invoke::rebuildMenuAndCaches();
+    return TRUE;
   }
 
   /**

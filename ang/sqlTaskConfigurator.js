@@ -886,13 +886,14 @@
 
             matches = urlHash.match(/^\/(?<entity>[a-zA-Z0-9_]+)?(?<urlHash>\/.*)?$/);
             result.entity = matches.groups.entity;
-            urlHash = matches.groups.urlHash
+            urlHash = matches.groups.urlHash;
 
             if (urlHash === undefined) return result;
 
             matches = urlHash.match(/^\/(?<action>[a-zA-Z0-9_]+)?(?<urlHash>\?.*)?$/);
             result.action = matches.groups.action;
-            urlHash = matches.groups.urlHash
+            result.success = result.action !== undefined;
+            urlHash = matches.groups.urlHash;
 
             if (urlHash === undefined) return result;
 
@@ -933,7 +934,7 @@
               }
 
               default: {
-                parameters[key] = JSON.parse(value);
+                parameters[key] = value.length < 1 ? "" : JSON.parse(value);
                 break;
               }
             }

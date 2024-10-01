@@ -21,6 +21,16 @@ return [
     'is_contact'  => 0,
     'description' => ts('Default configuration (ID) for new SQL Tasks.'),
   ],
+  'sqltask_export_append_scripts' => [
+    'name'        => 'sqltask_export_append_scripts',
+    'type'        => 'Boolean',
+    'default'     => TRUE,
+    'html_type'   => 'checkbox',
+    'title'       => ts('SQL Tasks Export: Append Scripts?'),
+    'is_domain'   => 1,
+    'is_contact'  => 0,
+    'description' => ts('Should task export files include a read-only version of the included SQL and PHP scripts?'),
+  ],
   'sqltasks_is_dispatcher_disabled' => [
     'name'            => 'sqltasks_is_dispatcher_disabled',
     'type'            => 'Boolean',

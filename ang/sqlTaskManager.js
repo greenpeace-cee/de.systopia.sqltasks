@@ -426,6 +426,10 @@
         $location.path("/sqltasks/run/" + taskId);
       };
 
+      $scope.onExecutePress = function(taskId) {
+        $location.path("/sqltasks/run/" + taskId);
+      };
+
       $scope.addNewTask = function () {
         $location.url(`/sqltasks/configure/0?template=${$scope.selectTemplateModel.templateId}`);
       };

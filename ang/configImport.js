@@ -37,7 +37,7 @@
         try {
           CRM.api3("Sqltask", "importconfig", {
             id: taskId,
-            import_json_data: JSON.parse($scope.content)
+            import_data: $scope.content
           }).done(function(result) {
             var message = "";
             var title = "";

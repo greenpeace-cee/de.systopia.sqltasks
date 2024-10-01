@@ -24,5 +24,4 @@ class CRM_Sqltasks_Page_Manager extends CRM_Core_Page {
     $redirectUrl = CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/a/', NULL, TRUE, '/sqltasks/manage'));
     CRM_Utils_System::redirect($redirectUrl);
   }
-
 }

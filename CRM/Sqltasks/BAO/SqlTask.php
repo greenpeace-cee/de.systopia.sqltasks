@@ -117,8 +117,10 @@ class CRM_Sqltasks_BAO_SqlTask extends CRM_Sqltasks_DAO_SqlTask {
       return $execution->result();
     }
 
-    if (isset($this->running_since) && !$this->parallelExecAllowed()) {
-      $execution->reportError('Task is still running. Execution skipped.');
+    $parallel_exec_allowed = $this->parallel_exec == self::PARALLEL_EXEC_ALLOWED;
+
+    if (isset($this->running_since) && !$parallel_exec_allowed) {
+      $execution->reportError('Task is still running (started ' . $this->running_since . '). Execution skipped.');
       $execution->stop();
 
       return $execution->result();
@@ -468,24 +470,24 @@ class CRM_Sqltasks_BAO_SqlTask extends CRM_Sqltasks_DAO_SqlTask {
         break;
 
       case 'weekly':
-        $scheduled_date->setISODate($year, $week, $scheduled_weekday);
-        $scheduled_date->setTime($scheduled_hour, $scheduled_minute);
+        $schedule_date->setISODate($year, $week, $scheduled_weekday);
+        $schedule_date->setTime($scheduled_hour, $scheduled_minute);
         break;
 
       case 'monthly':
-        $scheduled_date->setDate($year, $month, $scheduled_day);
-        $scheduled_date->setTime($scheduled_hour, $scheduled_minute);
+        $schedule_date->setDate($year, $month, $scheduled_day);
+        $schedule_date->setTime($scheduled_hour, $scheduled_minute);
         break;
 
       case 'yearly':
-        $scheduled_date->setDate($year, $scheduled_month, $scheduled_day);
-        $scheduled_date->setTime($scheduled_hour, $scheduled_minute);
+        $schedule_date->setDate($year, $scheduled_month, $scheduled_day);
+        $schedule_date->setTime($scheduled_hour, $scheduled_minute);
         break;
     }
 
     $last_exec_ts = $last_execution->getTimestamp();
     $now_ts = $now->getTimestamp();
-    $scheduled_ts = $scheduled_date->getTimestamp();
+    $scheduled_ts = $schedule_date->getTimestamp();
 
     return $scheduled_ts < $now_ts && $last_exec_ts < $scheduled_ts;
   }
@@ -509,14 +511,15 @@ class CRM_Sqltasks_BAO_SqlTask extends CRM_Sqltasks_DAO_SqlTask {
   public function updateAttributes($params, $options = []) {
     $save = $options['save'] ?? TRUE;
     $update_mod_timestamp = $options['update_mod_timestamp'] ?? TRUE;
+    $null_keys = [];
 
     $fields = self::fields();
     $empty_fields = [];
 
     foreach ($params as $key => $value) {
-      if (in_array($value, [NULL, ''], TRUE) && !$fields[$key]['required']) {
-        $this->$key = NULL;
-        $empty_fields[] = $key;
+      if (in_array($value, [NULL, ''], TRUE) && !self::fields()[$key]['required']) {
+        $this->$key = 'null';
+        $null_keys[] = $key;
         continue;
       }
 
@@ -623,6 +626,10 @@ class CRM_Sqltasks_BAO_SqlTask extends CRM_Sqltasks_DAO_SqlTask {
       foreach ($empty_fields as $key) {
         $this->$key = NULL;
       }
+    }
+
+    foreach ($null_keys as $key) {
+      $this->$key = NULL;
     }
   }
 

@@ -50,8 +50,6 @@ CREATE TABLE `civicrm_sqltasks` (
   `archive_date` datetime NULL COMMENT 'Date/time the task was archived',
   `last_runtime` int unsigned NULL COMMENT 'Duration of the last execution in milliseconds',
   `parallel_exec` int unsigned NOT NULL DEFAULT 0 COMMENT 'Should this task be executed in parallel?',
-  `main_sql` text NULL COMMENT 'Main SQL script',
-  `post_sql` text NULL COMMENT 'Cleanup SQL script',
   `config` text NULL COMMENT 'Task configuration (JSON)',
   `abort_on_error` int unsigned NOT NULL DEFAULT 0 COMMENT 'Should task execution abort in case of an error?',
   `last_modified` datetime NULL COMMENT 'Date/time of the latest change to the task configuration',
@@ -86,7 +84,7 @@ ENGINE=InnoDB;
 CREATE TABLE `civicrm_sqltasks_execution` (
   `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique SqltasksExecution ID',
   `sqltask_id` int unsigned COMMENT 'FK to SQL Task',
-  `start_date` datetime NOT NULL COMMENT 'Start date of execution',
+  `start_date` datetime NULL COMMENT 'Start date of execution',
   `end_date` datetime NULL COMMENT 'End date of execution',
   `runtime` int unsigned NULL COMMENT 'Task runtime in milliseconds',
   `input` longtext NULL COMMENT 'Task input',

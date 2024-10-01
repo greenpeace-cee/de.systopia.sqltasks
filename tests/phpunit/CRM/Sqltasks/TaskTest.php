@@ -12,12 +12,12 @@ use Civi\Test\TransactionalInterface;
  */
 class CRM_Sqltasks_TaskTest extends CRM_Sqltasks_AbstractTaskTest {
 
-  public function setUp(): void {
-    CRM_Core_DAO::executeQuery('DELETE FROM civicrm_sqltasks');
+  public function setUp() : void {
+    CRM_Core_DAO::executeQuery('DELETE FROM civicrm_sqltasks WHERE 1');
     parent::setUp();
   }
 
-  public function tearDown(): void {
+  public function tearDown() : void {
     CRM_Core_DAO::executeQuery('DROP TABLE IF EXISTS tmp_test_execute');
     CRM_Core_DAO::executeQuery('DROP TABLE IF EXISTS tmp_test_execute_post');
     CRM_Core_DAO::executeQuery('DROP TABLE IF EXISTS tmp_test_input_value');
