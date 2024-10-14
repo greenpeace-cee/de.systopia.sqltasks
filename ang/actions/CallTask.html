@@ -33,7 +33,9 @@
                 checkbox-on-click="executeDisabledTasksOnClick($event)"
                 fieldid="'is_execute_disabled_tasks' + index"
                 fieldlabel="ts('Execute disabled tasks')"
-                model="model['is_execute_disabled_tasks']">
+                model="model['is_execute_disabled_tasks']"
+                showHelpIcon="true"
+                helpaction='onInfoPress("Execute Disabled Tasks", "id-is-execute-disabled-tasks", "CRM\/Sqltasks\/Action\/CallTask")'>
             </check-box>
 
             <check-box
@@ -41,7 +43,8 @@
                 fieldid="'execute_in_parallel' + index"
                 fieldlabel="ts('Parallel execution')"
                 model="model['execute_in_parallel']"
-                showHelpIcon="true">
+                showHelpIcon="true"
+                helpaction='onInfoPress("Parallel Execution", "id-execute-in-parallel", "CRM\/Sqltasks\/Action\/CallTask")'>
             </check-box>
 
             <multiple-select2

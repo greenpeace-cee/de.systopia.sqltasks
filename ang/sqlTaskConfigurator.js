@@ -1376,8 +1376,8 @@
           // // when user try to turn off executing disabled tasks:
           if ($scope.model['is_execute_disabled_tasks'] === '1') {
             CRM.confirm({
-              title: ts("Are you sure?"),
-              message: ts('The selected values for "Sql tasks" and "Sql tasks categories" will be refreshed.'),
+              title: ts("Confirm change"),
+              message: ts('<p>Are you sure you want to disable the execution of disabled tasks?</p><p><strong>This will remove any tasks that are disabled from your task selection!</strong></p>'),
               options: { yes: "Continue", no: "Cancel" },
             }).on("crmConfirm:yes", () => {
               $scope.model['is_execute_disabled_tasks'] = '0';
