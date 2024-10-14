@@ -30,7 +30,7 @@
             <action-additional-info model='model' fieldPrefix="'call_task'" index='index'></action-additional-info>
 
             <check-box
-                checkbox-change="executeDisabledTasksOnChange(value)"
+                checkbox-on-click="executeDisabledTasksOnClick($event)"
                 fieldid="'is_execute_disabled_tasks' + index"
                 fieldlabel="ts('Execute disabled tasks')"
                 model="model['is_execute_disabled_tasks']">
