@@ -131,6 +131,15 @@ class CRM_Sqltasks_DAO_SqlTask extends CRM_Core_DAO {
   public $input_required;
 
   /**
+   * Input parameter specification (JSON)
+   *
+   * @var string
+   *   (SQL type: text)
+   *   Note that values will be retrieved from the database as a string.
+   */
+  public $input_spec;
+
+  /**
    * Date/time the task was archived
    *
    * @var string
@@ -459,6 +468,22 @@ class CRM_Sqltasks_DAO_SqlTask extends CRM_Core_DAO {
           'localizable' => 0,
           'html' => [
             'type' => 'CheckBox',
+          ],
+          'add' => NULL,
+        ],
+        'input_spec' => [
+          'name' => 'input_spec',
+          'type' => CRM_Utils_Type::T_TEXT,
+          'title' => E::ts('Input Spec'),
+          'description' => E::ts('Input parameter specification (JSON)'),
+          'required' => FALSE,
+          'where' => 'civicrm_sqltasks.input_spec',
+          'table_name' => 'civicrm_sqltasks',
+          'entity' => 'SqlTask',
+          'bao' => 'CRM_Sqltasks_DAO_SqlTask',
+          'localizable' => 0,
+          'html' => [
+            'type' => 'TextArea',
           ],
           'add' => NULL,
         ],

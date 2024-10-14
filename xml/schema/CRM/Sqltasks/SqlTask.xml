@@ -126,6 +126,16 @@
   </field>
 
   <field>
+    <name>input_spec</name>
+    <comment>Input parameter specification (JSON)</comment>
+    <type>text</type>
+    <required>false</required>
+    <html>
+      <type>TextArea</type>
+    </html>
+  </field>
+
+  <field>
     <name>archive_date</name>
     <comment>Date/time the task was archived</comment>
     <type>datetime</type>

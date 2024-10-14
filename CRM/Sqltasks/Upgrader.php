@@ -514,4 +514,19 @@ class CRM_Sqltasks_Upgrader extends CRM_Extension_Upgrader_Base {
       return TRUE;
     }
 
+    /**
+     * Add column `civicrm_sqltasks.input_spec`
+     */
+    public function upgrade_0330() {
+      $this->ctx->log->info("Add column `civicrm_sqltasks.input_spec`");
+
+      CRM_Core_DAO::executeQuery("
+        ALTER TABLE `civicrm_sqltasks`
+        ADD COLUMN `input_spec` text NULL COMMENT 'Input parameter specification (JSON)';
+      ");
+
+      $logging = new CRM_Logging_Schema();
+      $logging->fixSchemaDifferences();
+      return TRUE;
+    }
 }
