@@ -23,7 +23,7 @@ class CompilerPass implements CompilerPassInterface {
       try {
         $errorScope = \CRM_Core_TemporaryErrorScope::useException();
         $query = \CRM_Core_DAO::executeQuery("
-          SELECT id FROM civicrm_sqltasks WHERE input_spec IS NOT NULL ORDER BY id ASC;
+          SELECT id, name FROM civicrm_sqltasks WHERE input_spec IS NOT NULL ORDER BY id ASC;
         ");
       }
       catch (\Civi\Core\Exception\DBQueryException $e) {
@@ -43,7 +43,7 @@ class CompilerPass implements CompilerPassInterface {
         $action_provider_definition->addMethodCall('addAction', [
           "SqltasksRunSQLTask_$task_id",
           $task_class_name,
-          E::ts("Run SQL Task #$task_id"),
+          E::ts("Run SQL Task [{$task_id}] {$query->name}"),
         ], []);
       }
     }
