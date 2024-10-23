@@ -12,6 +12,19 @@
 | written permission from the original author(s).        |
 +-------------------------------------------------------*}
 
+{htxt id='id-is-execute-disabled-tasks'}
+  <p>{ts domain="de.systopia.sqltasks"}You can decide whether tasks that are disabled should be executed by this action.{/ts}</p>
+  <p>{ts domain="de.systopia.sqltasks"}This setting applies to tasks and categories.{/ts}</p>
+  <p>{ts domain="de.systopia.sqltasks"}The check will be performed during execution, so disabling a task being called by this action could change the behaviour of this task if the setting is off.{/ts}</p>
+{/htxt}
+
+{htxt id='id-execute-in-parallel'}
+  <p>{ts domain="de.systopia.sqltasks"}You can run tasks in parallel via a background queue, e.g. with coworker. {/ts}</p>
+  <p>{ts domain="de.systopia.sqltasks"}This will only apply if your CiviCRM installation is configured for background queues via the <code>enableBackgroundQueue</code> setting and if a background queue runner is set up.{/ts}</p>
+  <p>{ts domain="de.systopia.sqltasks"}If <code>enableBackgroundQueue</code> is disabled and you use this option, tasks will simply be executed sequentially.{/ts}</p>
+  <p>{ts domain="de.systopia.sqltasks"}<strong>Be <id>very</id> careful with this! Order of execution is not guaranteed during parallel execution, so this feature must not be used when tasks must be executed in a specific order.</strong>{/ts}</p>
+{/htxt}
+
 {htxt id='id-task-tasks'}
   <p>{ts domain="de.systopia.sqltasks"}You can select any tasks (except this one) to be run as an action of this task.{/ts}</p>
   <p>{ts domain="de.systopia.sqltasks"}Only enabled tasks will be run, in the order defined by the task manager, <i>not</i> this list.{/ts}</p>

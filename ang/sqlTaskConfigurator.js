@@ -1360,23 +1360,38 @@
         $scope.isDataExists = function(array) {
           return Boolean(array && array.length);
         };
-
         $scope.refreshSelectSqlTasks = function() {};
+        $scope.refreshSqlTaskSelects = function() {
+          $scope.loadTasks(function () {
+            $scope.refreshSelectSqlTaskCategories();
+            $scope.refreshSelectSqlTasks();
+          });
+        };
         $scope.refreshSelectSqlTaskCategories = function() {};
-        $scope.executeDisabledTasksOnChange = function(value) {
-          $scope.model['is_execute_disabled_tasks'] = value;
-          $scope.loadTasks(function () {
-            $scope.refreshSelectSqlTaskCategories();
-            $scope.refreshSelectSqlTasks();
-          });
-        };
-
         $scope.onApplyTemplateCallback = function(value) {
-          $scope.loadTasks(function () {
-            $scope.refreshSelectSqlTaskCategories();
-            $scope.refreshSelectSqlTasks();
-          });
+          $scope.refreshSqlTaskSelects();
         };
+        $scope.executeDisabledTasksOnClick = function($event) {
+
+          // // when user try to turn off executing disabled tasks:
+          if ($scope.model['is_execute_disabled_tasks'] === '1') {
+            CRM.confirm({
+              title: ts("Confirm change"),
+              message: ts('<p>Are you sure you want to disable the execution of disabled tasks?</p><p><strong>This will remove any tasks that are disabled from your task selection!</strong></p>'),
+              options: { yes: "Continue", no: "Cancel" },
+            }).on("crmConfirm:yes", () => {
+              $scope.model['is_execute_disabled_tasks'] = '0';
+              $scope.refreshSqlTaskSelects();
+            }).on("crmConfirm:no", () => {
+              $scope.model['is_execute_disabled_tasks'] = '1';
+              $scope.refreshSqlTaskSelects();
+              $event.preventDefault();
+            });
+          } else {
+            $scope.model['is_execute_disabled_tasks'] = '1';
+            $scope.refreshSqlTaskSelects();
+          }
+        }
 
         var tasksData = [];
 
@@ -1856,7 +1871,15 @@
         fieldId: "<fieldid",
         helpAction: "&helpaction",
         showHelpIcon: "<showhelpicon",
-        checkboxChange: "&"
+        checkboxChange: "&",
+        checkboxOnClick: "&"
+      },
+      controller: function($scope) {
+        $scope.onClickEvent = function ($event) {
+          if (angular.isFunction($scope.checkboxOnClick)) {
+            $scope.checkboxOnClick($event);
+          }
+        };
       }
     };
   });
