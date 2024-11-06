@@ -136,7 +136,7 @@ abstract class CRM_Sqltasks_Action {
    * @return string
    */
   protected function resolveTokens($string, $record) {
-    while (preg_match('/\{(?P<token>\w+)\}/', $string, $match)) {
+    while (preg_match('/\{(?P<token>\w+)\}/', $string ?? '', $match)) {
       $token = $match['token'];
       $value = isset($record->$token) ? $record->$token : '';
       $string = str_replace('{' . $match['token'] . '}', $value, $string);
