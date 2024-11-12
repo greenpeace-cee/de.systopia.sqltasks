@@ -401,7 +401,6 @@
                                     class="crm-form-select"
                                     id="param-{{$index}}-type"
                                     name="type"
-                                    ng-change="resetInputDefault($index)"
                                     ng-model="taskOptions.input_spec[$index].type"
                                     required
                                 >
@@ -412,6 +411,20 @@
                             </td>
 
                             <td>
+                                <label for="param-{{$index}}-multiple">{{ts('Multiple')}}</label>
+
+                                <input
+                                    class="crm-form-checkbox"
+                                    id="param-{{$index}}-multiple"
+                                    name="multiple"
+                                    ng-model="taskOptions.input_spec[$index].multiple"
+                                    type="checkbox"
+                                />
+                            </td>
+
+                            <td ng-if="taskOptions.input_spec[$index].multiple"></td>
+
+                            <td ng-if="!taskOptions.input_spec[$index].multiple">
                                 <label for="param-{{$index}}-default">{{ts('Default')}}:</label>
 
                                 <input

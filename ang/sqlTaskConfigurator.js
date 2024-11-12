@@ -448,6 +448,7 @@
         $scope.taskOptions.input_spec.push({
           name: "",
           type: "String",
+          multiple: false,
           value_string: "",
           value_float: 0,
           value_boolean: false,

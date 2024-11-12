@@ -123,7 +123,8 @@ class RunSQLTask extends AbstractAction {
       foreach ($input_spec as $input_param) {
         $name = $input_param['name'];
         $type = $input_param['type'];
-        $default  = $input_param['default'] ?? NULL;
+        $multiple = (bool) ($input_param['multiple'] ?? FALSE);
+        $default = $multiple ? [] : ($input_param['default'] ?? NULL);
 
         $specs[] = new Specification(
           $name,
@@ -133,7 +134,7 @@ class RunSQLTask extends AbstractAction {
           $default,
           NULL,
           NULL,
-          FALSE
+          $multiple
         );
       }
 
@@ -212,38 +213,41 @@ class RunSQLTask extends AbstractAction {
       if (empty($input_values)) return NULL;
 
       return count($input_values) > 1 ? json_encode($input_values) : $input_values[0];
-    } else {
-      $exec_params = [];
-
-      foreach ($input_spec as $input_param) {
-        $name = $input_param['name'];
-        $type = $input_param['type'] ?? 'String';
-        $value = $parameters->getParameter($name);
-
-        if (is_null($value) || $value === '') continue;
-
-        switch ($type) {
-          case 'String':
-            $exec_params[$name] = (string) $value;
-            break;
-
-          case 'Float':
-            $exec_params[$name] = (float) $value;
-            break;
-
-          case 'Boolean':
-            $exec_params[$name] = (bool) $value;
-            break;
-
-          default:
-            $exec_params[$name] = $value;
-        }
-      }
-
-      return json_encode($exec_params);
     }
 
-    return NULL;
+    $exec_params = [];
+
+    foreach ($input_spec as $input_param) {
+      $name = $input_param['name'];
+      $type = $input_param['type'] ?? 'String';
+      $value = $parameters->getParameter($name);
+
+      if (is_null($value) || $value === '') continue;
+
+      if (is_array($value)) {
+        $exec_params[$name] = $value;
+        continue;
+      }
+
+      switch ($type) {
+        case 'String':
+          $exec_params[$name] = (string) $value;
+          break;
+
+        case 'Float':
+          $exec_params[$name] = (float) $value;
+          break;
+
+        case 'Boolean':
+          $exec_params[$name] = (bool) $value;
+          break;
+
+        default:
+          $exec_params[$name] = $value;
+      }
+    }
+
+    return json_encode($exec_params);
   }
 
 }

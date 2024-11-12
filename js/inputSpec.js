@@ -9,9 +9,10 @@ function parseInputSpec (inputSpec) {
     const defaultValue = param.default;
     delete param.default;
 
-    param.value_string = param.type === "String" ? String(defaultValue ?? "") : "";
-    param.value_float = param.type === "Float" ? Number(defaultValue ?? 0) : 0;
-    param.value_boolean = param.type === "Boolean" ? Boolean(defaultValue) : false;
+    param.value_string = !param.multiple && param.type === "String" ? String(defaultValue ?? "") : "";
+    param.value_float = !param.multiple && param.type === "Float" ? Number(defaultValue ?? 0) : 0;
+    param.value_boolean = !param.multiple && param.type === "Boolean" ? Boolean(defaultValue) : false;
+    param.value_multiple = "[]";
   }
 
   return params;
@@ -24,10 +25,11 @@ function serializeInputSpec (inputSpec) {
   const params = structuredClone(inputSpec);
 
   for (const param of params) {
-    param.default = param[`value_${param.type.toLowerCase()}`];
+    param.default = param.multiple ? [] : param[`value_${param.type.toLowerCase()}`];
     delete param.value_string;
     delete param.value_float;
     delete param.value_boolean;
+    delete param.value_multiple;
   }
 
   return JSON.stringify(params);

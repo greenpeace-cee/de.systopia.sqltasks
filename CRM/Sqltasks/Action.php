@@ -175,8 +175,14 @@ abstract class CRM_Sqltasks_Action {
           if (empty($token_prop)) {
             $ctx_val = $this->context[$token_name];
             $token_value = is_array($ctx_val) ? json_encode($ctx_val) : $ctx_val;
-          } else {
-            $token_value = $this->context[$token_name][$token_prop];
+            break;
+          }
+
+          $token_value = $this->context[$token_name][$token_prop];
+
+          if (is_array($token_value)) {
+            Civi::log()->warning('Accessing global token property with multiple values');
+            $token_value = json_encode($token_value);
           }
 
           break;

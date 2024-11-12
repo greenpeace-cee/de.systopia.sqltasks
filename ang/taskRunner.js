@@ -85,17 +85,27 @@
       if ($scope.inputRequired && $scope.inputValue.length < 1 && $scope.inputParams.length < 1) {
         $scope.state = "error";
         $scope.errors.push(new Error("Input value is required"));
-        // $scope.$apply();
         return;
       }
 
-      $scope.inputValue = $scope.inputParams.length < 1
-        ? $scope.inputValue
-        : JSON.stringify($scope.inputParams.reduce(
-          (result, param) =>
-            Object.assign(result, { [param.name]: param[`value_${param.type.toLowerCase()}`] }),
-          {}
-        ));
+      try {
+        $scope.inputValue = $scope.inputParams.length < 1
+          ? $scope.inputValue
+          : JSON.stringify($scope.inputParams.reduce(
+            (result, param) => {
+              if (param.multiple) {
+                return Object.assign(result, { [param.name]: JSON.parse(param[`value_multiple`]) });
+              } else {
+                return Object.assign(result, { [param.name]: param[`value_${param.type.toLowerCase()}`] });
+              }
+            },
+            {}
+          ));
+      } catch (error) {
+        $scope.state = "error";
+        $scope.errors.push(new Error("Failed to parse input parameters"));
+        return;
+      }
 
       const taskExecResult = await $scope.api3("Sqltask", "execute", {
         async: $scope.backgroundQueueEnabled,

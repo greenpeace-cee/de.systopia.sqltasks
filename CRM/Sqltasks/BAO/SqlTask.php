@@ -794,9 +794,10 @@ class CRM_Sqltasks_BAO_SqlTask extends CRM_Sqltasks_DAO_SqlTask {
       }
 
       $normalized = [
-        'default' => $param_spec['default'] ?? NULL,
-        'name'    => $param_spec['name'],
-        'type'    => $param_spec['type'] ?? 'String',
+        'default'  => $param_spec['default'] ?? NULL,
+        'multiple' => $param_spec['multiple'] ?? FALSE,
+        'name'     => $param_spec['name'],
+        'type'     => $param_spec['type'] ?? 'String',
       ];
 
       if (is_null($normalized['default']) || $normalized['default'] === '') {
