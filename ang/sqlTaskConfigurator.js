@@ -2008,23 +2008,29 @@
         componentModel: "=model",
         fieldLabel: "<fieldlabel",
         fieldId: "<fieldid",
-        dataParams: "<dataparams",
+        isMultiple: "<ismultiple",
         helpAction: "&helpaction",
         showHelpIcon: "<showhelpicon",
         inputMaxWidth: "<inputmaxwidth",
       },
       controller: function($scope) {
         $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "300px";
+        $scope.isMultiple = angular.isDefined($scope.isMultiple) ? $scope.isMultiple : false;
         var selectStyles = {
           'width' : "100%",
           'max-width' : $scope.inputMaxWidth,
-          'box-sizing' : 'border-box',
-          'height' : '28px'
+          'box-sizing' : 'border-box'
         };
-        $scope.dataParams = angular.isDefined($scope.dataParams) ? $scope.dataParams : [];
+        if (!$scope.isMultiple) {
+          selectStyles['height'] = '28px';
+        }
+
         CRM.$(function($) {
           setTimeout(function() {
-            $("#" + $scope.fieldId).css(selectStyles).crmEntityRef();
+            $("#" + $scope.fieldId).css(selectStyles).crmAutocomplete('Contact', {}, {
+              multiple: $scope.isMultiple,
+              minimumInputLength: 1
+            });
           }, 0);
         });
       }

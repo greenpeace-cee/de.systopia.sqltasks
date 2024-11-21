@@ -93,7 +93,7 @@
                 fieldid="'activity_source_contact_id' + index">
             </select-entityref>
 
-            <select-entityref dataparams='{"multiple":true}' model="model['assigned_to']"
+            <select-entityref isMultiple='true' model="model['assigned_to']"
                 fieldlabel="ts('Assigned To')" fieldid="'s2id_activity_assigned_to' + index" inputMaxWidth="'300px'"
                 helpaction='onInfoPress("Assignees", "id-activity-assignees", "CRM\/Sqltasks\/Action\/CreateActivity")'
                 showHelpIcon=true>
