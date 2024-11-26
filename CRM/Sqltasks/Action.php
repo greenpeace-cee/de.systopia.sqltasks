@@ -16,6 +16,11 @@
 use CRM_Sqltasks_ExtensionUtil as E;
 
 /**
+ * Custom exception class that is thrown when an action's configuration is invalid
+ */
+class CRM_Sqltasks_Action_ConfigError extends Exception {}
+
+/**
  * This class represents a single task
  *
  * @todo turn this into an entity
@@ -131,7 +136,7 @@ abstract class CRM_Sqltasks_Action {
    * @return string
    */
   protected function resolveTokens($string, $record) {
-    while (preg_match('/\{(?P<token>\w+)\}/', $string, $match)) {
+    while (preg_match('/\{(?P<token>\w+)\}/', $string ?? '', $match)) {
       $token = $match['token'];
       $value = isset($record->$token) ? $record->$token : '';
       $string = str_replace('{' . $match['token'] . '}', $value, $string);
@@ -152,41 +157,61 @@ abstract class CRM_Sqltasks_Action {
    * @return string|string[]
    */
   protected function resolveGlobalTokens($value) {
-    if (!is_string($value)) {
-      return $value;
-    }
-    // TODO: add JSON support (with prefix.token.key1.subkey1 syntax?)
-    while (preg_match('/\{(?P<prefix>context|setting|config)\.(?P<token>\w+)\}/', $value, $match)) {
-      $tokenValue = '';
-      switch ($match['prefix']) {
-        case 'context':
-          if (!empty($this->context[$match['token']])) {
-            $tokenValue = $this->context[$match['token']];
-          }
-          break;
-        default:
+    if (!is_string($value)) return $value;
 
-        case 'setting':
-          $settingVal = Civi::settings()->get($match['token']);
-          if (!empty($settingVal)) {
-            $tokenValue = $settingVal;
-          }
-          break;
+    $token_pattern = '/\{(?P<prefix>context|setting|config)\.(?P<token>\w+)(\.(?P<token_prop>\w+))?\}/';
 
-        case 'config':
-          $tokenValue = (CRM_Sqltasks_GlobalToken::singleton())->getValue($match['token']);
+    while (preg_match($token_pattern, $value, $match)) {
+      $prefix = $match['prefix'];
+      $token_name = $match['token'];
+      $token_prop = $match['token_prop'] ?? '';
+
+      $token_value = '';
+
+      switch ($prefix) {
+        case 'context': {
+          if (empty($this->context[$token_name])) break;
+
+          if (empty($token_prop)) {
+            $ctx_val = $this->context[$token_name];
+            $token_value = is_array($ctx_val) ? json_encode($ctx_val) : $ctx_val;
+            break;
+          }
+
+          $token_value = $this->context[$token_name][$token_prop];
+
+          if (is_array($token_value)) {
+            Civi::log()->warning('Accessing global token property with multiple values');
+            $token_value = json_encode($token_value);
+          }
+
           break;
+        }
+
+        case 'setting': {
+          $setting_val = Civi::settings()->get($token_name);
+
+          if (empty($setting_val)) break;
+
+          $token_value = $setting_val;
+          break;
+        }
+
+        case 'config': {
+          $token_value = (CRM_Sqltasks_GlobalToken::singleton())->getValue($token_name);
+          break;
+        }
       }
-      $token = '{' . $match['prefix'] . '.' . $match['token'] . '}';
-      if (empty($tokenValue)) {
-        $this->log("No value found for token {$token}");
+
+      $token = '{' . "$prefix.$token_name" . (empty($token_prop) ? '' : ".$token_prop") . '}';
+
+      if (is_null($token_value) || $token_value === '') {
+        $this->log("No value found for token $token");
       }
-      $value = str_replace(
-        $token,
-        $tokenValue,
-        $value
-      );
+
+      $value = str_replace($token, $token_value, $value);
     }
+
     return $value;
   }
 
@@ -437,6 +462,27 @@ abstract class CRM_Sqltasks_Action {
    */
   public static function isDefaultTemplateAction() {
     return TRUE;
+  }
+
+  /**
+   * Wrapper function for CRM_Sqltasks_Action::execute() that
+   *   - checks the action's configuration,
+   *   - measures and returns execution time
+   *
+   * @return array
+   */
+  public function prepareAndExecute() {
+    $start_time = microtime(TRUE);
+
+    try {
+      $this->checkConfiguration();
+    } catch (Exception $ex) {
+      throw new CRM_Sqltasks_Action_ConfigError($ex->getMessage(), 0, $ex);
+    }
+
+    $this->execute();
+
+    return [ 'runtime' => microtime(TRUE) - $start_time ];
   }
 
 }

@@ -135,7 +135,7 @@ class CRM_Sqltasks_Action_CreateActivityTest extends CRM_Sqltasks_Action_Abstrac
       );
 
       while ($queryResult->fetch()) {
-        $this->assertObjectHasAttribute(
+        $this->assertObjectHasProperty(
           'sqltask_activity_id',
           $queryResult,
           'Temporary table should have a sqltask_activity_id column'
@@ -220,7 +220,7 @@ class CRM_Sqltasks_Action_CreateActivityTest extends CRM_Sqltasks_Action_Abstrac
       );
 
       while ($queryResult->fetch()) {
-        $this->assertObjectHasAttribute(
+        $this->assertObjectHasProperty(
           'sqltask_activity_id',
           $queryResult,
           'Temporary table should have a sqltask_activity_id column'

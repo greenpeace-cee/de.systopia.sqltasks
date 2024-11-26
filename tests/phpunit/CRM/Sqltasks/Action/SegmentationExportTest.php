@@ -9,6 +9,16 @@ class CRM_Sqltasks_Action_SegmentationExportTest extends CRM_Sqltasks_Action_Abs
 
   private $segmentationPresent;
 
+  public function setUp(): void {
+    parent::setUp();
+
+    // Temporarily disable the MySQL setting ONLY_FULL_GROUP_BY to allow
+    // selections with incomplete GROUP BY clauses in de.systopia.segmentation
+    CRM_Core_DAO::executeQuery("
+      SET sql_mode=(SELECT REPLACE(@@sql_mode, 'ONLY_FULL_GROUP_BY', ''))
+    ");
+  }
+
   public function setUpHeadless() {
     $test = \Civi\Test::headless()
       ->uninstallMe(__DIR__)
@@ -21,6 +31,15 @@ class CRM_Sqltasks_Action_SegmentationExportTest extends CRM_Sqltasks_Action_Abs
       $test->install('de.systopia.segmentation');
     }
     return $test->apply(TRUE);
+  }
+
+  public function tearDown(): void {
+    // Re-enable the MySQL setting ONLY_FULL_GROUP_BY
+    CRM_Core_DAO::executeQuery("
+      SET sql_mode=(SELECT CONCAT(@@sql_mode, ',ONLY_FULL_GROUP_BY'))
+    ");
+
+    parent::tearDown();
   }
 
   public function testSegmentationExport() {

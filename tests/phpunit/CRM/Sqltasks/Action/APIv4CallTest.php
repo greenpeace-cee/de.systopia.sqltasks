@@ -215,7 +215,7 @@ class CRM_Sqltasks_Action_APIv4CallTest extends CRM_Sqltasks_Action_AbstractActi
     );
 
     while ($query->fetch()) {
-      $this->assertObjectHasAttribute(
+      $this->assertObjectHasProperty(
         'sqltask_api_result',
         $query,
         'Temporary table should have a sqltask_api_result column'

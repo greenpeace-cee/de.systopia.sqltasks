@@ -7,6 +7,7 @@ use \Civi\ActionProvider\Exception\ExecutionException;
 use \Civi\ActionProvider\Parameter\ParameterBagInterface;
 use \Civi\ActionProvider\Parameter\SpecificationBag;
 use \Civi\ActionProvider\Parameter\Specification;
+use \Civi\Api4;
 
 use CRM_Sqltasks_ExtensionUtil as E;
 
@@ -20,13 +21,7 @@ class RunSQLTask extends AbstractAction {
    * @return void
    */
   protected function doAction(ParameterBagInterface $parameters, ParameterBagInterface $output) {
-    // Configuration
-    $task_id = $this->configuration->getParameter('task_id');
-    $log_to_file = $this->configuration->getParameter('log_to_file');
-    $return_parameter = $this->configuration->getParameter('return_parameter');
-
-    // Parameters
-    $input_values = $parameters->getParameter('input_values');
+    $task_id = $this->getTaskId() ?? $this->configuration->getParameter('task_id');
 
     try {
       civicrm_api3('Sqltask', 'get', [ 'id' => $task_id ]);
@@ -36,17 +31,9 @@ class RunSQLTask extends AbstractAction {
 
     $exec_params = [
       'id'          => $task_id,
-      'input_val'   => $input_values,
-      'log_to_file' => $log_to_file,
+      'input_val'   => $this->getInputValues($parameters),
+      'log_to_file' => $this->configuration->getParameter('log_to_file'),
     ];
-
-    if (is_array($input_values)) {
-      if (count($input_values) < 1) {
-        $exec_params['input_val'] = NULL;
-      } else if (count($input_values) < 2) {
-        $exec_params['input_val'] = $input_values[0];
-      }
-    }
 
     try {
       $exec_result = civicrm_api3('Sqltask', 'execute', $exec_params);
@@ -54,6 +41,8 @@ class RunSQLTask extends AbstractAction {
       $output->setParameter('error_count', $exec_result['values']['error_count']);
       $output->setParameter('logs', $exec_result['values']['logs']);
       $output->setParameter('runtime', $exec_result['values']['runtime']);
+
+      $return_parameter = $this->configuration->getParameter('return_parameter');
 
       if (isset($return_parameter) && isset($exec_result['values'][$return_parameter])) {
         $output->setParameter('return_value', $exec_result['values'][$return_parameter]);
@@ -67,8 +56,10 @@ class RunSQLTask extends AbstractAction {
    * @return SpecificationBag
    */
   public function getConfigurationSpecification() {
-    return new SpecificationBag([
-      new Specification(
+    $specs = [];
+
+    if (empty($this->getTaskId())) {
+      $specs[] = new Specification(
         'task_id',        // string $name
         'Integer',        // string $dataType
         E::ts('Task ID'), // string $title
@@ -77,46 +68,80 @@ class RunSQLTask extends AbstractAction {
         NULL,             // string|null $fkEntity
         NULL,             // array $options
         FALSE             // bool $multiple
-      ),
-      new Specification(
-        'log_to_file',
-        'Boolean',
-        E::ts('Log to file?'),
-        FALSE,
-        FALSE,
-        NULL,
-        NULL,
-        FALSE
-      ),
-      new Specification(
-        'return_parameter',
-        'String',
-        E::ts('Return Parameter'),
-        FALSE,
-        NULL,
-        NULL,
-        NULL,
-        FALSE
-      ),
-    ]);
+      );
+    }
+
+    $specs[] = new Specification(
+      'log_to_file',
+      'Boolean',
+      E::ts('Log to file?'),
+      FALSE,
+      FALSE,
+      NULL,
+      NULL,
+      FALSE
+    );
+
+    $specs[] = new Specification(
+      'return_parameter',
+      'String',
+      E::ts('Return Parameter'),
+      FALSE,
+      NULL,
+      NULL,
+      NULL,
+      FALSE
+    );
+
+    return new SpecificationBag($specs);
   }
 
   /**
    * @return SpecificationBag
    */
   public function getParameterSpecification() {
-    return new SpecificationBag([
-      new Specification(
-        'input_values',
-        'String',
-        E::ts('Input values'),
-        FALSE,
-        NULL,
-        NULL,
-        NULL,
-        TRUE
-      ),
-    ]);
+    $input_spec = $this->getInputSpec();
+
+    if (empty($input_spec)) {
+      return new SpecificationBag([
+        new Specification(
+          'input_values',
+          'String',
+          E::ts("Input values"),
+          FALSE,
+          NULL,
+          NULL,
+          NULL,
+          TRUE
+        ),
+      ]);
+    }
+
+    if (is_array($input_spec)) {
+      $specs = [];
+
+      foreach ($input_spec as $input_param) {
+        $name = $input_param['name'];
+        $type = $input_param['type'];
+        $multiple = (bool) ($input_param['multiple'] ?? FALSE);
+        $default = $multiple ? [] : ($input_param['default'] ?? NULL);
+
+        $specs[] = new Specification(
+          $name,
+          $type,
+          E::ts("Parameter $name"),
+          is_null($default),
+          $default,
+          NULL,
+          NULL,
+          $multiple
+        );
+      }
+
+      return new SpecificationBag($specs);
+    }
+
+    return new SpecificationBag([]);
   }
 
   /**
@@ -165,6 +190,64 @@ class RunSQLTask extends AbstractAction {
         FALSE
       ),
     ]);
+  }
+
+  public function getTaskId() {
+    return NULL;
+  }
+
+  public function getInputSpec() {
+    return NULL;
+  }
+
+  /**
+   * @param ParameterBagInterface $parameters
+   * @return string|null
+   */
+  private function getInputValues($parameters) {
+    $input_spec = $this->getInputSpec();
+
+    if (empty($input_spec)) {
+      $input_values = $parameters->getParameter('input_values');
+
+      if (empty($input_values)) return NULL;
+
+      return count($input_values) > 1 ? json_encode($input_values) : $input_values[0];
+    }
+
+    $exec_params = [];
+
+    foreach ($input_spec as $input_param) {
+      $name = $input_param['name'];
+      $type = $input_param['type'] ?? 'String';
+      $value = $parameters->getParameter($name);
+
+      if (is_null($value) || $value === '') continue;
+
+      if (is_array($value)) {
+        $exec_params[$name] = $value;
+        continue;
+      }
+
+      switch ($type) {
+        case 'String':
+          $exec_params[$name] = (string) $value;
+          break;
+
+        case 'Float':
+          $exec_params[$name] = (float) $value;
+          break;
+
+        case 'Boolean':
+          $exec_params[$name] = (bool) $value;
+          break;
+
+        default:
+          $exec_params[$name] = $value;
+      }
+    }
+
+    return json_encode($exec_params);
   }
 
 }
