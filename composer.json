@@ -1,5 +1,6 @@
 {
     "name": "civicrm/sqltasks",
+    "type": "civicrm-ext",
     "description": "Manage recurring tasks based on SQL queries",
     "license": "AGPL-3.0-only",
     "authors": [
