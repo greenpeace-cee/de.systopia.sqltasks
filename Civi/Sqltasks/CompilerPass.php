@@ -18,7 +18,7 @@ class CompilerPass implements CompilerPassInterface {
         'SqltasksRunSQLTask',
         'Civi\Sqltasks\Actions\RunSQLTask',
         E::ts('Run SQL Task'),
-      ], []);
+      ]);
 
       try {
         $errorScope = \CRM_Core_TemporaryErrorScope::useException();
@@ -44,7 +44,7 @@ class CompilerPass implements CompilerPassInterface {
           "SqltasksRunSQLTask_$task_id",
           $task_class_name,
           E::ts("Run SQL Task [{$task_id}] {$query->name}"),
-        ], []);
+        ]);
       }
     }
   }
