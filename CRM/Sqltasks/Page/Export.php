@@ -73,11 +73,15 @@ class CRM_Sqltasks_Page_Export extends CRM_Core_Page {
       'category',
       'description',
       'input_required',
+      'input_spec',
       'last_modified',
       'parallel_exec',
       'run_permissions',
       'scheduled',
     ]);
+
+    $task_data['input_spec'] = json_decode($task_data['input_spec'], TRUE);
+
     return json_encode($task_data, JSON_PRETTY_PRINT);
   }
 
