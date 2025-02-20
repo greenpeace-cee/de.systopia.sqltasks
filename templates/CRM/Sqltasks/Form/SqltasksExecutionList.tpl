@@ -74,50 +74,50 @@
   </div>
 
   {if $sqltasksExecutions}
-    <div class="crm-form-block">
-      <div class="st__pb-10 st__pt-10">
-        <div>{$sqltasksExecutionsCount} Executions</div>
-      </div>
+  <div class="crm-form-block">
+    <div class="st__pb-10 st__pt-10">
+      <div>{$sqltasksExecutionsCount} Executions</div>
     </div>
+  </div>
 
-    <div class="crm-form-block st__p-0">
-      {include file="CRM/Sqltasks/Chank/SqltasksExecutionListPagination.tpl"}
-      <div>
-        <table class="dataTable selector row-highlight st__m-0">
-          <tr>
-            <th>Task Id</th>
-            <th>Error Count</th>
-            <th>Start Date</th>
-            <th>End Date</th>
-            <th>
-              Task Runtime
-              <p class="ste__runtime-summary">Avg: {$summary.avg/1000|round:3}s | Min: {$summary.min/1000|round:3}s | Max: {$summary.max/1000|round:3}s</p>
-            </th>
-            <th>Executor</th>
-            <th>Actions</th>
+  <div class="crm-form-block st__p-0">
+    {include file="CRM/Sqltasks/Chank/SqltasksExecutionListPagination.tpl"}
+    <div>
+      <table class="dataTable selector row-highlight st__m-0">
+        <tr>
+          <th>Task Id</th>
+          <th>Error Count</th>
+          <th>Start Date</th>
+          <th>End Date</th>
+          <th>
+            Task Runtime
+            <p class="ste__runtime-summary">Avg: {$summary.avg/1000|round:3}s | Min: {$summary.min/1000|round:3}s | Max: {$summary.max/1000|round:3}s</p>
+          </th>
+          <th>Executor</th>
+          <th>Actions</th>
+        </tr>
+        {foreach from=$sqltasksExecutions item=sqltasksExecution}
+          <tr class="{if $sqltasksExecution.is_has_errors}ste__error-execution{else}ste__success-execution{/if}">
+            <td>{$sqltasksExecution.sqltask_id}</td>
+            <td>{$sqltasksExecution.error_count}</td>
+            <td>{$sqltasksExecution.start_date}</td>
+            <td>{$sqltasksExecution.end_date}</td>
+            <td>{$sqltasksExecution.runtime/1000}s</td>
+            <td>
+              <a href="{crmURL p='civicrm/contact/view' q="reset=1&cid=`$sqltasksExecution.created_id`"}"  target="_blank">{$sqltasksExecution.created_contact_display_name}</a>
+            </td>
+            <td>
+              <a href="{crmURL p='civicrm/sqltasks-execution/view' q="reset=1&id=`$sqltasksExecution.id`"}" target="_blank">Detailed logs</a>
+            </td>
           </tr>
-          {foreach from=$sqltasksExecutions item=sqltasksExecution}
-            <tr class="{if $sqltasksExecution.is_has_errors}ste__error-execution{else}ste__success-execution{/if}">
-              <td>{$sqltasksExecution.sqltask_id}</td>
-              <td>{$sqltasksExecution.error_count}</td>
-              <td>{$sqltasksExecution.start_date}</td>
-              <td>{$sqltasksExecution.end_date}</td>
-              <td>{$sqltasksExecution.runtime/1000}s</td>
-              <td>
-                <a href="{crmURL p='civicrm/contact/view' q="reset=1&cid=`$sqltasksExecution.created_id`"}"  target="_blank">{$sqltasksExecution.created_contact_display_name}</a>
-              </td>
-              <td>
-                <a href="{crmURL p='civicrm/sqltasks-execution/view' q="reset=1&id=`$sqltasksExecution.id`"}" target="_blank">Detailed logs</a>
-              </td>
-            </tr>
-          {/foreach}
-        </table>
-      </div>
-
-      {include file="CRM/Sqltasks/Chank/SqltasksExecutionListPagination.tpl"}
-
-      {else}
-        <div>Empty result.</div>
-      {/if}
+        {/foreach}
+      </table>
     </div>
+
+    {include file="CRM/Sqltasks/Chank/SqltasksExecutionListPagination.tpl"}
+
+    {else}
+      <div>Empty result.</div>
+    {/if}
+  </div>
 </div>

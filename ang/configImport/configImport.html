@@ -1,5 +1,6 @@
 <div id="bootstrap-theme">
   <h1 crm-page-title>{{ts('Import Configuration')}}</h1>
+
   <div class="crm-form-block">
     <div class="st__flex st__gap-10 st__pb-10">
       <a class="btn btn-secondary" ng-href="#/sqltasks/manage" title="{{ts('Back to Manager')}}">
@@ -28,18 +29,18 @@
     </div>
 
     <div class="help">
-        <strong>{{ts('Caution!')}}</strong> {{ts('Please review the task configuration after import,
-        especially if imported from another environment.')}}
-        {{ts('The configuration file only contains the IDs of certain entities (e.g. actvity
-        types, templates, campaigns, etc.), and those can vary from system to system.')}}
+      <strong>{{ts('Caution!')}}</strong> {{ts('Please review the task configuration after import,
+      especially if imported from another environment.')}}
+      {{ts('The configuration file only contains the IDs of certain entities (e.g. actvity
+      types, templates, campaigns, etc.), and those can vary from system to system.')}}
     </div>
 
     <div class="st__pt-10">
-        <button class="btn btn-primary crm-button_qf_ConfigImport_submit crm-i-button crm-form-submit default validate" name="_qf_ConfigImport_submit"
-                value="Import" type="button" id="_qf_ConfigImport_submit-bottom" ng-click="onImportPress()">
-          <i class="crm-i fa-check"></i>
-          <span>Import</span>
-        </button>
+      <button class="btn btn-primary crm-button_qf_ConfigImport_submit crm-i-button crm-form-submit default validate" name="_qf_ConfigImport_submit"
+        value="Import" type="button" id="_qf_ConfigImport_submit-bottom" ng-click="onImportPress()">
+        <i class="crm-i fa-check"></i>
+        <span>Import</span>
+      </button>
     </div>
   </div>
 </div>

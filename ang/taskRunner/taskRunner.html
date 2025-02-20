@@ -29,7 +29,7 @@
       </div>
 
       <div class="help st__m-0" ng-if="state === 'running'"
-        style="background-color:#ece7bc; border:solid 1px #cbbc44">
+           style="background-color:#ece7bc; border:solid 1px #cbbc44">
         <span>{{ts('Task "%1" is running ...', {1: task.name})}}</span>
       </div>
 
@@ -54,13 +54,13 @@
           <div class="crm-section" ng-repeat="param in inputParams">
             <label>{{param.name}}:</label>
             <input class="crm-form-text" id="param-{{param.name}}-string" ng-model="inputParams[$index].value_string"
-              ng-show="!param.multiple && param.type === 'String'" type="text"/>
+                   ng-show="!param.multiple && param.type === 'String'" type="text"/>
             <input class="crm-form-text" id="param-{{param.name}}-number" ng-model="inputParams[$index].value_float"
-              ng-show="!param.multiple && param.type === 'Float'" type="number"/>
+                   ng-show="!param.multiple && param.type === 'Float'" type="number"/>
             <input class="crm-form-checkbox" id="param-{{param.name}}-boolean"
-              ng-model="inputParams[$index].value_boolean" ng-show="!param.multiple && param.type === 'Boolean'" type="checkbox"/>
+                   ng-model="inputParams[$index].value_boolean" ng-show="!param.multiple && param.type === 'Boolean'" type="checkbox"/>
             <input class="crm-form-text" id="param-{{param.name}}-multiple" ng-model="inputParams[$index].value_multiple"
-              ng-show="param.multiple" type="text"/>
+                   ng-show="param.multiple" type="text"/>
           </div>
         </div>
       </div>

@@ -62,6 +62,10 @@
   gap: 15px;
 }
 
+.st__gap-20 {
+  gap: 20px;
+}
+
 .st__align-items-center {
   align-items: center;
 }

@@ -69,8 +69,8 @@
                   {{ts('Show task execution logs', {'domain' : 'de.systopia.sqltasks'})}}
                 </a>
                 <a class="st__flex st__pb-10 st__gap-5 st__align-items-center" href="{{url('civicrm/sqltasks/global-token-manager');}}"
-                   target="_blank"
-                   title="{{ts('Global Token Manager', {'domain' : 'de.systopia.sqltasks'})}}">
+                  target="_blank"
+                  title="{{ts('Global Token Manager', {'domain' : 'de.systopia.sqltasks'})}}">
                   <span class="crm-i fa-book"></span>
                   <span>{{ts('Global Token Manager', {'domain' : 'de.systopia.sqltasks'})}}</span>
                 </a>
@@ -100,22 +100,22 @@
               <div class="st__p-10 st__bg-enabled st__flex st__align-items-center st__cursor-pointer">
                 <label class="st__cursor-pointer" for="isShowEnabledTask">{{ts('Enabled')}}</label>
                 <input class="crm-form-checkbox st__m-0 st__cursor-pointer" ng-true-value="'1'" ng-false-value="'0'"
-                       ng-change="redrawTaskList(); updatePreviousTaskOrder();"
-                       ng-model="tasksDisplayPreferences.isShowEnabledTask" id="isShowEnabledTask" name="isShowEnabledTask" type="checkbox" >
+                  ng-change="redrawTaskList(); updatePreviousTaskOrder();"
+                  ng-model="tasksDisplayPreferences.isShowEnabledTask" id="isShowEnabledTask" name="isShowEnabledTask" type="checkbox" >
               </div>
 
               <div class="st__p-10 st__bg-disabled st__flex st__align-items-center st__cursor-pointer">
                 <label class="st__cursor-pointer" for="isShowDisabledTask">{{ts('Disabled')}}</label>
                 <input class="crm-form-checkbox st__m-0 st__cursor-pointer" ng-true-value="'1'" ng-false-value="'0'"
-                       ng-change="redrawTaskList(); updatePreviousTaskOrder();"
-                       ng-model="tasksDisplayPreferences.isShowDisabledTask" id="isShowDisabledTask" name="isShowDisabledTask" type="checkbox" >
+                  ng-change="redrawTaskList(); updatePreviousTaskOrder();"
+                  ng-model="tasksDisplayPreferences.isShowDisabledTask" id="isShowDisabledTask" name="isShowDisabledTask" type="checkbox" >
               </div>
 
               <div class="st__p-10 st__bg-archived st__flex st__align-items-center st__cursor-pointer">
                 <label class="st__cursor-pointer" for="isShowArchivedTask">{{ts('Archived')}}</label>
                 <input class="crm-form-checkbox st__m-0 st__cursor-pointer" ng-true-value="'1'" ng-false-value="'0'"
-                       ng-change="redrawTaskList(); updatePreviousTaskOrder();"
-                       ng-model="tasksDisplayPreferences.isShowArchivedTask" id="isShowArchivedTask" name="isShowArchivedTask" type="checkbox" >
+                  ng-change="redrawTaskList(); updatePreviousTaskOrder();"
+                  ng-model="tasksDisplayPreferences.isShowArchivedTask" id="isShowArchivedTask" name="isShowArchivedTask" type="checkbox" >
               </div>
             </div>
           </div>

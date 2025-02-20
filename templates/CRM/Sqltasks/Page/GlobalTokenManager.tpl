@@ -75,8 +75,8 @@
         <td>
           <div class="stgt__edit-mode">
             <button class="btn btn-primary stgt__update-token-data-button"">
-              <i class="crm-i fa-check"></i>
-              <span>{ts}Update{/ts}</span>
+            <i class="crm-i fa-check"></i>
+            <span>{ts}Update{/ts}</span>
             </button>
             <button class="btn btn-secondary stgt__cancel-editing-token-data-button">
               <i class="crm-i fa-close"></i>
@@ -101,132 +101,132 @@
 
 {literal}
 <script>
-    CRM.$(function ($) {
-        var tokens = {/literal}{$tokens}{literal};
-        var templateColumns = $('.stgt__table-template .stgt__row-template').html();
-        var table =  $('.stgt__table');
-        var createTokenErrorMessageElement =  $('.stgt__create-token-error-message-wrap');
+  CRM.$(function ($) {
+    var tokens = {/literal}{$tokens}{literal};
+    var templateColumns = $('.stgt__table-template .stgt__row-template').html();
+    var table =  $('.stgt__table');
+    var createTokenErrorMessageElement =  $('.stgt__create-token-error-message-wrap');
 
-        addTokensToTable();
-        initCreatingNewToken();
+    addTokensToTable();
+    initCreatingNewToken();
 
-        function addTokensToTable() {
-            for (var i = 0; i < tokens.length; i++) {
-                addTokenToTable(tokens[i]);
-            }
+    function addTokensToTable() {
+      for (var i = 0; i < tokens.length; i++) {
+        addTokenToTable(tokens[i]);
+      }
+    }
+
+    function addTokenToTable(token) {
+      table.find('.stgt__add-new-token-row').before('<tr class="stgt__row" data-token-name="' + token.name + '"></td>');
+      var tokenRow = $("tr.stgt__row[data-token-name='" + token.name + "']");
+      tokenRow.append(templateColumns);
+
+      tokenRow.find('.stgt__token-name').text(token.name);
+      tokenRow.find('.stgt__token-value').text(token.value);
+
+      tokenRow.find('.stgt__edit-token-data-button').click(function () {
+        tokenRow.addClass('edit-mode');
+        tokenRow.find('.stgt__edit-token-name-input').val(tokenRow.find('.stgt__token-name').text());
+        tokenRow.find('.stgt__edit-token-value-input').val(tokenRow.find('.stgt__token-value').text());
+      });
+
+      tokenRow.find('.stgt__delete-token-button').click(function () {
+        showDeleteTokenWindow(tokenRow);
+      });
+
+      tokenRow.find('.stgt__update-token-data-button').click(function () {
+        updateTokenData(tokenRow);
+      });
+
+      tokenRow.find('.stgt__cancel-editing-token-data-button').click(function () {
+        tokenRow.removeClass('edit-mode');
+      });
+
+      return tokenRow;
+    }
+
+    function updateTokenData(tokenRow) {
+      var newName = tokenRow.find('.stgt__edit-token-name-input').val();
+      var value = tokenRow.find('.stgt__edit-token-value-input').val();
+      var name = tokenRow.data('token-name');
+      var errorMessageElement = tokenRow.find('.stgt__edit-token-error-message-wrap');
+      errorMessageElement.empty();
+
+      if (newName.length < 1) {
+        errorMessageElement.append(getErrorMessageHtml(ts("Name cannot be empty.")));
+        return;
+      }
+
+      CRM.api3('SqltaskGlobalToken', 'update_token', {
+        "new_name": newName,
+        "value": value,
+        "name": name
+      }).done(function(result) {
+        if (result.is_error === 0) {
+          tokenRow.removeClass('edit-mode');
+          tokenRow.find('.stgt__token-name').text(newName);
+          tokenRow.find('.stgt__token-value').text(value);
+          tokenRow.data('token-name', newName);
+          tokenRow.effect('highlight', {}, 1500);
+          CRM.alert(ts('Global token successfully updated!'), ts("Updating global token"), "success");
+        } else {
+          errorMessageElement.append(getErrorMessageHtml(result.error_message));
+        }
+      });
+    }
+
+    function showDeleteTokenWindow(tokenRow) {
+      CRM.confirm({
+        title: ts('Remove global token'),
+        message: ts('Are you sure?'),
+      }).on('crmConfirm:yes', function() {
+        var tokenName = tokenRow.data('token-name');
+        CRM.api3('SqltaskGlobalToken', 'delete_token', {"name": tokenName}).done(function(result) {
+          if (result.is_error === 0) {
+            CRM.alert(ts('Global token successfully deleted!'), ts("Deleting global token"), "success");
+            tokenRow.remove();
+          } else {
+            CRM.alert(result.error_message, ts("Error deleting global token"), "error");
+          }
+        });
+      });
+    }
+
+    function initCreatingNewToken() {
+      $('#globalTokenCreateButton').click(function () {
+        var row = $(this).closest('.stgt__add-new-token-row');
+        var nameElement = row.find('.stgt__create-token-name-input');
+        var valueElement = row.find('.stgt__create-token-value-input');
+        var name = nameElement.val();
+        var value = valueElement.val();
+        createTokenErrorMessageElement.empty();
+
+        if (name.length < 1) {
+          createTokenErrorMessageElement.append(getErrorMessageHtml(ts("Name cannot be empty.")));
+          return;
         }
 
-        function addTokenToTable(token) {
-            table.find('.stgt__add-new-token-row').before('<tr class="stgt__row" data-token-name="' + token.name + '"></td>');
-            var tokenRow = $("tr.stgt__row[data-token-name='" + token.name + "']");
-            tokenRow.append(templateColumns);
+        CRM.api3('SqltaskGlobalToken', 'create', {
+          "name": name,
+          "value": value
+        }).done(function(result) {
+          if (result.is_error === 0) {
+            var tokenRow = addTokenToTable({'name' : name, 'value' : value});
+            tokenRow.effect('highlight', {}, 1500);
+            valueElement.val('');
+            nameElement.val('');
+            CRM.alert(ts('Global token successfully created!'), ts("Creating global token"), "success");
+          } else {
+            createTokenErrorMessageElement.append(getErrorMessageHtml(result.error_message));
+          }
+        });
+      });
+    }
 
-            tokenRow.find('.stgt__token-name').text(token.name);
-            tokenRow.find('.stgt__token-value').text(token.value);
+    function getErrorMessageHtml(message) {
+      return '<span class="crm-error">' + message + '</span>';
+    }
 
-            tokenRow.find('.stgt__edit-token-data-button').click(function () {
-                tokenRow.addClass('edit-mode');
-                tokenRow.find('.stgt__edit-token-name-input').val(tokenRow.find('.stgt__token-name').text());
-                tokenRow.find('.stgt__edit-token-value-input').val(tokenRow.find('.stgt__token-value').text());
-            });
-
-            tokenRow.find('.stgt__delete-token-button').click(function () {
-                showDeleteTokenWindow(tokenRow);
-            });
-
-            tokenRow.find('.stgt__update-token-data-button').click(function () {
-                updateTokenData(tokenRow);
-            });
-
-            tokenRow.find('.stgt__cancel-editing-token-data-button').click(function () {
-                tokenRow.removeClass('edit-mode');
-            });
-
-            return tokenRow;
-        }
-
-        function updateTokenData(tokenRow) {
-            var newName = tokenRow.find('.stgt__edit-token-name-input').val();
-            var value = tokenRow.find('.stgt__edit-token-value-input').val();
-            var name = tokenRow.data('token-name');
-            var errorMessageElement = tokenRow.find('.stgt__edit-token-error-message-wrap');
-            errorMessageElement.empty();
-
-            if (newName.length < 1) {
-                errorMessageElement.append(getErrorMessageHtml(ts("Name cannot be empty.")));
-                return;
-            }
-
-            CRM.api3('SqltaskGlobalToken', 'update_token', {
-                "new_name": newName,
-                "value": value,
-                "name": name
-            }).done(function(result) {
-                if (result.is_error === 0) {
-                    tokenRow.removeClass('edit-mode');
-                    tokenRow.find('.stgt__token-name').text(newName);
-                    tokenRow.find('.stgt__token-value').text(value);
-                    tokenRow.data('token-name', newName);
-                    tokenRow.effect('highlight', {}, 1500);
-                    CRM.alert(ts('Global token successfully updated!'), ts("Updating global token"), "success");
-                } else {
-                    errorMessageElement.append(getErrorMessageHtml(result.error_message));
-                }
-            });
-        }
-
-        function showDeleteTokenWindow(tokenRow) {
-            CRM.confirm({
-                title: ts('Remove global token'),
-                message: ts('Are you sure?'),
-            }).on('crmConfirm:yes', function() {
-                var tokenName = tokenRow.data('token-name');
-                CRM.api3('SqltaskGlobalToken', 'delete_token', {"name": tokenName}).done(function(result) {
-                    if (result.is_error === 0) {
-                        CRM.alert(ts('Global token successfully deleted!'), ts("Deleting global token"), "success");
-                        tokenRow.remove();
-                    } else {
-                        CRM.alert(result.error_message, ts("Error deleting global token"), "error");
-                    }
-                });
-            });
-        }
-
-        function initCreatingNewToken() {
-            $('#globalTokenCreateButton').click(function () {
-                var row = $(this).closest('.stgt__add-new-token-row');
-                var nameElement = row.find('.stgt__create-token-name-input');
-                var valueElement = row.find('.stgt__create-token-value-input');
-                var name = nameElement.val();
-                var value = valueElement.val();
-                createTokenErrorMessageElement.empty();
-
-                if (name.length < 1) {
-                    createTokenErrorMessageElement.append(getErrorMessageHtml(ts("Name cannot be empty.")));
-                    return;
-                }
-
-                CRM.api3('SqltaskGlobalToken', 'create', {
-                    "name": name,
-                    "value": value
-                }).done(function(result) {
-                    if (result.is_error === 0) {
-                        var tokenRow = addTokenToTable({'name' : name, 'value' : value});
-                        tokenRow.effect('highlight', {}, 1500);
-                        valueElement.val('');
-                        nameElement.val('');
-                        CRM.alert(ts('Global token successfully created!'), ts("Creating global token"), "success");
-                    } else {
-                        createTokenErrorMessageElement.append(getErrorMessageHtml(result.error_message));
-                    }
-                });
-            });
-        }
-
-        function getErrorMessageHtml(message) {
-            return '<span class="crm-error">' + message + '</span>';
-        }
-
-    });
+  });
 </script>
 {/literal}

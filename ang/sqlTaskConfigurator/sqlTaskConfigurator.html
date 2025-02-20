@@ -327,9 +327,9 @@
             </div>
 
             <multiple-select2 model="taskOptions.run_permissions" fieldlabel="ts('Run Permissions')"
-                              fieldid="'run_permissions' + index" optionsArray="permissionsData" inputMaxWidth="'240px'"
-                              helpaction='onInfoPress("Run Permissions", "id-run-permissions", "CRM\/Sqltasks\/Form\/Configure")'
-                              showHelpIcon=true>
+              fieldid="'run_permissions' + index" optionsArray="permissionsData" inputMaxWidth="'240px'"
+              helpaction='onInfoPress("Run Permissions", "id-run-permissions", "CRM\/Sqltasks\/Form\/Configure")'
+              showHelpIcon=true>
             </multiple-select2>
 
             <div class="crm-section">
@@ -349,28 +349,16 @@
               <div class="label">
                 <label for="abort_on_error">{{ts('Abort on error')}}</label>
 
-                <a
-                  onclick="CRM.help('Abort execution on error', {id: 'id-abort-on-error', file: 'CRM\/Sqltasks\/Form\/Configure'}); return false;"
-                  href="javascript:;"
-                  title="{{ts('Help')}}"
-                  class="helpicon"
-                >
+                <a onclick="CRM.help('Abort execution on error', {id: 'id-abort-on-error', file: 'CRM\/Sqltasks\/Form\/Configure'}); return false;"
+                  href="javascript:;" title="{{ts('Help')}}" class="helpicon">
                   &nbsp;
                 </a>
               </div>
 
               <div class="content">
-                <input
-                  class="crm-form-checkbox"
-                  id="abort_on_error"
-                  name="abort_on_error"
-                  ng-true-value="'1'"
-                  ng-false-value="'0'"
-                  ng-model="taskOptions.abort_on_error"
-                  type="checkbox"
-                />
+                <input class="crm-form-checkbox" id="abort_on_error" name="abort_on_error" ng-true-value="'1'" ng-false-value="'0'"
+                       ng-model="taskOptions.abort_on_error" type="checkbox"/>
               </div>
-
               <div class="clear"></div>
             </div>
           </div>
@@ -384,27 +372,13 @@
               <tr ng-repeat="param in taskOptions.input_spec">
                 <td>
                   <label for="param-{{$index}}-name">{{ts('Name')}}:</label>
-
-                  <input
-                    class="crm-form-text"
-                    id="param-{{$index}}-name"
-                    name="name"
-                    ng-model="taskOptions.input_spec[$index].name"
-                    required
-                    type="text"
-                  />
+                  <input class="crm-form-text" id="param-{{$index}}-name" name="name"
+                    ng-model="taskOptions.input_spec[$index].name" required type="text"/>
                 </td>
 
                 <td>
                   <label for="param-{{$index}}-type">{{ts('Type')}}:</label>
-
-                  <select
-                    class="crm-form-select"
-                    id="param-{{$index}}-type"
-                    name="type"
-                    ng-model="taskOptions.input_spec[$index].type"
-                    required
-                  >
+                  <select class="crm-form-select" id="param-{{$index}}-type" name="type" ng-model="taskOptions.input_spec[$index].type" required>
                     <option value="String">Text</option>
                     <option value="Float">Number</option>
                     <option value="Boolean">Checkbox</option>
@@ -413,54 +387,24 @@
 
                 <td>
                   <label for="param-{{$index}}-multiple">{{ts('Multiple')}}</label>
-
-                  <input
-                    class="crm-form-checkbox"
-                    id="param-{{$index}}-multiple"
-                    name="multiple"
-                    ng-model="taskOptions.input_spec[$index].multiple"
-                    type="checkbox"
-                  />
+                  <input class="crm-form-checkbox" id="param-{{$index}}-multiple" name="multiple"
+                    ng-model="taskOptions.input_spec[$index].multiple" type="checkbox"/>
                 </td>
 
                 <td ng-if="taskOptions.input_spec[$index].multiple"></td>
 
                 <td ng-if="!taskOptions.input_spec[$index].multiple">
                   <label for="param-{{$index}}-default">{{ts('Default')}}:</label>
-
-                  <input
-                    class="crm-form-text"
-                    id="param-{{$index}}-value_string"
-                    name="default"
-                    ng-if="taskOptions.input_spec[$index].type === 'String'"
-                    ng-model="taskOptions.input_spec[$index].value_string"
-                    type="text"
-                  />
-
-                  <input
-                    class="crm-form-text"
-                    id="param-{{$index}}-value_float"
-                    name="default"
-                    ng-if="taskOptions.input_spec[$index].type === 'Float'"
-                    ng-model="taskOptions.input_spec[$index].value_float"
-                    type="number"
-                  />
-
-                  <input
-                    class="crm-form-checkbox"
-                    id="param-{{$index}}-value_boolean"
-                    name="default"
-                    ng-if="taskOptions.input_spec[$index].type === 'Boolean'"
-                    ng-model="taskOptions.input_spec[$index].value_boolean"
-                    type="checkbox"
-                  />
+                  <input class="crm-form-text" id="param-{{$index}}-value_string" name="default"
+                    ng-if="taskOptions.input_spec[$index].type === 'String'" ng-model="taskOptions.input_spec[$index].value_string" type="text"/>
+                  <input class="crm-form-text" id="param-{{$index}}-value_float" name="default"
+                    ng-if="taskOptions.input_spec[$index].type === 'Float'" ng-model="taskOptions.input_spec[$index].value_float" type="number"/>
+                  <input class="crm-form-checkbox" id="param-{{$index}}-value_boolean" name="default" ng-if="taskOptions.input_spec[$index].type === 'Boolean'"
+                    ng-model="taskOptions.input_spec[$index].value_boolean" type="checkbox"/>
                 </td>
 
                 <td>
-                  <button
-                    class="delete-input-param"
-                    ng-click="deleteInputParameter($index)"
-                  >
+                  <button class="delete-input-param" ng-click="deleteInputParameter($index)">
                     <i class="crm-i fa-trash" />
                     {{ts('Delete')}}
                   </button>
@@ -570,17 +514,14 @@
       </div>
 
       <div class="crm-submit-buttons">
-        <button ng-disabled="getBooleanFromNumber(taskOptions.is_archived)"
-                class="btn btn-primary sql-task-configurator-save-button"
-                crm-icon="fa-floppy-o" type="button"
-                id="_qf_Configure_submit-bottom-save">
+        <button ng-disabled="getBooleanFromNumber(taskOptions.is_archived)" class="btn btn-primary sql-task-configurator-save-button"
+          crm-icon="fa-floppy-o" type="button" id="_qf_Configure_submit-bottom-save">
           <span>{{getBooleanFromNumber(taskId) ? ts('Save') : ts('Create')}}</span>
         </button>
 
         <button ng-disabled="getBooleanFromNumber(taskOptions.is_archived)"
-                class="btn btn-primary sql-task-configurator-save-button"
-                crm-icon="fa-check" type="button"
-                id="_qf_Configure_submit-bottom-save-and-done">
+          class="btn btn-primary sql-task-configurator-save-button" crm-icon="fa-check" type="button"
+          id="_qf_Configure_submit-bottom-save-and-done">
           <span>{{getBooleanFromNumber(taskId) ? ts('Save and Done') : ts('Create and Done')}}</span>
         </button>
 
