@@ -12,37 +12,41 @@
 | written permission from the original author(s).        |
 +-------------------------------------------------------*}
 
-<table class="sqltask-mytask-list">
-    {foreach from=$tasks key=key item=task}
-    <tr class="sqltask-{$task.id} sqltask-mytask">
-        <td class="sqltask-mytask-name" title="{$task.description}">
-            {$task.name}
-        </td>
-        <td class="sqltask-mytask-info">
+<div id="bootstrap-theme">
+  <div class="crm-form-block">
+    <table>
+      {foreach from=$tasks key=key item=task}
+      <tr class="sqltask-{$task.id}">
+          <td title="{$task.description}">
+              {$task.name}
+          </td>
+          <td>
             <span class="sqltask-mytask-runtime">{ts domain="de.systopia.sqltasks" 1=$task.last_runtime}%1 seconds{/ts}</span>
             <img class="sqltask-mytask-busy" src="{$config->resourceBase}i/loading.gif"/>
-        </td>
-        <td>
+          </td>
+          <td>
             {if $task.input_required}
-                <input class="crm-form-text sqltask-mytask-input-value" type="text">
+              <input class="crm-form-text sqltask-mytask-input-value" type="text">
             {/if}
-        </td>
-        <td class="sqltask-mytask-run">
-            <a class="button sqltask-mytask-run"
+          </td>
+          <td class="sqltask-mytask-run">
+            <a class="btn btn-secondary sqltask-mytask-run"
                href="#"
                id="sqltask-{$task.id}"
                title="{ts domain="de.systopia.sqltasks" 1=$task.name}RUN %1{/ts}"
                data-task-id="{$task.id}"
                data-is-input-required="{$task.input_required}"
             >
-                {ts domain="de.systopia.sqltasks"}RUN{/ts}
+              {ts domain="de.systopia.sqltasks"}RUN{/ts}
             </a>
-        </td>
-        <td class="sqltask-mytask-downloads">
-        </td>
-    </tr>
-    {/foreach}
-</table>
+          </td>
+          <td class="sqltask-mytask-downloads">
+          </td>
+        </tr>
+      {/foreach}
+    </table>
+  </div>
+</div>
 
 {literal}
 <script type="text/javascript">

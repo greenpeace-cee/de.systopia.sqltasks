@@ -293,7 +293,7 @@
 
       $scope.sortableOptions = {
         handle: ".handle-drag",
-        placeholder: 'sql-task-manager-target-highlight-place',
+        placeholder: 'st__target-highlight-place',
         revert: 300,
         cursor: "move",
         scroll: true,

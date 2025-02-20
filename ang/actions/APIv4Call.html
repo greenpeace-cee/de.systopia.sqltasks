@@ -1,5 +1,5 @@
-<div class="crm-accordion-wrapper crm-sqltask-apiv4 relativePosition collapsed">
-    <div class="crm-accordion-header active accordion-header-custom action-label">
+<div class="crm-accordion-wrapper crm-sqltask-apiv4 st__position-relative collapsed">
+    <div class="crm-accordion-header active action-label">
         <label class="input-checkbox">
             <input
                 ng-false-value="'0'"
@@ -10,16 +10,15 @@
             />
 
             &nbsp;{{ts('APIv4 Call')}}
+          <span ng-if="model['action_title']" class="sql-task-action-title">
+            {{model['action_title']}}
+          </span>
         </label>
 
-        <span ng-if="model['action_title']" class="sql-task-action-title">
-            {{model['action_title']}}
-        </span>
-
-        <label class="header-delete-btn" ng-click="removeItemFromArray(index)">
+        <button class="btn btn-secondary" ng-click="removeItemFromArray(index)">
             <i class="crm-i fa-trash header-delete"></i>
             {{ts('Delete')}}
-        </label>
+        </button>
     </div>
 
     <div class="crm-accordion-body" style="display: none;">
@@ -52,7 +51,7 @@
                 fieldlabel="ts('APIv4 Explorer URL')"
                 helpaction="onInfoPress('APIv4 Explorer URL', 'id-apiv4-explorer-url', 'CRM/Sqltasks/Action/APIv4Call')"
                 input-change="onUrlInput(value)"
-                inputMaxWidth="'600px'"
+                inputMaxWidth="'500px'"
                 isrequired="false"
                 model="model['url']"
                 showHelpIcon="true"

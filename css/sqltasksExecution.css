@@ -1,0 +1,27 @@
+/*
+    Styles for all sqltask pages
+    Prefix: ste__
+    (Sql Tasks Execution)
+*/
+
+.ste__search-item {
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.ste__execution-list-wrap table.dataTable tr.ste__success-execution {
+  background: #d4e8be !important;
+}
+
+.ste__execution-list-wrap table.dataTable tr.ste__error-execution {
+  background: #f6c5c5 !important;
+}
+
+.ste__runtime-summary {
+  line-height: normal;
+  font-size: 11px;
+  font-weight: normal;
+  text-transform: none;
+  margin: 0;
+}

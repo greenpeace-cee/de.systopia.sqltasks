@@ -1,15 +1,15 @@
-<div class="crm-accordion-wrapper crm-sqltask-task relativePosition collapsed">
-    <div class="crm-accordion-header accordion-header-custom active action-label">
+<div class="crm-accordion-wrapper crm-sqltask-task st__position-relative collapsed">
+    <div class="crm-accordion-header active action-label">
         <label class="input-checkbox">
         <input ng-model="model['enabled']" style="cursor: pointer;" type="checkbox" ng-true-value="'1'" ng-false-value="'0'">
           &nbsp;
           {{ts('Assign to Campaign (Segmentation)')}}
+          <span ng-if="model['action_title']" class="sql-task-action-title">{{model['action_title']}}</span>
         </label>
-        <span ng-if="model['action_title']" class="sql-task-action-title">{{model['action_title']}}</span>
-        <label class="header-delete-btn" ng-click="removeItemFromArray(index)">
+        <button class="btn btn-secondary" ng-click="removeItemFromArray(index)">
             <i class="crm-i fa-trash header-delete"></i>
             {{ts('Delete')}}
-        </label>
+        </button>
     </div>
     <div class="crm-accordion-body" style="display: none;">
         <div class="sql-task-action-template-wrapper">
@@ -33,7 +33,7 @@
                 helpaction='onInfoPress("Data table", "id-segmentation-assign-table", "CRM\/Sqltasks\/Action\/SegmentationAssign")'>
             </text-input>
 
-            <ordinary-select2 model="model['campaign_id']" fieldlabel="ts('Campaign')" inputMaxWidth="'300px'"
+            <ordinary-select2 model="model['campaign_id']" fieldlabel="ts('Campaign')" inputMaxWidth="'240px'"
                 fieldid="'segmentation_assign_campaign_id' + index" optionsArray="campaignData"
                 isdataloaded="isDataLoaded('segmentation_assign_campaign_id' + index)">
             </ordinary-select2>
@@ -44,7 +44,7 @@
             </check-box>
 
             <text-input model="model['segment_name']" fieldlabel="ts('Segment')"
-                fieldid="'segmentation_assign_segment_name' + index" showHelpIcon=true inputMaxWidth="'300px'"
+                fieldid="'segmentation_assign_segment_name' + index" showHelpIcon=true inputMaxWidth="'240px'"
                 disabled="getBooleanFromNumber(model['segment_from_table'])"
                 helpaction='onInfoPress("Segment", "id-segmentation-assign-segment-name", "CRM\/Sqltasks\/Action\/SegmentationAssign")'>
             </text-input>
@@ -56,7 +56,7 @@
                 checkbox-change="checkboxChange(value)">
             </check-box>
 
-            <ordinary-select2 model="model['start']" fieldlabel="ts('Change Campaign Status')" inputMaxWidth="'300px'"
+            <ordinary-select2 model="model['start']" fieldlabel="ts('Change Campaign Status')" inputMaxWidth="'240px'"
                               fieldid="'segmentation_assign_start' + index" showHelpIcon=true optionsArray="statusesData" select-change="statusChanged(value)"
                               helpaction='onInfoPress("Change Campaign Status", "id-segmentation-assign-start", "CRM\/Sqltasks\/Action\/SegmentationAssign")'
                               isdataloaded="isDataLoaded('segmentation_assign_start' + index)">

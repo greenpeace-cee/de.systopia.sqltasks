@@ -1,15 +1,15 @@
-<div class="crm-accordion-wrapper crm-sqltask-tag relativePosition collapsed">
-    <div class="crm-accordion-header accordion-header-custom active action-label">
+<div class="crm-accordion-wrapper crm-sqltask-tag st__position-relative collapsed">
+    <div class="crm-accordion-header active action-label">
         <label class="input-checkbox">
             <input ng-model="model['enabled']" style="cursor: pointer;" type="checkbox" ng-true-value="'1'" ng-false-value="'0'">
             &nbsp;
             {{ts('Synchronise Tag')}}
+          <span ng-if="model['action_title']" class="sql-task-action-title">{{model['action_title']}}</span>
         </label>
-        <span ng-if="model['action_title']" class="sql-task-action-title">{{model['action_title']}}</span>
-        <label class="header-delete-btn" ng-click="removeItemFromArray(index)">
+        <button class="btn btn-secondary" ng-click="removeItemFromArray(index)">
             <i class="crm-i fa-trash header-delete"></i>
             {{ts('Delete')}}
-        </label>
+        </button>
     </div>
     <div class="crm-accordion-body" style="display: none;">
         <div class="sql-task-action-template-wrapper">
@@ -37,7 +37,7 @@
                               isdataloaded="isDataLoaded('tag_tag_id_' + index)">
             </ordinary-select2>
 
-            <ordinary-select2 isrequired="getBooleanFromNumber(model['enabled'])" inputMaxWidth="'300px'"
+            <ordinary-select2 isrequired="getBooleanFromNumber(model['enabled'])" inputMaxWidth="'240px'"
                              model="model['entity_table']" fieldlabel="ts('Choose Entity')"
                              fieldid="'tag_entity_table' + index" optionsArray="entityData"
                              isdataloaded="isDataLoaded('tag_entity_table' + index)">>

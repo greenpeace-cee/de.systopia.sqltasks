@@ -1,15 +1,15 @@
-<div class="crm-accordion-wrapper crm-sqltask-post_sql relativePosition collapsed">
-    <div class="crm-accordion-header active collapsed accordion-header-custom action-label">
+<div class="crm-accordion-wrapper crm-sqltask-post_sql st__position-relative collapsed">
+    <div class="crm-accordion-header active collapsed action-label">
         <label class="input-checkbox">
             <input ng-model="model['enabled']" style="cursor: pointer;" ng-true-value="'1'" ng-false-value="'0'" type="checkbox">
             &nbsp;
             {{ts('Run Cleanup SQL Script')}}
+          <span ng-if="model['action_title']" class="sql-task-action-title">{{model['action_title']}}</span>
         </label>
-        <span ng-if="model['action_title']" class="sql-task-action-title">{{model['action_title']}}</span>
-        <label class="header-delete-btn" ng-click="removeItemFromArray(index)">
+        <button class="btn btn-secondary" ng-click="removeItemFromArray(index)">
             <i class="crm-i fa-trash header-delete"></i>
             {{ts('Delete')}}
-        </label>
+        </button>
     </div>
     <div class="crm-accordion-body" style="display: none;">
         <div class="sql-task-action-template-wrapper">

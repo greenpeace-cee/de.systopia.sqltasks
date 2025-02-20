@@ -1,15 +1,15 @@
-<div class="crm-accordion-wrapper crm-sqltask-php collapsed relativePosition">
-    <div class="crm-accordion-header accordion-header-custom active action-label">
+<div class="crm-accordion-wrapper crm-sqltask-php collapsed st__position-relative">
+    <div class="crm-accordion-header active action-label">
         <label class="input-checkbox">
             <input ng-true-value="'1'" style="cursor: pointer;" ng-false-value="'0'" ng-model="model['enabled']" type="checkbox">
             &nbsp;
             {{ts('Run PHP Code')}}
+          <span ng-if="model['action_title']" class="sql-task-action-title">{{model['action_title']}}</span>
         </label>
-        <span ng-if="model['action_title']" class="sql-task-action-title">{{model['action_title']}}</span>
-        <label class="header-delete-btn" ng-click="removeItemFromArray(index)">
+        <button class="btn btn-secondary" ng-click="removeItemFromArray(index)">
             <i class="crm-i fa-trash header-delete"></i>
             {{ts('Delete')}}
-        </label>
+        </button>
     </div>
     <div class="crm-accordion-body" style="display: none;">
         <div class="sql-task-action-template-wrapper">

@@ -1,52 +1,48 @@
-<div class="global-token__page">
+<div id="bootstrap-theme">
+  <div class="crm-form-block stgt__page">
+    <div>
+      <a class="btn btn-primary" href="{crmURL p='civicrm/sqltasks/manage' q='reset=1'}" title="{ts}Go to the SQL Task Manager{/ts}">
+        <i class="crm-i fa-list"></i>
+        <span>{ts}Go to the SQL Task Manager{/ts}</span>
+      </a>
+    </div>
 
-  <div class="sql-task__button-wrap">
-    <a class="sql-task__button sql-task__search-button crm-form-submit default crm-button crm-hover-button"
-       href="{crmURL p='civicrm/sqltasks/manage' q='reset=1'}" title="{ts}Go to the SQL Task Manager{/ts}">
-      <span class="crm-i fa-list"></span>
-      <span>{ts}Go to the SQL Task Manager{/ts}</span>
-    </a>
-  </div>
-
-  <div class="clear"></div>
-
-  <div class="crm-block crm-form-block page-civicrm-admin">
-    <div class="crm-content-block crm-block">
-
+    <div>
       <div class="help">
         <p>{ts}You can manage global tokens below. Global tokens can be used to store values that are used in multiple SQL Tasks, allowing for the value to be changed everywhere by just editing the token. This can be useful for things like credentials.{/ts}</p>
         <p>{ts}To use a global token, use this syntax in any task field:{/ts}</p>
         <p><code>{ts}{literal}{config.name_of_token}{/literal}{/ts}</code></p>
       </div>
 
-      <div class="global-token__table-wrap">
-        <table class="global-token__table form-layout">
+      <div class="stgt__table-wrap">
+        <table class="stgt__table form-layout">
           <thead>
-            <tr>
-              <th class="global-token__large-column">
-                  {ts}Name{/ts}
-              </th>
-              <th class="global-token__large-column">
-                  {ts}Value{/ts}
-              </th>
-              <th>
-                  {ts}Actions{/ts}
-              </th>
-            </tr>
+          <tr>
+            <th class="stgt__large-column">
+              {ts}Name{/ts}
+            </th>
+            <th class="stgt__large-column">
+              {ts}Value{/ts}
+            </th>
+            <th>
+              {ts}Actions{/ts}
+            </th>
+          </tr>
           </thead>
-          <tr class="global-token__add-new-token-row">
+          <tr class="stgt__add-new-token-row">
             <td>
-              <input class="global-token__create-token-name-input crm-form-text" type="text" maxlength="{$maxLengthOfTokenName}">
-              <div class="global-token__create-token-error-message-wrap"></div>
+              <input class="crm-form-text stgt__create-token-name-input crm-form-text" type="text" maxlength="{$maxLengthOfTokenName}">
+              <div class="stgt__create-token-error-message-wrap"></div>
             </td>
             <td>
-              <input class="global-token__create-token-value-input crm-form-text" type="text">
+              <input class="crm-form-text stgt__create-token-value-input crm-form-text" type="text">
             </td>
             <td>
               <div>
-                <a class="button global-token__button" id="globalTokenCreateButton" href="javascript:;">
-                  <span><i class="crm-i fa-plus-circle"></i><span>{ts}Create new global token{/ts}</span></span>
-                </a>
+                <button class="btn btn-primary st__m-0" id="globalTokenCreateButton">
+                  <i class="crm-i fa-plus-circle"></i>
+                  <span>{ts}Create new global token{/ts}</span>
+                </button>
               </div>
             </td>
           </tr>
@@ -54,59 +50,62 @@
       </div>
 
     </div>
-  </div>
 
-  {*this table is hidden and the row will be used like a template*}
-  <table class="global-token__table-template">
-    <tr class="global-token__row-template">
-      <td>
-        <div class="global-token__edit-mode">
-          <input class="global-token__edit-token-name-input crm-form-text" maxlength="{$maxLengthOfTokenName}" type="text">
-          <div class="global-token__edit-token-error-message-wrap"></div>
-        </div>
-        <div class="global-token__view-mode">
-          <div class="global-token__token-name"></div>
-        </div>
-      </td>
-      <td>
-        <div class="global-token__edit-mode">
-          <input class="global-token__edit-token-value-input crm-form-text" type="text">
-        </div>
-        <div class="global-token__view-mode">
-          <div class="global-token__token-value">
+    {*this table is hidden and the row will be used like a template*}
+    <table class="stgt__table-template">
+      <tr class="stgt__row-template">
+        <td>
+          <div class="stgt__edit-mode">
+            <input class="stgt__edit-token-name-input crm-form-text" maxlength="{$maxLengthOfTokenName}" type="text">
+            <div class="stgt__edit-token-error-message-wrap"></div>
           </div>
-        </div>
-      </td>
-      <td>
-        <div class="global-token__edit-mode">
-          <a class="button global-token__button global-token__update-token-data-button" href="javascript:;">
-            <span><i class="crm-i fa-check"></i><span>{ts}Update{/ts}</span></span>
-          </a>
-          <a class="button global-token__button global-token__cancel-editing-token-data-button" href="javascript:;">
-            <span><i class="crm-i fa-close"></i><span>{ts}Cancel{/ts}</span></span>
-          </a>
-        </div>
-        <div class="global-token__view-mode">
-          <a class="button global-token__button global-token__edit-token-data-button" href="javascript:;">
-            <span><i class="crm-i fa-pencil"></i><span>{ts}Edit{/ts}</span></span>
-          </a>
-          <a class="button global-token__button global-token__delete-token-button" href="javascript:;">
-            <span><i class="crm-i fa-trash"></i><span>{ts}Delete{/ts}</span></span>
-          </a>
-        </div>
-      </td>
-    </tr>
-  </table>
-
+          <div class="stgt__view-mode">
+            <div class="stgt__token-name"></div>
+          </div>
+        </td>
+        <td>
+          <div class="stgt__edit-mode">
+            <input class="stgt__edit-token-value-input crm-form-text" type="text">
+          </div>
+          <div class="stgt__view-mode">
+            <div class="stgt__token-value">
+            </div>
+          </div>
+        </td>
+        <td>
+          <div class="stgt__edit-mode">
+            <button class="btn btn-primary stgt__update-token-data-button"">
+              <i class="crm-i fa-check"></i>
+              <span>{ts}Update{/ts}</span>
+            </button>
+            <button class="btn btn-secondary stgt__cancel-editing-token-data-button">
+              <i class="crm-i fa-close"></i>
+              <span>{ts}Cancel{/ts}</span>
+            </button>
+          </div>
+          <div class="stgt__view-mode">
+            <button class="btn btn-secondary stgt__edit-token-data-button">
+              <i class="crm-i fa-pencil"></i>
+              <span>{ts}Edit{/ts}</span>
+            </button>
+            <button class="btn btn-danger stgt__delete-token-button">
+              <i class="crm-i fa-trash"></i>
+              <span>{ts}Delete{/ts}</span>
+            </button>
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
 </div>
 
 {literal}
 <script>
     CRM.$(function ($) {
         var tokens = {/literal}{$tokens}{literal};
-        var templateColumns = $('.global-token__table-template .global-token__row-template').html();
-        var table =  $('.global-token__table');
-        var createTokenErrorMessageElement =  $('.global-token__create-token-error-message-wrap');
+        var templateColumns = $('.stgt__table-template .stgt__row-template').html();
+        var table =  $('.stgt__table');
+        var createTokenErrorMessageElement =  $('.stgt__create-token-error-message-wrap');
 
         addTokensToTable();
         initCreatingNewToken();
@@ -118,28 +117,28 @@
         }
 
         function addTokenToTable(token) {
-            table.find('.global-token__add-new-token-row').before('<tr class="global-token__row" data-token-name="' + token.name + '"></td>');
-            var tokenRow = $("tr.global-token__row[data-token-name='" + token.name + "']");
+            table.find('.stgt__add-new-token-row').before('<tr class="stgt__row" data-token-name="' + token.name + '"></td>');
+            var tokenRow = $("tr.stgt__row[data-token-name='" + token.name + "']");
             tokenRow.append(templateColumns);
 
-            tokenRow.find('.global-token__token-name').text(token.name);
-            tokenRow.find('.global-token__token-value').text(token.value);
+            tokenRow.find('.stgt__token-name').text(token.name);
+            tokenRow.find('.stgt__token-value').text(token.value);
 
-            tokenRow.find('.global-token__edit-token-data-button').click(function () {
+            tokenRow.find('.stgt__edit-token-data-button').click(function () {
                 tokenRow.addClass('edit-mode');
-                tokenRow.find('.global-token__edit-token-name-input').val(tokenRow.find('.global-token__token-name').text());
-                tokenRow.find('.global-token__edit-token-value-input').val(tokenRow.find('.global-token__token-value').text());
+                tokenRow.find('.stgt__edit-token-name-input').val(tokenRow.find('.stgt__token-name').text());
+                tokenRow.find('.stgt__edit-token-value-input').val(tokenRow.find('.stgt__token-value').text());
             });
 
-            tokenRow.find('.global-token__delete-token-button').click(function () {
+            tokenRow.find('.stgt__delete-token-button').click(function () {
                 showDeleteTokenWindow(tokenRow);
             });
 
-            tokenRow.find('.global-token__update-token-data-button').click(function () {
+            tokenRow.find('.stgt__update-token-data-button').click(function () {
                 updateTokenData(tokenRow);
             });
 
-            tokenRow.find('.global-token__cancel-editing-token-data-button').click(function () {
+            tokenRow.find('.stgt__cancel-editing-token-data-button').click(function () {
                 tokenRow.removeClass('edit-mode');
             });
 
@@ -147,10 +146,10 @@
         }
 
         function updateTokenData(tokenRow) {
-            var newName = tokenRow.find('.global-token__edit-token-name-input').val();
-            var value = tokenRow.find('.global-token__edit-token-value-input').val();
+            var newName = tokenRow.find('.stgt__edit-token-name-input').val();
+            var value = tokenRow.find('.stgt__edit-token-value-input').val();
             var name = tokenRow.data('token-name');
-            var errorMessageElement = tokenRow.find('.global-token__edit-token-error-message-wrap');
+            var errorMessageElement = tokenRow.find('.stgt__edit-token-error-message-wrap');
             errorMessageElement.empty();
 
             if (newName.length < 1) {
@@ -165,8 +164,8 @@
             }).done(function(result) {
                 if (result.is_error === 0) {
                     tokenRow.removeClass('edit-mode');
-                    tokenRow.find('.global-token__token-name').text(newName);
-                    tokenRow.find('.global-token__token-value').text(value);
+                    tokenRow.find('.stgt__token-name').text(newName);
+                    tokenRow.find('.stgt__token-value').text(value);
                     tokenRow.data('token-name', newName);
                     tokenRow.effect('highlight', {}, 1500);
                     CRM.alert(ts('Global token successfully updated!'), ts("Updating global token"), "success");
@@ -195,9 +194,9 @@
 
         function initCreatingNewToken() {
             $('#globalTokenCreateButton').click(function () {
-                var row = $(this).closest('.global-token__add-new-token-row');
-                var nameElement = row.find('.global-token__create-token-name-input');
-                var valueElement = row.find('.global-token__create-token-value-input');
+                var row = $(this).closest('.stgt__add-new-token-row');
+                var nameElement = row.find('.stgt__create-token-name-input');
+                var valueElement = row.find('.stgt__create-token-value-input');
                 var name = nameElement.val();
                 var value = valueElement.val();
                 createTokenErrorMessageElement.empty();
@@ -230,64 +229,4 @@
 
     });
 </script>
-
-<style>
-  .global-token__edit-mode {
-    display: none;
-  }
-
-  .global-token__row.edit-mode .global-token__edit-mode {
-    display: block;
-  }
-
-  .global-token__row.edit-mode .global-token__view-mode {
-    display: none;
-  }
-
-  .global-token__table-template {
-    display: none !important;
-  }
-
-  .global-token__page .global-token__button span span {
-    display: inline-block;
-    vertical-align: middle;
-  }
-
-  .global-token__page .global-token__button span i {
-    display: inline-block;
-    vertical-align: middle;
-    margin: 0 5px 0 0;
-  }
-
-  .global-token__page a:hover .crm-i.fa-trash {
-    color: inherit;
-  }
-
-  .global-token__button {
-    white-space: nowrap;
-  }
-
-  .global-token__large-column {
-    width: 50%;
-  }
-
-  .global-token__token-value {
-    max-width: 600px;
-  }
-
-  .global-token__token-name {
-    max-width: 500px;
-  }
-
-  .global-token__page .global-token__add-new-token-row .global-token__create-token-value-input,
-  .global-token__page .global-token__add-new-token-row .global-token__create-token-name-input ,
-  .global-token__page .global-token__row .global-token__edit-token-name-input ,
-  .global-token__page .global-token__row .global-token__edit-token-value-input {
-    width: 100%;
-    max-width: 100%;
-    display: block;
-    box-sizing: border-box;
-    height: 30px;
-  }
-</style>
 {/literal}

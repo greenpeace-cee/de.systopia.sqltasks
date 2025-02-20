@@ -20,11 +20,11 @@ class ShowWhereTaskIsUsed extends Base {
     $data['warningWindow']['noButtonText'] = 'Back';
 
     if (empty($dep_task_ids)) {
-      $data['warningWindow']['message'] = "<p style='width: 300px;'>This task is not used by other tasks.</p>";
+      $data['warningWindow']['message'] = "<p style='width: 240px;'>This task is not used by other tasks.</p>";
       return $data;
     }
 
-    $data['warningWindow']['message'] = '<p style="width: 300px;">This task is used by the following task(s):</p>';
+    $data['warningWindow']['message'] = '<p style="width: 240px;">This task is used by the following task(s):</p>';
     $data['warningWindow']['message'] .= $this->prepareTaskLinks($dep_task_ids);
 
     return $data;

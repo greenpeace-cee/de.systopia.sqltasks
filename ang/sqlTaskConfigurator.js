@@ -248,7 +248,7 @@
 
       var previousOrder = [];
       $scope.sortableOptions = {
-        placeholder: 'sql-task-target-highlight-place',
+        placeholder: 'st__target-highlight-place',
         revert: 300,
         cursor: "move",
         scroll: true,
@@ -1774,10 +1774,10 @@
             $scope.model.segments = "";
             var inputStyles =  {
               'width' : '100%',
-              'max-width' : '300px',
+              'max-width' : '240px',
               'font-family' : 'monospace, monospace !important',
               'box-sizing' : 'border-box',
-              'height' : '28px'
+              'height' : '32px'
             };
             setTimeout(() => {
               $("#" + fieldId)
@@ -1843,7 +1843,7 @@
       },
       controller: function($scope) {
         $scope.columnsNumber = angular.isDefined($scope.columnsNumber) ? $scope.columnsNumber : 74;
-        $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "300px";
+        $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "240px";
         $scope.textAreaStyles = {
           'width' : $scope.inputMaxWidth,
           'font-family' : 'monospace',
@@ -1875,13 +1875,13 @@
         $scope.extraText = angular.isDefined($scope.extraText) ? $scope.extraText : "";
         $scope.componentModel = angular.isDefined($scope.isDisabled) ? $scope.componentModel : "";
         $scope.sizeLength = angular.isDefined($scope.sizeLength) ? $scope.sizeLength : 32;
-        $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "300px";
+        $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "240px";
         $scope.inputStyle =  {
           'width' : '100%',
           'max-width' : $scope.inputMaxWidth,
           'font-family' : 'monospace, monospace !important',
           'box-sizing' : 'border-box',
-          'height' : '28px'
+          'height' : '32px'
         };
       }
     };
@@ -1926,12 +1926,12 @@
         inputMaxWidth: "<inputmaxwidth",
       },
       controller: function($scope) {
-        $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "300px";
+        $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "240px";
         $scope.selectStyle = {
           'width' : '100%',
           'max-width' : $scope.inputMaxWidth,
           'box-sizing' : 'border-box',
-          'height' : '28px'
+          'height' : '32px'
         };
       }
     };
@@ -1955,12 +1955,12 @@
         fieldIdToChange: "<"
       },
       controller: function($scope) {
-        $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "300px";
+        $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "240px";
         var selectStyles = {
           'width' : "100%",
           'max-width' : $scope.inputMaxWidth,
           'box-sizing' : 'border-box',
-          'height' : '28px'
+          'height' : '32px'
         };
 
         if (angular.isDefined($scope.isDataLoaded) && $scope.isDataLoaded == false) {
@@ -2002,7 +2002,7 @@
           $("#" + $scope.fieldId).css(selectStyles).crmSelect2();
         };
 
-        $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "300px";
+        $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "240px";
         var selectStyles = {
           'width' : "100%",
           'max-width' : $scope.inputMaxWidth,
@@ -2041,7 +2041,7 @@
         inputMaxWidth: "<inputmaxwidth",
       },
       controller: function($scope) {
-        $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "300px";
+        $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "240px";
         $scope.isMultiple = angular.isDefined($scope.isMultiple) ? $scope.isMultiple : false;
         var selectStyles = {
           'width' : "100%",
@@ -2049,7 +2049,7 @@
           'box-sizing' : 'border-box'
         };
         if (!$scope.isMultiple) {
-          selectStyles['height'] = '28px';
+          selectStyles['height'] = '32px';
         }
 
         CRM.$(function($) {

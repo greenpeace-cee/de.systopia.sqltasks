@@ -1,9 +1,9 @@
-<div class="crm-form-block">
-  <div class="sql-task__form-wrap">
+<div id="bootstrap-theme">
+  <div class="crm-form-block">
     <h1 crm-page-title>{{ts('Delete Task') + ' "' + taskData.name + '"'}}</h1>
-    <div>
 
-      <div class="sql-task-delete-page-content">
+    <div>
+      <div class="st__pb-60 st__pt-30">
         <p ng-if="taskData">
           {{ts('You are about to delete plugin')}} "{{taskData.name}}" [{{taskData.id}}]. {{ts('You should consider simply
           disabling it, since all data
@@ -14,15 +14,15 @@
         </p>
       </div>
 
-      <div class="sql-task__button-wrap">
-        <a class="sql-task__button sql-task__search-button crm-form-submit default crm-button crm-hover-button"
+      <div class="st__flex st__gap-10">
+        <a class="sql-task__search-button crm-form-submit default crm-button crm-hover-button"
            ng-click="onTaskDelete()"
            href="javascript:;" title="{{ts('Delete')}}">
           <span class="crm-i fa-trash"></span>
           <span>{{ts('Delete')}}</span>
         </a>
 
-        <a class="sql-task__button sql-task__search-button crm-form-submit default crm-button crm-hover-button"
+        <a class="sql-task__search-button crm-form-submit default crm-button crm-hover-button"
            ng-click="onBackPress()"
            href="javascript:;" title="{{ts('Back')}}">
           <span class="crm-i fa-list"></span>

@@ -1,271 +1,66 @@
-.sql-task-manager-dashboard__dispatcher-info-messages {
-    margin-right: 0 !important;
-    margin-left: 0 !important;
-    padding-left: 0 !important;
-    list-style-position: inside !important;
+/*
+    Prefix: stm__
+    (Sql Tasks Manager)
+*/
+
+.stm__tasks-table tr.even-row.enabled  {
+  background: #d3f5ac !important;
 }
 
-.sql-task-manager-dashboard__dispatcher-info-message-type-info {
-    background: #f1f8eb;
+.stm__tasks-table tr.odd-row.enabled {
+  background: #e5f9d0 !important;
 }
 
-.sql-task-manager-dashboard__dispatcher-info-message-type-error {
-    background: #f8ebee;
-    color: #8c2e0b;
+.stm__tasks-table tr.even-row.archived  {
+  background: #fcdebd !important;
 }
 
-.sql-task-manager-dashboard__dispatcher-info-message {
-    padding: 10px 10px 10px 5px;
+.stm__tasks-table tr.odd-row.archived {
+  background: #ffeedb !important;
 }
 
-.page-civicrm-a.page-civicrm-a table:not(.form-layout-compressed) .tasks-table tr.even-row.enabled  {
-  background: #d3f5ac;
-}
-
-.page-civicrm-a.page-civicrm-a table:not(.form-layout-compressed) .tasks-table tr.odd-row.enabled {
-  background: #e5f9d0;
-}
-
-.page-civicrm-a.page-civicrm-a table:not(.form-layout-compressed) .tasks-table tr.even-row.archived  {
-  background: #fcdebd;
-}
-
-.page-civicrm-a.page-civicrm-a table:not(.form-layout-compressed) .tasks-table tr.odd-row.archived {
-  background: #ffeedb;
-}
-
-.sql-task-archive-message {
-  font-style: italic;
-}
-
-.sql-task-move-arrow {
-  cursor: pointer;
-  display: inline-block;
-  margin: 0;
-}
-
-.sql-task-move-arrow img {
-  height: 15px;
-  width: 10px;
-  padding: 2px;
-  margin: 0;
-  display: block;
-}
-
-.sql-task-table-column-category {
+.stm__table-column-category {
   word-wrap: break-word;
   max-width: 120px;
 }
 
-.sql-task-table-column-name {
+.stm__table-column-name {
   word-wrap: break-word;
   max-width: 380px;
 }
 
-.sql-task-table-column-description {
+.stm__table-column-description {
   word-wrap: break-word;
   max-width: 420px;
 }
 
-.sql-task-table-column-last-executed {
+.stm__table-column-last-executed {
   word-wrap: break-word;
   max-width: 130px;
+  font-size: 12px;
 }
 
-.sql-task-move-arrow-wrap {
-  word-wrap: break-word;
-  max-width: 120px;
-}
-
-.sql-task-preference-item {
-  padding: 0;
-  position: relative;
-}
-
-.sql-task-preference-item-label {
-  display: block !important;
-  vertical-align: middle;
-  padding:  10px 10px 10px 25px;
-  cursor: pointer;
-  margin: 0 !important;
-}
-
-.sql-task-preference-item-input {
-  display: inline-block;
-  vertical-align: middle;
-  position: absolute;
-  left: 5px;
-  top: 12px;
-}
-
-.sql-task-preference-item-label-text {
-  display: block;
-  color: #292929;
-}
-
-.sql-task-preference-item-color {
-  background: white;
-  width: 15px;
-  height: 15px;
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.sql-task-preference-item-label.archived {
-  background: #fcdebd;
-}
-
-.sql-task-preference-item-label.enabled {
-  background: #d3f5ac;
-}
-
-.sql-task-preference-item-label.disabled {
-  background: #EFEFEF;
-}
-
-.sql-task-info-display-counter {
-  display: flex;
-  gap: 5px;
-}
-
-.sql-task-info-view-logs {
-  padding-bottom: 10px;
-  display: flex;
-  gap: 5px;
-  align-items: center;
-}
-
-.sql-task-info-panel {
-  padding: 10px;
-  display: flex;
-  justify-content: space-between;
-  color: #464354;
-  background: #f3f6f7;
-  align-items: center;
-}
-
-.sql-task-manager-preloader {
+.stm__preloader {
   position: relative;
   height: 100px;
 }
 
-.sql-task-manager-preloader-message {
-  padding: 10px;
-  color: black;
+.stm__action-item, .stm__action-item:hover {
+  padding: 0 5px !important;
 }
 
-.sql-task-manager-target-highlight-place {
-  border: solid 4px #ffe59b !important;
-  height: 130px;
-}
-
-.sql-task-manager-new-task-panel select {
-  min-width: 300px;
-}
-
-.sql-task-manager-override-shadow {
-  box-shadow: none !important;
-  border: 1px solid rgb(232 238 240) !important;
-}
-
-.sql-task-manager-dashboard__wrap {
-  display: flex;
-  flex-wrap: wrap;
-  align-content: stretch;
+.stm__action-item {
+  display: flex !important;
   gap: 10px;
-  padding-bottom: 10px;
 }
 
-.sql-task-manager-dashboard__item {
-  width: 500px;
-  border: 1px solid #e8eef0;
+.stm__action-item i, .stm__action-item span {
+  color: inherit !important;
 }
 
-.sql-task-manager-dashboard__item.sql-task-manager-dashboard__item-info {
-  flex-grow: 1;
-}
-
-.sql-task-manager-dashboard__item-tile {
-  border-bottom: 1px solid #d3dee2;
-  border-radius: 2px 2px 0 0;
-  font-size: 14px;
-  line-height: 20px;
-  padding: 10px;
-  box-shadow: none;
-  margin: 0 0 10px 0;
-  display: flex;
-  gap: 5px;
-  color: #464354;
-  background: #f3f6f7;
-}
-
-.sql-task-manager-new-task-panel-text {
-  padding-bottom: 10px;
-}
-
-.sql-task-manager-dashboard__content {
-  padding: 10px 10px 20px 10px;
-}
-
-.sql-task-manager-dashboard__links-wrap {
-  display: flex;
-  gap: 15px;
-}
-
-.sql-task-manager-result-footer-info-wrap {
-  padding: 30px 0 10px 0;
-}
-
-.sql-task-preference-info {
-  padding-right: 10px;
-}
-
-.sql-task-preference-item-wrap {
-  display: flex;
-  gap: 10px;
-  align-items: center;
-}
-
-.sql-task-manager-dashboard__ico {
-  width: 20px;
-  height: 20px;
-  display: flex;
+.stm__weight-arrow {
+  display: flex !important;
   align-items: center;
   justify-content: center;
-  font-size: 18px;
-  overflow: hidden;
-}
-
-.sql-task-manager-dashboard__ico > i {
-  line-height: 20px !important;
-}
-
-.sql-task-manager-dashboard__ico.blue-ico {
-  color: #1871bd;
-}
-
-.sql-task-manager-dashboard__ico.big-ico {
-  width: 30px;
-  height: 30px;
-  font-size: 28px;
-}
-
-.sql-task-manager-dashboard__ico.big-ico > i {
-  line-height: 30px !important;
-}
-
-.sql-task-manager-dashboard__create-task-btn {
-  display: flex !important;
-  gap: 5px;
-  align-items: center;
-  padding-bottom: 5px !important;
-  padding-top: 5px !important;
-  padding-left: 5px !important;
-  min-width: 0 !important;
-}
-
-.sql-task-manager-new-task-panel-adding-block {
-  display: flex;
-  gap: 10px;
-  align-items: center;
+  padding: 5px !important;
 }
