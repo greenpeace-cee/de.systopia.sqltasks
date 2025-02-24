@@ -1291,15 +1291,16 @@
 
         CRM.api3("Tag", "get", {
           sequential: 1,
-          return: ["name", "id"],
+          return: ["name", "label", "id"],
           is_enabled: 1,
           options: { limit: 0 }
         }).done(function(result) {
           var tagsData = [];
           result.values.map(tag => {
+            var name = (tag['label'] === undefined) ? tag.name : tag.label;
             tagsData.push({
               value: tag.id,
-              name: tag.name
+              name: name
             });
           });
           $scope.tagsData = tagsData;
