@@ -30,8 +30,16 @@
   max-width: 800px;
 }
 
+.st__max-width-900 {
+  max-width: 900px;
+}
+
 .st__max-width-700 {
   max-width: 700px;
+}
+
+.st__max-width-500 {
+  max-width: 500px;
 }
 
 .st__flex {

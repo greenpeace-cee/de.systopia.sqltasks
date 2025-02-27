@@ -7,26 +7,27 @@
       <span ng-if="model['action_title']" class="sql-task-action-title">{{model['action_title']}}</span>
     </label>
 
-    <button class="btn btn-secondary" ng-click="removeItemFromArray(index)">
+    <button class="btn btn-secondary st__m-0" ng-click="removeItemFromArray(index)">
       <i class="crm-i fa-trash header-delete"></i>
       {{ts('Delete')}}
     </button>
   </div>
   <div class="crm-accordion-body" style="display: none;">
-    <div class="sql-task-action-template-wrapper">
-      <action-template-select
-        model='model'
-        action-templates='actionTemplates'
-        action-template='actionTemplate'>
-      </action-template-select>
-      <div class="clear"></div>
-      <action-template-form
-        model='model'
-        action-templates='actionTemplates'
-        action-template='actionTemplate'>
-      </action-template-form>
-    </div>
-    <div class="sql-tasks">
+    <div class="sql-tasks st__position-relative">
+      <div class="sql-task-action-template-wrapper">
+        <action-template-select
+          model='model'
+          action-templates='actionTemplates'
+          action-template='actionTemplate'>
+        </action-template-select>
+        <div class="clear"></div>
+        <action-template-form
+          model='model'
+          action-templates='actionTemplates'
+          action-template='actionTemplate'>
+        </action-template-form>
+      </div>
+
       <action-additional-info model='model' fieldPrefix="'api_call'" index='index'></action-additional-info>
 
       <text-input isrequired="getBooleanFromNumber(model['enabled'])"

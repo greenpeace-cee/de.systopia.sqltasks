@@ -1,36 +1,43 @@
 <div class="sql-task-action-template-form-wrapper" style="display: none;">
-  <div class="crm-section">
-    <div class="label">
-      <label for="action_tempalate_name">{{ts('Template Name')}}</label>
-      <span class="crm-marker ng-scope" title="">*</span>
+  <div class="anel panel-info">
+    <div class="panel-heading">
+      <span>{{ts('Edit/create action template')}}</span>
     </div>
-    <div class="content">
-      <input ng-model="actionTemplate.name"
-        id="action_tempalate_name" name="action_tempalate_name"
-        type="text" class="huge crm-form-text" maxlength="64">
-    </div>
-    <div class="clear"></div>
-  </div>
-  <div class="crm-section">
-    <div class="label">
-      <br />&nbsp;
-    </div>
-    <div class="content">
-      <div class="st__flex st__gap-10">
-        <button ng-disabled="!actionTemplate.id" ng-click="updateActionTemplate(actionTemplate)" class="btn btn-secondary">
-          <i class="crm-i fa-save"></i>
-          {{ts('Update')}}
-        </button>
-        <button ng-click="createActionTemplate(actionTemplate)" class="btn btn-secondary">
-          <i class="crm-i fa-clone"></i>
-          {{ts('Save as New Template')}}
-        </button>
-        <button ng-disabled="!actionTemplate.id" ng-click="deleteActionTemplate(actionTemplate)" class="btn btn-secondary">
-          <i class="crm-i fa-trash-o"></i>
-          {{ts('Delete')}}
-        </button>
+    <div class="panel-body">
+      <div class="crm-section">
+        <div class="label">
+          <label for="action_tempalate_name">{{ts('Template Name')}}</label>
+          <span class="crm-marker ng-scope" title="">*</span>
+        </div>
+        <div class="content st__max-width-500">
+          <input ng-model="actionTemplate.name"
+                 id="action_tempalate_name" name="action_tempalate_name"
+                 type="text" class="huge crm-form-text" maxlength="64">
+        </div>
+        <div class="clear"></div>
+      </div>
+      <div class="crm-section">
+        <div class="label">
+          <br />&nbsp;
+        </div>
+        <div class="content">
+          <div class="st__flex st__gap-10">
+            <button ng-disabled="!actionTemplate.id" ng-click="updateActionTemplate(actionTemplate)" class="btn btn-secondary">
+              <i class="crm-i fa-save"></i>
+              {{ts('Update')}}
+            </button>
+            <button ng-click="createActionTemplate(actionTemplate)" class="btn btn-secondary">
+              <i class="crm-i fa-clone"></i>
+              {{ts('Save as New Template')}}
+            </button>
+            <button ng-disabled="!actionTemplate.id" ng-click="deleteActionTemplate(actionTemplate)" class="btn btn-secondary">
+              <i class="crm-i fa-trash-o"></i>
+              {{ts('Delete')}}
+            </button>
+          </div>
+        </div>
+        <div class="clear"></div>
       </div>
     </div>
-    <div class="clear"></div>
   </div>
 </div>

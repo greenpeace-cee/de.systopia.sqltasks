@@ -1,5 +1,5 @@
 <div class="sql-task-action-template-select-wrapper">
-  <label class="header-template-select">
+  <div class="header-template-select">
     <select class="crm-form-select"
       ng-options="template.name for template in actionTemplates | filter:{type:model.type} track by template.id"
       ng-model="actionTemplate"
@@ -7,9 +7,10 @@
       ng-change="loadActionTemplate(actionTemplate.id)">
       <option value="" selected="selected" disabled>- Load Template -</option>
     </select>
-    <label class="btn btn-secondary" ng-click="toggleShowingActionTemplateForm($event)">
+    <button class="btn btn-secondary st__m-0" ng-click="toggleShowingActionTemplateForm($event)">
       <i class="crm-i fa-edit"></i>
-    </label>
-  </label>
+      <span>{{ts('Template')}}</span>
+    </button>
+  </div>
 </div>
 

@@ -2130,8 +2130,10 @@
           $scope.isShowActionTemplateForm = !$scope.isShowActionTemplateForm;
           if ($scope.isShowActionTemplateForm) {
             CRM.$(event.currentTarget).closest('.sql-task-action-template-wrapper').find('.sql-task-action-template-form-wrapper').slideDown("fast");
+            CRM.$(event.currentTarget).closest('.sql-task-action-template-wrapper').addClass('open-edit-form');
           } else {
             CRM.$(event.currentTarget).closest('.sql-task-action-template-wrapper').find('.sql-task-action-template-form-wrapper').hide("fast");
+            CRM.$(event.currentTarget).closest('.sql-task-action-template-wrapper').removeClass('open-edit-form');
           }
         };
       }
