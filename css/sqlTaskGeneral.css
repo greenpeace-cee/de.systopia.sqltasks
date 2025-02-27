@@ -1,100 +1,214 @@
 /*
-    General styles for all sqltask pages
+    Styles for all sqltask pages
+    Prefix: st__
+    (Sql Tasks)
 */
 
-body.sql-task-body-page-wrapper #page-title {
-    margin: 0 0 0 15px !important;
+.st__ico {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  overflow: hidden;
 }
 
-body.sql-task-body-page-wrapper #crm-main-content-wrapper {
-    margin-bottom: 300px !important;
+.st__ico > i {
+  line-height: 20px !important;
 }
 
-body.sql-task-body-page-wrapper .crm-container .crm-accordion-header {
-  padding-top: 8px !important;
-  padding-bottom: 8px !important;
-  box-shadow: none !important;
+.st__width-500 {
+  width: 500px;
 }
 
-body.sql-task-body-page-wrapper .crm-container .crm-accordion-body {
-  border: 1px solid #e8eef0;
-  box-shadow: none !important;
+.st__width-250 {
+  width: 250px;
 }
 
-body.sql-task-body-page-wrapper, body.sql-task-body-page-wrapper.page-civicrm, body.sql-task-body-page-wrapper#page {
-    background: white !important;
+.st__max-width-800 {
+  max-width: 800px;
 }
 
-body.sql-task-body-page-wrapper #header,
-body.sql-task-body-page-wrapper #breadcrumb,
-body.sql-task-body-page-wrapper #branding,
-body.sql-task-body-page-wrapper #main-content,
-body.sql-task-body-page-wrapper .tabs,
-body.sql-task-body-page-wrapper #content > .section .tabs,
-body.sql-task-body-page-wrapper .column.sidebar,
-body.sql-task-body-page-wrapper #sidebar-first,
-body.sql-task-body-page-wrapper #branding,
-body.sql-task-body-page-wrapper #toolbar,
-body.sql-task-body-page-wrapper #crm-main-content-wrapper > .messages.status  {
-    display: none !important;
+.st__max-width-900 {
+  max-width: 900px;
 }
 
-body.sql-task-body-page-wrapper {
-    background: white !important;
+.st__max-width-700 {
+  max-width: 700px;
 }
 
-body.sql-task-body-page-wrapper #main, #content {
-    width: 100% !important;
-    margin: 10px 0 0 0!important;
+.st__max-width-500 {
+  max-width: 500px;
 }
 
-body.sql-task-body-page-wrapper #page {
-    margin-right : 0 !important;
-    margin-left : 0 !important;
-    padding : 0 !important;
-}
-body.sql-task-body-page-wrapper.crm-menubar-visible.crm-menubar-over-cms-menu.crm-menubar-wrapped {
-    padding-top: 0 !important;
-}
-
-.page-civicrm #crm-container #crm-main-content-wrapper {
-    background: #ffffff !important;
-}
-
-.crm-container .crm-form-block {
-    background: white !important;
-}
-
-body.sql-task-body-page-wrapper .sql-task__button {
-  float: none !important;
-  margin: 0 !important;
-}
-
-body.sql-task-body-page-wrapper .sql-task__button-wrap {
-  padding: 10px 0;
-  gap: 10px;
+.st__flex {
   display: flex;
 }
 
-body.sql-task-body-page-wrapper .crm-form-block {
-  box-shadow: none !important;
-  border: 1px solid #e8eef0;
+.st__flex-wrap-wrap {
+  flex-wrap: wrap;
 }
 
-body.sql-task-body-page-wrapper .dataTable {
-  box-shadow: none !important;
-  border: 1px solid #e8eef0;
+.st__flex-grow-1 {
+  flex-grow: 1;
 }
 
-body.sql-task-body-page-wrapper h3::before {
-  box-shadow: none !important;
+.st__flex-wrap-wrap {
+  flex-wrap: wrap;
 }
 
-body.sql-task-body-page-wrapper .sql-task__form-wrap {
+.st__gap-5 {
+  gap: 5px;
+}
+
+.st__gap-10 {
+  gap: 10px;
+}
+
+.st__gap-15 {
+  gap: 15px;
+}
+
+.st__gap-20 {
+  gap: 20px;
+}
+
+.st__align-items-center {
+  align-items: center;
+}
+
+.st__align-content-stretch {
+  align-content: stretch;
+}
+
+.st__justify-content-center {
+  justify-content: center;
+}
+
+.st__pb-10 {
+  padding-bottom: 10px;
+}
+
+.st__pb-20 {
+  padding-bottom: 20px;
+}
+
+.st__pr-10 {
+  padding-right: 10px;
+}
+
+.st__pt-30 {
+  padding-top: 30px;
+}
+
+.st__pt-10 {
+  padding-top: 10px;
+}
+
+.st__pb-60 {
+  padding-top: 60px;
+}
+
+.st__p-10 {
   padding: 10px;
 }
 
-body.sql-task-body-page-wrapper .sql-task-delete-page-content {
-  padding-top: 30px;
-  padding-bottom: 60px;
+.st__ptb-10 {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+.st__p-20 {
+  padding: 20px;
+}
+
+.st__m-0 {
+  margin: 0 !important;
+}
+
+.st__mb-5 {
+  margin-bottom: 5px;
+}
+
+.st__mb-10 {
+  margin-bottom: 10px;
+}
+
+.st__mt-10 {
+  margin-top: 10px;
+}
+
+.st__mb-20 {
+  margin-bottom: 20px;
+}
+
+
+.st__font-style-italic {
+  font-style: italic;
+}
+
+.st__bg-archived {
+  background: #fcdebd;
+}
+
+.st__bg-enabled {
+  background: #d3f5ac;
+  padding: 10px;
+}
+
+.st__bg-disabled {
+  background: #EFEFEF;
+}
+
+.st__p-0 {
+  padding: 0 !important;
+}
+
+.st__cursor-pointer {
+  cursor: pointer !important;
+}
+
+.st__justify-content-space-between {
+  justify-content: space-between;
+}
+
+.st__target-highlight-place {
+  box-shadow: inset 0 0 16px rgba(0, 0, 0, 0.3) !important;
+  height: 50px !important;
+}
+
+.st__font-size-10 {
+  font-size: 10px;
+}
+
+
+.st__position-relative {
+  position: relative;
+}
+
+.st__form-label {
+  width: 18%;
+  display: flex;
+  justify-content: end;
+}
+
+.st__form-row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.st__form-content {
+  justify-content: start;
+  flex-grow: 1;
+  max-width: 500px;
+}
+
+.st__font-weight-bold {
+  font-weight: bold;
+}
+
+.st__font-style-italic {
+  font-style: italic;
 }

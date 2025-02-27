@@ -59,515 +59,515 @@
   });
 
   angular.module(moduleName).controller("sqlTaskConfiguratorCtrl", function($scope, $location, taskId, loaderService) {
-      $scope.isLoaded = false;
-      if (!$scope.isLoaded) {
-        loaderService.resetData();
-        $scope.isLoaded = true;
+    $scope.isLoaded = false;
+    if (!$scope.isLoaded) {
+      loaderService.resetData();
+      $scope.isLoaded = true;
+    }
+    $scope.ts = CRM.ts();
+    $scope.showLatestLogsUrl = CRM.url('civicrm/sqltasks-execution/latest-logs', {"sqltask_id" : taskId});
+    $scope.showAllLogsUrl = CRM.url('civicrm/sqltasks-execution/list', {"sqltask_id" : taskId});
+    $scope.taskOptions = {scheduled: ""};
+    $scope.templateId = $location.search().template;
+    $scope.formAction = (taskId === "0") ? 'create' : 'edit';
+    $scope.isTemplateIdExist = function () {return !!Number($scope.templateId);};
+    $scope.isCreatingNewSqlTask = function () {return $scope.formAction === 'create';};
+    $scope.isEditingSqlTask = function () {return $scope.formAction === 'edit';};
+    $scope.config = {
+      actions: [],
+      actionTemplates: [],
+      scheduled_month: "1",
+      scheduled_weekday: "1",
+      scheduled_day: "1",
+      scheduled_hour: "0",
+      scheduled_minute: "0",
+      version: 2
+    };
+    $scope.isExecutionBlockLoaded = function () {
+      return loaderService.isExecutionBlockLoaded();
+    };
+    $scope.taskId = taskId;
+
+    $scope.onInfoPress = onInfoPress;
+    $scope.fixTaskOptionRunPermissions = function () {
+      if ($scope.taskOptions.run_permissions === '' || $scope.taskOptions.run_permissions === null) {
+        $scope.taskOptions.run_permissions = [];
+      } else {
+        $scope.taskOptions.run_permissions = $scope.taskOptions.run_permissions.split(",");
       }
-      $scope.ts = CRM.ts();
-      $scope.showLatestLogsUrl = CRM.url('civicrm/sqltasks-execution/latest-logs', {"sqltask_id" : taskId});
-      $scope.showAllLogsUrl = CRM.url('civicrm/sqltasks-execution/list', {"sqltask_id" : taskId});
-      $scope.taskOptions = {scheduled: ""};
-      $scope.templateId = $location.search().template;
-      $scope.formAction = (taskId === "0") ? 'create' : 'edit';
-      $scope.isTemplateIdExist = function () {return !!Number($scope.templateId);};
-      $scope.isCreatingNewSqlTask = function () {return $scope.formAction === 'create';};
-      $scope.isEditingSqlTask = function () {return $scope.formAction === 'edit';};
-      $scope.config = {
-        actions: [],
-        actionTemplates: [],
-        scheduled_month: "1",
-        scheduled_weekday: "1",
-        scheduled_day: "1",
-        scheduled_hour: "0",
-        scheduled_minute: "0",
-        version: 2
-      };
-      $scope.isExecutionBlockLoaded = function () {
-        return loaderService.isExecutionBlockLoaded();
-      };
-      $scope.taskId = taskId;
-
-      $scope.onInfoPress = onInfoPress;
-      $scope.fixTaskOptionRunPermissions = function () {
-        if ($scope.taskOptions.run_permissions === '' || $scope.taskOptions.run_permissions === null) {
-          $scope.taskOptions.run_permissions = [];
-        } else {
-          $scope.taskOptions.run_permissions = $scope.taskOptions.run_permissions.split(",");
-        }
+    }
+    $scope.handleTaskResponse = function (result) {
+      if (result.is_error === 0) {
+        var task = Object.assign({}, result.values);
+        $scope.config = Object.assign({}, task.config);
+        delete task["config"];
+        task.enabled = task.enabled === "" ? false : task.enabled;
+        task.input_required = task.input_required === "" ? false : task.input_required;
+        task.input_spec = parseInputSpec(task.input_spec);
+        $scope.taskOptions = task;
+        $scope.fixTaskOptionRunPermissions();
+        $scope.$apply();
       }
-      $scope.handleTaskResponse = function (result) {
-        if (result.is_error === 0) {
-          var task = Object.assign({}, result.values);
-          $scope.config = Object.assign({}, task.config);
-          delete task["config"];
-          task.enabled = task.enabled === "" ? false : task.enabled;
-          task.input_required = task.input_required === "" ? false : task.input_required;
-          task.input_spec = parseInputSpec(task.input_spec);
-          $scope.taskOptions = task;
-          $scope.fixTaskOptionRunPermissions();
-          $scope.$apply();
-        }
-      };
+    };
 
-      $scope.getBooleanFromNumber = getBooleanFromNumber;
+    $scope.getBooleanFromNumber = getBooleanFromNumber;
 
-      $scope.$on("$viewContentLoaded", function() {
+    $scope.$on("$viewContentLoaded", function() {
+      setTimeout(function() {
+        openCheckedActions();
+      }, 1500);
+
+      var form = document.querySelector("#sql-task-form");
+      var saveTask = function(redirectToDashboardAfterSaving) {
+        openCheckedActions();
         setTimeout(function() {
-          openCheckedActions();
-        }, 1500);
-
-        var form = document.querySelector("#sql-task-form");
-        var saveTask = function(redirectToDashboardAfterSaving) {
-          openCheckedActions();
-          setTimeout(function() {
-            if (form.reportValidity()) {
-              var preparedData = {};
-              if (taskId) {
-                Object.assign(preparedData, { id: taskId });
-              }
-              Object.assign(preparedData, $scope.taskOptions);
-
-              preparedData.config = $scope.config;
-
-              if (Array.isArray($scope.taskOptions.run_permissions)) {
-                preparedData.run_permissions = $scope.taskOptions.run_permissions.join(",");
-              }
-
-              preparedData.input_spec = serializeInputSpec(preparedData.input_spec);
-
-              function submitCallback (result) {
-                $scope.handleTaskResponse(result);
-
-                if (result.is_error && result.error_type === "CONCURRENT_CHANGES") {
-                  CRM.confirm({
-                    title: ts("Warning"),
-                    message: ts(`${result.error_message}. Would you like to update the task anyway?`),
-                    options: { yes: "Save anyway", no: "Reload page" },
-                  }).on("crmConfirm:yes", () => {
-                    preparedData.last_modified = null;
-                    CRM.api3("Sqltask", "create", preparedData).done(submitCallback);
-                  }).on("crmConfirm:no", () => {
-                    window.location.reload();
-                  });
-
-                  return;
-                }
-
-                if (result.is_error) {
-                  var errorMessage = ts('Error while ' + (Number(taskId) ? 'updating' : 'creating') + ' task');
-                  CRM.alert(errorMessage, ts('Error'), 'error');
-                  return;
-                }
-
-                var title = ts('Task ' + (Number(taskId) ? 'updated' : 'created'));
-                var successMessage = ts('Task successfully ' + (Number(taskId) ? 'updated' : 'created'));
-                var linkToManage = '/sqltasks/manage/' + result.values.id;
-                var linkToRunTask = '/sqltasks/run/' + result.values.id;
-                successMessage += '<br> <a  href="' + CRM.url('civicrm/a') + '#' + linkToRunTask + '">Run Task Now</a>';
-
-                CRM.alert(successMessage, title, 'success', {'unique': true, 'expires' : 10000 });
-
-                if (redirectToDashboardAfterSaving) {
-                  $location.path(linkToManage);
-                }
-
-                $scope.taskId = result.values.id;
-                taskId = result.values.id;
-                $scope.$apply();
-              }
-
-              CRM.api3("Sqltask", "create", preparedData).done(submitCallback);
+          if (form.reportValidity()) {
+            var preparedData = {};
+            if (taskId) {
+              Object.assign(preparedData, { id: taskId });
             }
-          }, 500);
+            Object.assign(preparedData, $scope.taskOptions);
+
+            preparedData.config = $scope.config;
+
+            if (Array.isArray($scope.taskOptions.run_permissions)) {
+              preparedData.run_permissions = $scope.taskOptions.run_permissions.join(",");
+            }
+
+            preparedData.input_spec = serializeInputSpec(preparedData.input_spec);
+
+            function submitCallback (result) {
+              $scope.handleTaskResponse(result);
+
+              if (result.is_error && result.error_type === "CONCURRENT_CHANGES") {
+                CRM.confirm({
+                  title: ts("Warning"),
+                  message: ts(`${result.error_message}. Would you like to update the task anyway?`),
+                  options: { yes: "Save anyway", no: "Reload page" },
+                }).on("crmConfirm:yes", () => {
+                  preparedData.last_modified = null;
+                  CRM.api3("Sqltask", "create", preparedData).done(submitCallback);
+                }).on("crmConfirm:no", () => {
+                  window.location.reload();
+                });
+
+                return;
+              }
+
+              if (result.is_error) {
+                var errorMessage = ts('Error while ' + (Number(taskId) ? 'updating' : 'creating') + ' task');
+                CRM.alert(errorMessage, ts('Error'), 'error');
+                return;
+              }
+
+              var title = ts('Task ' + (Number(taskId) ? 'updated' : 'created'));
+              var successMessage = ts('Task successfully ' + (Number(taskId) ? 'updated' : 'created'));
+              var linkToManage = '/sqltasks/manage/' + result.values.id;
+              var linkToRunTask = '/sqltasks/run/' + result.values.id;
+              successMessage += '<br> <a  href="' + CRM.url('civicrm/a') + '#' + linkToRunTask + '">Run Task Now</a>';
+
+              CRM.alert(successMessage, title, 'success', {'unique': true, 'expires' : 10000 });
+
+              if (redirectToDashboardAfterSaving) {
+                $location.path(linkToManage);
+              }
+
+              $scope.taskId = result.values.id;
+              taskId = result.values.id;
+              $scope.$apply();
+            }
+
+            CRM.api3("Sqltask", "create", preparedData).done(submitCallback);
+          }
+        }, 500);
+      };
+
+      var triggerButtonSave = document.querySelector("#_qf_Configure_submit-bottom-save");
+      var triggerButtonSaveAndDone = document.querySelector("#_qf_Configure_submit-bottom-save-and-done");
+      triggerButtonSaveAndDone.onclick = function () {saveTask(true)};
+      triggerButtonSave.onclick = function () {saveTask(false)};
+    });
+
+    if (taskId) {
+      CRM.api3("Sqltask", "get", {
+        sequential: 1,
+        id: taskId
+      }).done(function(result) {
+        $scope.handleTaskResponse(result);
+      });
+    }
+
+    // Use configuration template if task is new
+    if ($scope.isCreatingNewSqlTask()) {
+      loadConfigTemplate();
+    }
+
+    CRM.$(function($) {
+      setTimeout(function() {
+        $("body").on("click", ".input-checkbox", function(e) {
+          e.stopPropagation();
+        });
+      }, 1500);
+    });
+
+    CRM.api3("Sqltaskfield", "getrunpermissions").done(function(result) {
+      permissionsData = [];
+      Object.keys(result.values[0]).map(key => {
+        permissionsData.push({
+          value: key,
+          name: result.values[0][key]
+        });
+      });
+      $scope.permissionsData = permissionsData;
+      loaderService.updateExecutionBlock();
+    });
+
+    $scope.onSchedulingOptionChange = function(params) {
+      Object.keys($scope.config).forEach(element => {
+        switch (element) {
+          case "scheduled_month":
+            $scope.config[element] = "1";
+            break;
+          case "scheduled_weekday":
+            $scope.config[element] = "1";
+            break;
+          case "scheduled_day":
+            $scope.config[element] = "1";
+            break;
+          case "scheduled_hour":
+            $scope.config[element] = "0";
+            break;
+          case "scheduled_minute":
+            $scope.config[element] = "0";
+            break;
+          default:
+            break;
+        }
+      });
+    };
+
+    var previousOrder = [];
+    $scope.sortableOptions = {
+      placeholder: 'st__target-highlight-place',
+      revert: 300,
+      cursor: "move",
+      scroll: true,
+      update: function(e, ui) {
+        previousOrder = $scope.config.actions.slice();
+        $scope.$apply();
+      },
+      stop: function(e, ui) {
+        var currentActionIndex = ui.item.sortable.dropindex;
+        var currentAction = $scope.config.actions[currentActionIndex];
+        var topAction = $scope.config.actions[currentActionIndex - 1];
+        var bottomAction = $scope.config.actions[currentActionIndex + 1];
+        var showError = function (extraMessage) {
+          CRM.alert("Cannot move action to this position. " + extraMessage, "Invalid action order", "error");
+          $scope.config.actions = previousOrder.slice();
+          $scope.$apply();
         };
 
-        var triggerButtonSave = document.querySelector("#_qf_Configure_submit-bottom-save");
-        var triggerButtonSaveAndDone = document.querySelector("#_qf_Configure_submit-bottom-save-and-done");
-        triggerButtonSaveAndDone.onclick = function () {saveTask(true)};
-        triggerButtonSave.onclick = function () {saveTask(false)};
-      });
-
-      if (taskId) {
-        CRM.api3("Sqltask", "get", {
-          sequential: 1,
-          id: taskId
-        }).done(function(result) {
-          $scope.handleTaskResponse(result);
-        });
-      }
-
-      // Use configuration template if task is new
-      if ($scope.isCreatingNewSqlTask()) {
-        loadConfigTemplate();
-      }
-
-      CRM.$(function($) {
-        setTimeout(function() {
-          $("body").on("click", ".input-checkbox", function(e) {
-            e.stopPropagation();
-          });
-        }, 1500);
-      });
-
-      CRM.api3("Sqltaskfield", "getrunpermissions").done(function(result) {
-        permissionsData = [];
-        Object.keys(result.values[0]).map(key => {
-          permissionsData.push({
-            value: key,
-            name: result.values[0][key]
-          });
-        });
-        $scope.permissionsData = permissionsData;
-        loaderService.updateExecutionBlock();
-      });
-
-      $scope.onSchedulingOptionChange = function(params) {
-        Object.keys($scope.config).forEach(element => {
-          switch (element) {
-            case "scheduled_month":
-              $scope.config[element] = "1";
-              break;
-            case "scheduled_weekday":
-              $scope.config[element] = "1";
-              break;
-            case "scheduled_day":
-              $scope.config[element] = "1";
-              break;
-            case "scheduled_hour":
-              $scope.config[element] = "0";
-              break;
-            case "scheduled_minute":
-              $scope.config[element] = "0";
-              break;
-            default:
-              break;
-          }
-        });
-      };
-
-      var previousOrder = [];
-      $scope.sortableOptions = {
-        placeholder: 'sql-task-target-highlight-place',
-        revert: 300,
-        cursor: "move",
-        scroll: true,
-        update: function(e, ui) {
-          previousOrder = $scope.config.actions.slice();
-          $scope.$apply();
-        },
-        stop: function(e, ui) {
-          var currentActionIndex = ui.item.sortable.dropindex;
-          var currentAction = $scope.config.actions[currentActionIndex];
-          var topAction = $scope.config.actions[currentActionIndex - 1];
-          var bottomAction = $scope.config.actions[currentActionIndex + 1];
-          var showError = function (extraMessage) {
-            CRM.alert("Cannot move action to this position. " + extraMessage, "Invalid action order", "error");
-            $scope.config.actions = previousOrder.slice();
-            $scope.$apply();
-          };
-
-          if (!currentAction) {
-            return;
-          }
-
-          switch (currentAction.type) {
-            case "CRM_Sqltasks_Action_ErrorHandler":
-              if ((bottomAction && bottomAction.type !== "CRM_Sqltasks_Action_ErrorHandler")
-                || (topAction && topAction.type !== "CRM_Sqltasks_Action_PostSQL" &&
-                topAction.type !== "CRM_Sqltasks_Action_SuccessHandler"
-                && topAction.type !== "CRM_Sqltasks_Action_ErrorHandler")
-              ) {
-                showError('The "' + $scope.formNameFromType(currentAction.type) + '" action cannot occur before other types of actions.');
-              }
-              break;
-            case "CRM_Sqltasks_Action_SuccessHandler":
-              if (bottomAction && bottomAction.type !== "CRM_Sqltasks_Action_ErrorHandler" && bottomAction.type !== "CRM_Sqltasks_Action_SuccessHandler") {
-                showError('The "' + $scope.formNameFromType(currentAction.type) + '" action cannot occur after this action.');
-              } else if (topAction && topAction.type === "CRM_Sqltasks_Action_PostSQL" || topAction.type === "CRM_Sqltasks_Action_ErrorHandler") {
-                showError('The "' + $scope.formNameFromType(currentAction.type)
-                  + '" action cannot occur after the "' + $scope.formNameFromType("CRM_Sqltasks_Action_ErrorHandler") + '" action.');
-              }
-              break;
-            case "CRM_Sqltasks_Action_PostSQL":
-              if (bottomAction && bottomAction.type !== "CRM_Sqltasks_Action_ErrorHandler" &&
-                bottomAction.type !== "CRM_Sqltasks_Action_SuccessHandler"
-                && bottomAction.type !== "CRM_Sqltasks_Action_PostSQL") {
-                showError('The "' + $scope.formNameFromType(currentAction.type) + '" action cannot occur after this action.');
-              } else if (topAction && (topAction.type === "CRM_Sqltasks_Action_SuccessHandler" || topAction.type === "CRM_Sqltasks_Action_ErrorHandler")) {
-                showError('The "' + $scope.formNameFromType(currentAction.type) + '" action cannot occur after either of these actions: "'
-                  + [$scope.formNameFromType("CRM_Sqltasks_Action_SuccessHandler"), $scope.formNameFromType("CRM_Sqltasks_Action_ErrorHandler")].join('", "')
-                  + '".');
-              }
-              break;
-            default:
-              if (topAction &&
-                (
-                  topAction.type === "CRM_Sqltasks_Action_SuccessHandler" ||
-                  topAction.type === "CRM_Sqltasks_Action_ErrorHandler" ||
-                  topAction.type === "CRM_Sqltasks_Action_PostSQL"
-                )
-              ) {
-                var actionTypeNames = [
-                  $scope.formNameFromType("CRM_Sqltasks_Action_SuccessHandler"),
-                  $scope.formNameFromType("CRM_Sqltasks_Action_ErrorHandler"),
-                  $scope.formNameFromType("CRM_Sqltasks_Action_PostSQL"),
-                ];
-                showError('The "' + $scope.formNameFromType(currentAction.type) + '" action cannot occur after either of these actions: "' + actionTypeNames.join('", "') + '".');
-              }
-              break;
-          }
-          //hack to fix multiple-select2 after drag and drop
-          $('.sql-task-multiple-select2 .content select').select2();
-        }
-      };
-
-      CRM.api3("Sqltask", "gettaskactions").done(function(result) {
-        $scope.actions = result.values;
-        $scope.$apply();
-      });
-
-      CRM.api3("Sqltaskfield", "getschedulingoptions").done(function(result) {
-        $scope.schedulingOptions = $scope.mapSchedulingOptions(result.values);
-        var defaultOption = result.values[0];
-        if (defaultOption === "always" && $scope.isCreatingNewSqlTask()) {
-          if ($scope.isTemplateIdExist()) {
-            $scope.taskOptions.enabled = 0;
-          } else {
-            $scope.taskOptions.scheduled = defaultOption;
-            $scope.taskOptions.enabled = 0;
-            $scope.taskOptions.parallel_exec = '0';
-            $scope.taskOptions.input_required = 0;
-            $scope.taskOptions.abort_on_error = '1';
-            $scope.config = Object.assign($scope.config, {
-              scheduled_month: 1,
-              scheduled_weekday: 1,
-              scheduled_day: 1
-            });
-          }
-        }
-        loaderService.updateExecutionBlock();
-        $scope.$apply();
-      });
-
-      CRM.api4("Job", "get", {
-        select: ["run_frequency"],
-        where: [
-          ["api_entity", "=", "Sqltask"],
-          ["api_action", "=", "execute"],
-          ["is_active", "=", true]],
-        limit: 25,
-      }).then((jobs) => {
-        $scope.dispatcherFrequency = jobs.reduce((result, { run_frequency: freq }) => {
-          switch (freq) {
-            case "Always": return "always";
-            case "Daily": return result === "disabled" ? "daily" : result;
-            case "Hourly": return ["disabled", "daily"].includes(result) ? "hourly" : result;
-            default: return result;
-          }
-        }, "disabled");
-      });
-
-      // action templates data
-      CRM.api3("SqltasksActionTemplate", "get", {
-        sequential: 1,
-        options: {limit : 0}
-      }).done(function(result) {
-        $scope.actionTemplates = result.values;
-        $scope.$apply();
-      });
-
-      $scope.addAction = function(actionName) {
-        if (actionName === undefined) {
+        if (!currentAction) {
           return;
         }
-        var newActionItem = {type: actionName};
 
-        //add to the stack of similar action types:
-        for (let index = $scope.config.actions.length - 1; index >= 0; index--) {
-          if (actionName === $scope.config.actions[index].type) {
-            $scope.config.actions.splice(index + 1, 0, newActionItem);
-            return;
-          }
-        }
-
-        if (actionName === "CRM_Sqltasks_Action_RunSQL" || actionName === "CRM_Sqltasks_Action_PostSQL") {
-          newActionItem['enabled'] = "1";
-        }
-
-        var postSqlActionIndexes = [];
-        var successHandlerActionIndexes = [];
-        var errorHandlerActionIndexes = [];
-
-        for (let index = 0; index < $scope.config.actions.length; index++) {
-          if ("CRM_Sqltasks_Action_PostSQL" === $scope.config.actions[index].type) {
-            postSqlActionIndexes.push(index);
-          } else if ("CRM_Sqltasks_Action_SuccessHandler" === $scope.config.actions[index].type) {
-            successHandlerActionIndexes.push(index);
-          } else if ("CRM_Sqltasks_Action_ErrorHandler" === $scope.config.actions[index].type) {
-            errorHandlerActionIndexes.push(index);
-          }
-        }
-
-        switch (actionName) {
-          case "CRM_Sqltasks_Action_PostSQL":
-            if (successHandlerActionIndexes.length === 0 && errorHandlerActionIndexes.length === 0) {
-              $scope.config.actions.push(newActionItem);
-            } else if(successHandlerActionIndexes.length > 0) {
-              $scope.config.actions.splice(successHandlerActionIndexes[0], 0, newActionItem);
-            } else if(errorHandlerActionIndexes.length > 0) {
-              $scope.config.actions.splice(errorHandlerActionIndexes[0], 0, newActionItem);
+        switch (currentAction.type) {
+          case "CRM_Sqltasks_Action_ErrorHandler":
+            if ((bottomAction && bottomAction.type !== "CRM_Sqltasks_Action_ErrorHandler")
+              || (topAction && topAction.type !== "CRM_Sqltasks_Action_PostSQL" &&
+              topAction.type !== "CRM_Sqltasks_Action_SuccessHandler"
+              && topAction.type !== "CRM_Sqltasks_Action_ErrorHandler")
+            ) {
+              showError('The "' + $scope.formNameFromType(currentAction.type) + '" action cannot occur before other types of actions.');
             }
             break;
           case "CRM_Sqltasks_Action_SuccessHandler":
-            if (errorHandlerActionIndexes.length === 0) {
-              $scope.config.actions.push(newActionItem);
-            } else if(errorHandlerActionIndexes.length > 0) {
-              $scope.config.actions.splice(errorHandlerActionIndexes[0], 0, newActionItem);
+            if (bottomAction && bottomAction.type !== "CRM_Sqltasks_Action_ErrorHandler" && bottomAction.type !== "CRM_Sqltasks_Action_SuccessHandler") {
+              showError('The "' + $scope.formNameFromType(currentAction.type) + '" action cannot occur after this action.');
+            } else if (topAction && topAction.type === "CRM_Sqltasks_Action_PostSQL" || topAction.type === "CRM_Sqltasks_Action_ErrorHandler") {
+              showError('The "' + $scope.formNameFromType(currentAction.type)
+                + '" action cannot occur after the "' + $scope.formNameFromType("CRM_Sqltasks_Action_ErrorHandler") + '" action.');
             }
             break;
-          case "CRM_Sqltasks_Action_ErrorHandler":
-            $scope.config.actions.push(newActionItem);
-            break;
-          default:
-            var mixedActionIndexes = [].concat(postSqlActionIndexes).concat(successHandlerActionIndexes).concat(errorHandlerActionIndexes);
-            if (mixedActionIndexes.length > 0) {
-              $scope.config.actions.splice(Math.min.apply(Math, mixedActionIndexes), 0, newActionItem);
-            } else {
-              $scope.config.actions.push(newActionItem);
-            }
-            break;
-        }
-      };
-
-      $scope.addInputParameter = () => {
-        if (!Array.isArray($scope.taskOptions.input_spec)) {
-          $scope.taskOptions.input_spec = [];
-        }
-
-        $scope.taskOptions.input_spec.push({
-          name: "",
-          type: "String",
-          multiple: false,
-          value_string: "",
-          value_float: 0,
-          value_boolean: false,
-        });
-      }
-
-      $scope.deleteInputParameter = (index) => {
-        if (!Array.isArray($scope.taskOptions.input_spec)) {
-          $scope.taskOptions.input_spec = [];
-        }
-
-        $scope.taskOptions.input_spec.splice(index, 1);
-      };
-
-      $scope.formNameFromType = function(type) {
-        switch (type) {
-          case "CRM_Sqltasks_Action_RunSQL":
-            return ts("Run SQL Script");
-          case "CRM_Sqltasks_Action_CreateActivity":
-            return ts("Create Activity");
-          case "CRM_Sqltasks_Action_APICall":
-            return ts("APIv3 Call");
-          case "CRM_Sqltasks_Action_APIv4Call":
-            return ts("APIv4 Call");
-          case "CRM_Sqltasks_Action_CSVExport":
-            return ts("CSV Export");
-          case "CRM_Sqltasks_Action_SyncTag":
-            return ts("Synchronise Tag");
-          case "CRM_Sqltasks_Action_SyncGroup":
-            return ts("Synchronise Group");
-          case "CRM_Sqltasks_Action_CallTask":
-            return ts("Run SQL Task(s)");
           case "CRM_Sqltasks_Action_PostSQL":
-            return ts("Run Cleanup SQL Script");
-          case "CRM_Sqltasks_Action_SuccessHandler":
-            return ts("Success Handler");
-          case "CRM_Sqltasks_Action_ErrorHandler":
-            return ts("Error Handler");
-          case "CRM_Sqltasks_Action_SegmentationAssign":
-            return ts("Assign to Campaign (Segmentation)");
-          case "CRM_Sqltasks_Action_SegmentationExport":
-            return ts("Segmentation Export");
-          case "CRM_Sqltasks_Action_RunPHP":
-            return ts("Run PHP Code");
-          case "CRM_Sqltasks_Action_ReturnValue":
-            return ts("Return Value");
+            if (bottomAction && bottomAction.type !== "CRM_Sqltasks_Action_ErrorHandler" &&
+              bottomAction.type !== "CRM_Sqltasks_Action_SuccessHandler"
+              && bottomAction.type !== "CRM_Sqltasks_Action_PostSQL") {
+              showError('The "' + $scope.formNameFromType(currentAction.type) + '" action cannot occur after this action.');
+            } else if (topAction && (topAction.type === "CRM_Sqltasks_Action_SuccessHandler" || topAction.type === "CRM_Sqltasks_Action_ErrorHandler")) {
+              showError('The "' + $scope.formNameFromType(currentAction.type) + '" action cannot occur after either of these actions: "'
+                + [$scope.formNameFromType("CRM_Sqltasks_Action_SuccessHandler"), $scope.formNameFromType("CRM_Sqltasks_Action_ErrorHandler")].join('", "')
+                + '".');
+            }
+            break;
           default:
-            return "";
+            if (topAction &&
+              (
+                topAction.type === "CRM_Sqltasks_Action_SuccessHandler" ||
+                topAction.type === "CRM_Sqltasks_Action_ErrorHandler" ||
+                topAction.type === "CRM_Sqltasks_Action_PostSQL"
+              )
+            ) {
+              var actionTypeNames = [
+                $scope.formNameFromType("CRM_Sqltasks_Action_SuccessHandler"),
+                $scope.formNameFromType("CRM_Sqltasks_Action_ErrorHandler"),
+                $scope.formNameFromType("CRM_Sqltasks_Action_PostSQL"),
+              ];
+              showError('The "' + $scope.formNameFromType(currentAction.type) + '" action cannot occur after either of these actions: "' + actionTypeNames.join('", "') + '".');
+            }
+            break;
         }
-      };
-
-      $scope.mapSchedulingOptions = (keys) =>
-        keys.reduce((result, key) => {
-          switch (key) {
-            case "always": return Object.assign(result, { [key]: ts("always") });
-            case "hourly": return Object.assign(result, { [key]: ts("every hour") });
-            case "daily": return Object.assign(result, { [key]: ts("every day (after midnight)") });
-            case "weekly": return Object.assign(result, { [key]: ts("every week") });
-            case "monthly": return Object.assign(result, { [key]: ts("every month") });
-            case "yearly": return Object.assign(result, { [key]: ts("annually") });
-          }
-        }, {});
-
-      $scope.shouldShowTimeFieldsByName = function(fieldName) {
-        if (!$scope.taskOptions.scheduled) {
-          return false;
-        }
-        switch (fieldName) {
-          case "minute":
-            return $scope.taskOptions.scheduled !== "always";
-          case "hour":
-            return !["always", "hourly"].includes($scope.taskOptions.scheduled);
-          case "day":
-            return !["always", "hourly", "daily"].includes(
-              $scope.taskOptions.scheduled
-            );
-          case "weekday":
-            return $scope.taskOptions.scheduled === "weekly";
-          case "month":
-            return $scope.taskOptions.scheduled === "yearly";
-          default:
-            return false;
-        }
-      };
-
-      async function loadConfigTemplate () {
-        // If query parameter 'template' does not exist, get default template ID from API
-        if (!$scope.templateId) {
-          $scope.templateId = await new Promise(resolve => {
-            CRM.api3("Setting", "getvalue", { name: "sqltasks_default_template" }).done(result => {
-              if (result.is_error) throw new Error(result.error_message);
-              resolve(result.result);
-            });
-          }).catch(console.error);
-        }
-
-        if (!$scope.templateId) return;
-
-        // Load template data from API
-        CRM.api3("SqltaskTemplate", "get", { id: $scope.templateId }).done(result => {
-          if (result.is_error) {
-            console.error(result.error_message);
-            return;
-          }
-
-          const template = JSON.parse(result.values.config);
-          $scope.config = template.config;
-          $scope.taskOptions.description = template.description;
-          $scope.taskOptions.category = template.category;
-          $scope.taskOptions.scheduled = template.scheduled;
-          $scope.taskOptions.parallel_exec = template.parallel_exec;
-          $scope.taskOptions.run_permissions = template.run_permissions;
-          $scope.fixTaskOptionRunPermissions();
-          $scope.taskOptions.input_required = template.input_required;
-          $scope.taskOptions.abort_on_error = template.abort_on_error;
-          $scope.$apply();
-        });
+        //hack to fix multiple-select2 after drag and drop
+        $('.sql-task-multiple-select2 .content select').select2();
       }
+    };
+
+    CRM.api3("Sqltask", "gettaskactions").done(function(result) {
+      $scope.actions = result.values;
+      $scope.$apply();
     });
+
+    CRM.api3("Sqltaskfield", "getschedulingoptions").done(function(result) {
+      $scope.schedulingOptions = $scope.mapSchedulingOptions(result.values);
+      var defaultOption = result.values[0];
+      if (defaultOption === "always" && $scope.isCreatingNewSqlTask()) {
+        if ($scope.isTemplateIdExist()) {
+          $scope.taskOptions.enabled = 0;
+        } else {
+          $scope.taskOptions.scheduled = defaultOption;
+          $scope.taskOptions.enabled = 0;
+          $scope.taskOptions.parallel_exec = '0';
+          $scope.taskOptions.input_required = 0;
+          $scope.taskOptions.abort_on_error = '1';
+          $scope.config = Object.assign($scope.config, {
+            scheduled_month: 1,
+            scheduled_weekday: 1,
+            scheduled_day: 1
+          });
+        }
+      }
+      loaderService.updateExecutionBlock();
+      $scope.$apply();
+    });
+
+    CRM.api4("Job", "get", {
+      select: ["run_frequency"],
+      where: [
+        ["api_entity", "=", "Sqltask"],
+        ["api_action", "=", "execute"],
+        ["is_active", "=", true]],
+      limit: 25,
+    }).then((jobs) => {
+      $scope.dispatcherFrequency = jobs.reduce((result, { run_frequency: freq }) => {
+        switch (freq) {
+          case "Always": return "always";
+          case "Daily": return result === "disabled" ? "daily" : result;
+          case "Hourly": return ["disabled", "daily"].includes(result) ? "hourly" : result;
+          default: return result;
+        }
+      }, "disabled");
+    });
+
+    // action templates data
+    CRM.api3("SqltasksActionTemplate", "get", {
+      sequential: 1,
+      options: {limit : 0}
+    }).done(function(result) {
+      $scope.actionTemplates = result.values;
+      $scope.$apply();
+    });
+
+    $scope.addAction = function(actionName) {
+      if (actionName === undefined) {
+        return;
+      }
+      var newActionItem = {type: actionName};
+
+      //add to the stack of similar action types:
+      for (let index = $scope.config.actions.length - 1; index >= 0; index--) {
+        if (actionName === $scope.config.actions[index].type) {
+          $scope.config.actions.splice(index + 1, 0, newActionItem);
+          return;
+        }
+      }
+
+      if (actionName === "CRM_Sqltasks_Action_RunSQL" || actionName === "CRM_Sqltasks_Action_PostSQL") {
+        newActionItem['enabled'] = "1";
+      }
+
+      var postSqlActionIndexes = [];
+      var successHandlerActionIndexes = [];
+      var errorHandlerActionIndexes = [];
+
+      for (let index = 0; index < $scope.config.actions.length; index++) {
+        if ("CRM_Sqltasks_Action_PostSQL" === $scope.config.actions[index].type) {
+          postSqlActionIndexes.push(index);
+        } else if ("CRM_Sqltasks_Action_SuccessHandler" === $scope.config.actions[index].type) {
+          successHandlerActionIndexes.push(index);
+        } else if ("CRM_Sqltasks_Action_ErrorHandler" === $scope.config.actions[index].type) {
+          errorHandlerActionIndexes.push(index);
+        }
+      }
+
+      switch (actionName) {
+        case "CRM_Sqltasks_Action_PostSQL":
+          if (successHandlerActionIndexes.length === 0 && errorHandlerActionIndexes.length === 0) {
+            $scope.config.actions.push(newActionItem);
+          } else if(successHandlerActionIndexes.length > 0) {
+            $scope.config.actions.splice(successHandlerActionIndexes[0], 0, newActionItem);
+          } else if(errorHandlerActionIndexes.length > 0) {
+            $scope.config.actions.splice(errorHandlerActionIndexes[0], 0, newActionItem);
+          }
+          break;
+        case "CRM_Sqltasks_Action_SuccessHandler":
+          if (errorHandlerActionIndexes.length === 0) {
+            $scope.config.actions.push(newActionItem);
+          } else if(errorHandlerActionIndexes.length > 0) {
+            $scope.config.actions.splice(errorHandlerActionIndexes[0], 0, newActionItem);
+          }
+          break;
+        case "CRM_Sqltasks_Action_ErrorHandler":
+          $scope.config.actions.push(newActionItem);
+          break;
+        default:
+          var mixedActionIndexes = [].concat(postSqlActionIndexes).concat(successHandlerActionIndexes).concat(errorHandlerActionIndexes);
+          if (mixedActionIndexes.length > 0) {
+            $scope.config.actions.splice(Math.min.apply(Math, mixedActionIndexes), 0, newActionItem);
+          } else {
+            $scope.config.actions.push(newActionItem);
+          }
+          break;
+      }
+    };
+
+    $scope.addInputParameter = () => {
+      if (!Array.isArray($scope.taskOptions.input_spec)) {
+        $scope.taskOptions.input_spec = [];
+      }
+
+      $scope.taskOptions.input_spec.push({
+        name: "",
+        type: "String",
+        multiple: false,
+        value_string: "",
+        value_float: 0,
+        value_boolean: false,
+      });
+    }
+
+    $scope.deleteInputParameter = (index) => {
+      if (!Array.isArray($scope.taskOptions.input_spec)) {
+        $scope.taskOptions.input_spec = [];
+      }
+
+      $scope.taskOptions.input_spec.splice(index, 1);
+    };
+
+    $scope.formNameFromType = function(type) {
+      switch (type) {
+        case "CRM_Sqltasks_Action_RunSQL":
+          return ts("Run SQL Script");
+        case "CRM_Sqltasks_Action_CreateActivity":
+          return ts("Create Activity");
+        case "CRM_Sqltasks_Action_APICall":
+          return ts("APIv3 Call");
+        case "CRM_Sqltasks_Action_APIv4Call":
+          return ts("APIv4 Call");
+        case "CRM_Sqltasks_Action_CSVExport":
+          return ts("CSV Export");
+        case "CRM_Sqltasks_Action_SyncTag":
+          return ts("Synchronise Tag");
+        case "CRM_Sqltasks_Action_SyncGroup":
+          return ts("Synchronise Group");
+        case "CRM_Sqltasks_Action_CallTask":
+          return ts("Run SQL Task(s)");
+        case "CRM_Sqltasks_Action_PostSQL":
+          return ts("Run Cleanup SQL Script");
+        case "CRM_Sqltasks_Action_SuccessHandler":
+          return ts("Success Handler");
+        case "CRM_Sqltasks_Action_ErrorHandler":
+          return ts("Error Handler");
+        case "CRM_Sqltasks_Action_SegmentationAssign":
+          return ts("Assign to Campaign (Segmentation)");
+        case "CRM_Sqltasks_Action_SegmentationExport":
+          return ts("Segmentation Export");
+        case "CRM_Sqltasks_Action_RunPHP":
+          return ts("Run PHP Code");
+        case "CRM_Sqltasks_Action_ReturnValue":
+          return ts("Return Value");
+        default:
+          return "";
+      }
+    };
+
+    $scope.mapSchedulingOptions = (keys) =>
+      keys.reduce((result, key) => {
+        switch (key) {
+          case "always": return Object.assign(result, { [key]: ts("always") });
+          case "hourly": return Object.assign(result, { [key]: ts("every hour") });
+          case "daily": return Object.assign(result, { [key]: ts("every day (after midnight)") });
+          case "weekly": return Object.assign(result, { [key]: ts("every week") });
+          case "monthly": return Object.assign(result, { [key]: ts("every month") });
+          case "yearly": return Object.assign(result, { [key]: ts("annually") });
+        }
+      }, {});
+
+    $scope.shouldShowTimeFieldsByName = function(fieldName) {
+      if (!$scope.taskOptions.scheduled) {
+        return false;
+      }
+      switch (fieldName) {
+        case "minute":
+          return $scope.taskOptions.scheduled !== "always";
+        case "hour":
+          return !["always", "hourly"].includes($scope.taskOptions.scheduled);
+        case "day":
+          return !["always", "hourly", "daily"].includes(
+            $scope.taskOptions.scheduled
+          );
+        case "weekday":
+          return $scope.taskOptions.scheduled === "weekly";
+        case "month":
+          return $scope.taskOptions.scheduled === "yearly";
+        default:
+          return false;
+      }
+    };
+
+    async function loadConfigTemplate () {
+      // If query parameter 'template' does not exist, get default template ID from API
+      if (!$scope.templateId) {
+        $scope.templateId = await new Promise(resolve => {
+          CRM.api3("Setting", "getvalue", { name: "sqltasks_default_template" }).done(result => {
+            if (result.is_error) throw new Error(result.error_message);
+            resolve(result.result);
+          });
+        }).catch(console.error);
+      }
+
+      if (!$scope.templateId) return;
+
+      // Load template data from API
+      CRM.api3("SqltaskTemplate", "get", { id: $scope.templateId }).done(result => {
+        if (result.is_error) {
+          console.error(result.error_message);
+          return;
+        }
+
+        const template = JSON.parse(result.values.config);
+        $scope.config = template.config;
+        $scope.taskOptions.description = template.description;
+        $scope.taskOptions.category = template.category;
+        $scope.taskOptions.scheduled = template.scheduled;
+        $scope.taskOptions.parallel_exec = template.parallel_exec;
+        $scope.taskOptions.run_permissions = template.run_permissions;
+        $scope.fixTaskOptionRunPermissions();
+        $scope.taskOptions.input_required = template.input_required;
+        $scope.taskOptions.abort_on_error = template.abort_on_error;
+        $scope.$apply();
+      });
+    }
+  });
 
   function removeItemFromArray(index) {
     this.$parent.config.actions.splice(index, 1);
@@ -1775,10 +1775,10 @@
             $scope.model.segments = "";
             var inputStyles =  {
               'width' : '100%',
-              'max-width' : '300px',
+              'max-width' : '240px',
               'font-family' : 'monospace, monospace !important',
               'box-sizing' : 'border-box',
-              'height' : '28px'
+              'height' : '32px'
             };
             setTimeout(() => {
               $("#" + fieldId)
@@ -1844,7 +1844,7 @@
       },
       controller: function($scope) {
         $scope.columnsNumber = angular.isDefined($scope.columnsNumber) ? $scope.columnsNumber : 74;
-        $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "300px";
+        $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "240px";
         $scope.textAreaStyles = {
           'width' : $scope.inputMaxWidth,
           'font-family' : 'monospace',
@@ -1876,13 +1876,13 @@
         $scope.extraText = angular.isDefined($scope.extraText) ? $scope.extraText : "";
         $scope.componentModel = angular.isDefined($scope.isDisabled) ? $scope.componentModel : "";
         $scope.sizeLength = angular.isDefined($scope.sizeLength) ? $scope.sizeLength : 32;
-        $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "300px";
+        $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "240px";
         $scope.inputStyle =  {
           'width' : '100%',
           'max-width' : $scope.inputMaxWidth,
           'font-family' : 'monospace, monospace !important',
           'box-sizing' : 'border-box',
-          'height' : '28px'
+          'height' : '32px'
         };
       }
     };
@@ -1927,12 +1927,12 @@
         inputMaxWidth: "<inputmaxwidth",
       },
       controller: function($scope) {
-        $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "300px";
+        $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "240px";
         $scope.selectStyle = {
           'width' : '100%',
           'max-width' : $scope.inputMaxWidth,
           'box-sizing' : 'border-box',
-          'height' : '28px'
+          'height' : '32px'
         };
       }
     };
@@ -1956,12 +1956,12 @@
         fieldIdToChange: "<"
       },
       controller: function($scope) {
-        $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "300px";
+        $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "240px";
         var selectStyles = {
           'width' : "100%",
           'max-width' : $scope.inputMaxWidth,
           'box-sizing' : 'border-box',
-          'height' : '28px'
+          'height' : '32px'
         };
 
         if (angular.isDefined($scope.isDataLoaded) && $scope.isDataLoaded == false) {
@@ -2003,7 +2003,7 @@
           $("#" + $scope.fieldId).css(selectStyles).crmSelect2();
         };
 
-        $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "300px";
+        $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "240px";
         var selectStyles = {
           'width' : "100%",
           'max-width' : $scope.inputMaxWidth,
@@ -2042,7 +2042,7 @@
         inputMaxWidth: "<inputmaxwidth",
       },
       controller: function($scope) {
-        $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "300px";
+        $scope.inputMaxWidth = angular.isDefined($scope.inputMaxWidth) ? $scope.inputMaxWidth : "240px";
         $scope.isMultiple = angular.isDefined($scope.isMultiple) ? $scope.isMultiple : false;
         var selectStyles = {
           'width' : "100%",
@@ -2050,7 +2050,7 @@
           'box-sizing' : 'border-box'
         };
         if (!$scope.isMultiple) {
-          selectStyles['height'] = '28px';
+          selectStyles['height'] = '32px';
         }
 
         CRM.$(function($) {
@@ -2131,8 +2131,10 @@
           $scope.isShowActionTemplateForm = !$scope.isShowActionTemplateForm;
           if ($scope.isShowActionTemplateForm) {
             CRM.$(event.currentTarget).closest('.sql-task-action-template-wrapper').find('.sql-task-action-template-form-wrapper').slideDown("fast");
+            CRM.$(event.currentTarget).closest('.sql-task-action-template-wrapper').addClass('open-edit-form');
           } else {
             CRM.$(event.currentTarget).closest('.sql-task-action-template-wrapper').find('.sql-task-action-template-form-wrapper').hide("fast");
+            CRM.$(event.currentTarget).closest('.sql-task-action-template-wrapper').removeClass('open-edit-form');
           }
         };
       }

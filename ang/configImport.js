@@ -27,6 +27,7 @@
         CRM.$('body').addClass('sql-task-body-page-wrapper');
       }, 0);
 
+      $scope.taskId = taskId;
       $scope.ts = CRM.ts();
       $scope.$fileContent = "";
       $scope.showContent = function($fileContent) {
