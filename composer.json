@@ -8,5 +8,8 @@
             "name": "SYSTOPIA",
             "email": "endres@systopia.de"
         }
-    ]
+    ],
+    "require": {
+        "phpmyadmin/sql-parser": "^5.11"
+    }
 }

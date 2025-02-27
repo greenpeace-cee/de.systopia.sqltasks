@@ -73,4 +73,10 @@
     <title>SQL Task Settings</title>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
+  <item>
+    <path>civicrm/sqltasks/analyze</path>
+    <page_callback>CRM_Sqltasks_Page_Analyze</page_callback>
+    <title>Analyze SQL Tasks</title>
+    <access_arguments>administer CiviCRM</access_arguments>
+  </item>
 </menu>
