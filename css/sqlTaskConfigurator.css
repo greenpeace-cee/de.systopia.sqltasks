@@ -37,7 +37,21 @@ select.pixelInput {
   flex-direction: row;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
+  justify-content: start;
+  position: relative;
+}
+
+#bootstrap-theme .action-label label > span,
+#bootstrap-theme .action-label label,
+#bootstrap-theme .action-label label {
+  color: inherit !important;
+}
+
+.action-label > button {
+  position: absolute;
+  top: 50%;
+  right: 5px;
+  transform: translate(0, -50%);
 }
 
 .action-label:after {
