@@ -32,9 +32,21 @@
                 fieldlabel="ts('Contact Table (contact_id)')" fieldid="'tag_contact_table' + index" inputMaxWidth="'500px'">
             </text-input>
 
-            <ordinary-select2 isrequired="getBooleanFromNumber(model['enabled'])" model="model['tag_id']" inputMaxWidth="'500px'"
-                              fieldlabel="ts('Synchronise Tag')" fieldid="'tag_tag_id_' + index" optionsArray="tagsData"
-                              isdataloaded="isDataLoaded('tag_tag_id_' + index)">
+            <check-box
+                model="model['use_tags_from_table']"
+                fieldlabel="ts('Use tag names from data table? (tag_name)')"
+                fieldid="'sync_tags_use_tags_from_table' + index">
+            </check-box>
+
+            <ordinary-select2
+                ng-if="!getBooleanFromNumber(model['use_tags_from_table'])"
+                isrequired="getBooleanFromNumber(model['enabled'])"
+                model="model['tag_id']"
+                inputMaxWidth="'500px'"
+                fieldlabel="ts('Synchronise Tag')"
+                fieldid="'tag_tag_id_' + index"
+                optionsArray="tagsData"
+                isdataloaded="isDataLoaded('tag_tag_id_' + index)">
             </ordinary-select2>
 
             <ordinary-select2 isrequired="getBooleanFromNumber(model['enabled'])" inputMaxWidth="'300px'"
