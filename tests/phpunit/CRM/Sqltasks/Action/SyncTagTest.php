@@ -234,7 +234,6 @@ class CRM_Sqltasks_Action_SyncTagTest extends CRM_Sqltasks_Action_AbstractAction
 
     $this->assertEquals([
       $contact_ids[0] => ['tag_1','tag_2','tag_3'],
-      $contact_ids[2] => ['tag_1'],
     ], $entity_tags);
 
   }
@@ -379,7 +378,6 @@ class CRM_Sqltasks_Action_SyncTagTest extends CRM_Sqltasks_Action_AbstractAction
 
     $this->assertEquals([
       $contact_ids[0] => ['tag_1','tag_2','tag_3'],
-      $contact_ids[2] => ['tag_1'],
     ], $entity_tags);
 
   }
