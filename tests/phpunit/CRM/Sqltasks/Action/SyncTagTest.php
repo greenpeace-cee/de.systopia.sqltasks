@@ -135,10 +135,10 @@ class CRM_Sqltasks_Action_SyncTagTest extends CRM_Sqltasks_Action_AbstractAction
 
             CREATE TABLE tmp_test_action_synctag (
               tag_name VARCHAR(64),
-              contact_id INT
+              entity_id INT
             );
 
-            INSERT INTO tmp_test_action_synctag (tag_name, contact_id) VALUES
+            INSERT INTO tmp_test_action_synctag (tag_name, entity_id) VALUES
               ('tag_1', $contact_ids[0]),
               ('tag_1', $contact_ids[1]),
               ('tag_1', $contact_ids[2]),
@@ -150,7 +150,7 @@ class CRM_Sqltasks_Action_SyncTagTest extends CRM_Sqltasks_Action_AbstractAction
         [
           'type'                => 'CRM_Sqltasks_Action_SyncTag',
           'enabled'             => TRUE,
-          'contact_table'       => 'tmp_test_action_synctag',
+          'source_table'        => 'tmp_test_action_synctag',
           'entity_table'        => 'civicrm_contact',
           'use_tags_from_table' => TRUE,
           'use_api'             => FALSE,
@@ -192,11 +192,11 @@ class CRM_Sqltasks_Action_SyncTagTest extends CRM_Sqltasks_Action_AbstractAction
 
             CREATE TABLE tmp_test_action_synctag (
               tag_name VARCHAR(64),
-              contact_id INT,
+              entity_id INT,
               exclude BIT
             );
 
-            INSERT INTO tmp_test_action_synctag (tag_name, contact_id, exclude) VALUES
+            INSERT INTO tmp_test_action_synctag (tag_name, entity_id, exclude) VALUES
               ('tag_1', $contact_ids[0], 0),
               ('tag_1', $contact_ids[2], 1),
               ('tag_2', $contact_ids[0], 0),
@@ -208,7 +208,7 @@ class CRM_Sqltasks_Action_SyncTagTest extends CRM_Sqltasks_Action_AbstractAction
         [
           'type'                => 'CRM_Sqltasks_Action_SyncTag',
           'enabled'             => TRUE,
-          'contact_table'       => 'tmp_test_action_synctag',
+          'source_table'        => 'tmp_test_action_synctag',
           'entity_table'        => 'civicrm_contact',
           'use_tags_from_table' => TRUE,
           'use_api'             => FALSE,
@@ -279,10 +279,10 @@ class CRM_Sqltasks_Action_SyncTagTest extends CRM_Sqltasks_Action_AbstractAction
 
             CREATE TABLE tmp_test_action_synctag (
               tag_name VARCHAR(64),
-              contact_id INT
+              entity_id INT
             );
 
-            INSERT INTO tmp_test_action_synctag (tag_name, contact_id) VALUES
+            INSERT INTO tmp_test_action_synctag (tag_name, entity_id) VALUES
               ('tag_1', $contact_ids[0]),
               ('tag_1', $contact_ids[1]),
               ('tag_1', $contact_ids[2]),
@@ -294,7 +294,7 @@ class CRM_Sqltasks_Action_SyncTagTest extends CRM_Sqltasks_Action_AbstractAction
         [
           'type'                => 'CRM_Sqltasks_Action_SyncTag',
           'enabled'             => TRUE,
-          'contact_table'       => 'tmp_test_action_synctag',
+          'source_table'        => 'tmp_test_action_synctag',
           'entity_table'        => 'civicrm_contact',
           'use_tags_from_table' => TRUE,
           'use_api'             => TRUE,
@@ -336,11 +336,11 @@ class CRM_Sqltasks_Action_SyncTagTest extends CRM_Sqltasks_Action_AbstractAction
 
             CREATE TABLE tmp_test_action_synctag (
               tag_name VARCHAR(64),
-              contact_id INT,
+              entity_id INT,
               exclude BIT
             );
 
-            INSERT INTO tmp_test_action_synctag (tag_name, contact_id, exclude) VALUES
+            INSERT INTO tmp_test_action_synctag (tag_name, entity_id, exclude) VALUES
               ('tag_1', $contact_ids[0], 0),
               ('tag_1', $contact_ids[2], 1),
               ('tag_2', $contact_ids[0], 0),
@@ -352,7 +352,7 @@ class CRM_Sqltasks_Action_SyncTagTest extends CRM_Sqltasks_Action_AbstractAction
         [
           'type'                => 'CRM_Sqltasks_Action_SyncTag',
           'enabled'             => TRUE,
-          'contact_table'       => 'tmp_test_action_synctag',
+          'source_table'        => 'tmp_test_action_synctag',
           'entity_table'        => 'civicrm_contact',
           'use_tags_from_table' => TRUE,
           'use_api'             => TRUE,

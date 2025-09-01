@@ -28,8 +28,13 @@
         <div class="sql-tasks">
             <action-additional-info model='model' fieldPrefix="'sync_tag'" index='index'></action-additional-info>
 
-            <text-input isrequired="getBooleanFromNumber(model['enabled'])" model="model['contact_table']" sizelength="60"
-                fieldlabel="ts('Contact Table (contact_id)')" fieldid="'tag_contact_table' + index" inputMaxWidth="'500px'">
+            <text-input
+                isrequired="getBooleanFromNumber(model['enabled'])"
+                model="model['source_table']"
+                sizelength="60"
+                fieldlabel="ts('Source Table (entity_id)')"
+                fieldid="'tag_source_table' + index"
+                inputMaxWidth="'500px'">
             </text-input>
 
             <check-box

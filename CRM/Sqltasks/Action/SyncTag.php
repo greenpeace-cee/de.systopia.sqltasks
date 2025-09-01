@@ -20,7 +20,7 @@ use CRM_Sqltasks_ExtensionUtil as E;
  *  a resulting contact set with a group
  *
  */
-class CRM_Sqltasks_Action_SyncTag extends CRM_Sqltasks_Action_ContactSet {
+class CRM_Sqltasks_Action_SyncTag extends CRM_Sqltasks_Action {
 
   /**
    * Get identifier string
@@ -61,12 +61,16 @@ class CRM_Sqltasks_Action_SyncTag extends CRM_Sqltasks_Action_ContactSet {
    * Run the synchronisation purely by SQL
    */
   protected function executeSQL() {
-    $contact_table = $this->getContactTable();
+    $source_table = $this->getSourceTable();
     $entity_table = $this->getEntityTable();
     $use_tags_from_table = (bool) $this->getConfigValue('use_tags_from_table');
 
-    if ($this->_columnExists($contact_table, 'exclude')) {
-      $exclude_clause = '(ct.exclude IS NULL OR ct.exclude != 1)';
+    $entity_id_column = $this->_columnExists($source_table, 'entity_id')
+      ? 'entity_id'
+      : 'contact_id';
+
+    if ($this->_columnExists($source_table, 'exclude')) {
+      $exclude_clause = '(src.exclude IS NULL OR src.exclude != 1)';
       $this->log('Column "exclude" exists, might skip some rows');
     } else {
       $exclude_clause = '1';
@@ -79,28 +83,28 @@ class CRM_Sqltasks_Action_SyncTag extends CRM_Sqltasks_Action_ContactSet {
         FROM civicrm_entity_tag et
         JOIN civicrm_tag t
           ON t.id = et.tag_id
-          AND t.name IN (SELECT DISTINCT ct.tag_name FROM $contact_table ct WHERE $exclude_clause)
-        LEFT JOIN $contact_table ct
-          ON ct.contact_id = et.entity_id
-          AND ct.tag_name = t.name
+          AND t.name IN (SELECT DISTINCT src.tag_name FROM $source_table src WHERE $exclude_clause)
+        LEFT JOIN $source_table src
+          ON src.$entity_id_column = et.entity_id
+          AND src.tag_name = t.name
           AND $exclude_clause
         WHERE
           et.entity_table = '$entity_table'
-          AND ct.contact_id IS NULL
+          AND src.$entity_id_column IS NULL
       ");
 
       // Tag all entities in the contact table that are not already tagged
       CRM_Core_DAO::executeQuery("
         INSERT INTO civicrm_entity_tag (entity_table, entity_id, tag_id)
         SELECT
-           '$entity_table' AS entity_table,
-           ct.contact_id   AS entity_id,
-           t.id            AS tag_id
-        FROM $contact_table ct
+           '$entity_table'       AS entity_table,
+           src.$entity_id_column AS entity_id,
+           t.id                  AS tag_id
+        FROM $source_table src
         JOIN civicrm_tag t
-          ON t.name = ct.tag_name
+          ON t.name = src.tag_name
         LEFT JOIN civicrm_entity_tag et
-          ON et.entity_id = ct.contact_id
+          ON et.entity_id = src.$entity_id_column
           AND et.entity_table = '$entity_table'
           AND et.tag_id = t.id
         WHERE
@@ -114,25 +118,25 @@ class CRM_Sqltasks_Action_SyncTag extends CRM_Sqltasks_Action_ContactSet {
       CRM_Core_DAO::executeQuery("
         DELETE et
         FROM civicrm_entity_tag et
-        LEFT JOIN $contact_table ct
-          ON ct.contact_id = et.entity_id
+        LEFT JOIN $source_table src
+          ON src.$entity_id_column = et.entity_id
           AND $exclude_clause
         WHERE
           et.entity_table = '$entity_table'
           AND et.tag_id = $tag_id
-          AND ct.contact_id IS NULL
+          AND src.$entity_id_column IS NULL
       ");
 
       // Tag all entities in the contact table that are not already tagged
       CRM_Core_DAO::executeQuery("
         INSERT INTO civicrm_entity_tag (entity_table, entity_id, tag_id)
         SELECT DISTINCT
-           '$entity_table' AS entity_table,
-           ct.contact_id   AS entity_id,
-           $tag_id         AS tag_id
-        FROM $contact_table ct
+           '$entity_table'       AS entity_table,
+           src.$entity_id_column AS entity_id,
+           $tag_id               AS tag_id
+        FROM $source_table src
         LEFT JOIN civicrm_entity_tag et
-          ON et.entity_id = ct.contact_id
+          ON et.entity_id = src.$entity_id_column
           AND et.entity_table = '$entity_table'
           AND et.tag_id = $tag_id
         WHERE
@@ -146,12 +150,16 @@ class CRM_Sqltasks_Action_SyncTag extends CRM_Sqltasks_Action_ContactSet {
    * Run the synchronisation via API
    */
   protected function executeAPI() {
-    $contact_table = $this->getContactTable();
+    $source_table = $this->getSourceTable();
     $entity_table = $this->getEntityTable();
     $use_tags_from_table = (bool) $this->getConfigValue('use_tags_from_table');
 
-    if ($this->_columnExists($contact_table, 'exclude')) {
-      $exclude_clause = '(ct.exclude IS NULL OR ct.exclude != 1)';
+    $entity_id_column = $this->_columnExists($source_table, 'entity_id')
+      ? 'entity_id'
+      : 'contact_id';
+
+    if ($this->_columnExists($source_table, 'exclude')) {
+      $exclude_clause = '(src.exclude IS NULL OR src.exclude != 1)';
       $this->log('Column "exclude" exists, might skip some rows');
     } else {
       $exclude_clause = '1';
@@ -166,14 +174,14 @@ class CRM_Sqltasks_Action_SyncTag extends CRM_Sqltasks_Action_ContactSet {
         FROM civicrm_entity_tag et
         JOIN civicrm_tag t
           ON t.id = et.tag_id
-          AND t.name IN (SELECT DISTINCT ct.tag_name FROM $contact_table ct WHERE $exclude_clause)
-        LEFT JOIN $contact_table ct
-          ON ct.contact_id = et.entity_id
-          AND ct.tag_name = t.name
+          AND t.name IN (SELECT DISTINCT src.tag_name FROM $source_table src WHERE $exclude_clause)
+        LEFT JOIN $source_table src
+          ON src.$entity_id_column = et.entity_id
+          AND src.tag_name = t.name
           AND $exclude_clause
         WHERE
           et.entity_table = '$entity_table'
-          AND ct.contact_id IS NULL
+          AND src.$entity_id_column IS NULL
       ");
 
       while ($entities2untag->fetch()) {
@@ -186,13 +194,13 @@ class CRM_Sqltasks_Action_SyncTag extends CRM_Sqltasks_Action_ContactSet {
       // Tag all entities in the contact table that are not already tagged
       $entities2tag = CRM_Core_DAO::executeQuery("
         SELECT
-           ct.contact_id AS entity_id,
-           t.id          AS tag_id
-        FROM $contact_table ct
+           src.$entity_id_column AS entity_id,
+           t.id                  AS tag_id
+        FROM $source_table src
         JOIN civicrm_tag t
-          ON t.name = ct.tag_name
+          ON t.name = src.tag_name
         LEFT JOIN civicrm_entity_tag et
-          ON et.entity_id = ct.contact_id
+          ON et.entity_id = src.$entity_id_column
           AND et.entity_table = '$entity_table'
           AND et.tag_id = t.id
         WHERE
@@ -213,31 +221,31 @@ class CRM_Sqltasks_Action_SyncTag extends CRM_Sqltasks_Action_ContactSet {
       // Un-tag all entities that are not in the contact table
       $entities2untag = CRM_Core_DAO::executeQuery("
         SELECT
-          et.id        AS id,
+          et.tag_id    AS tag_id,
           et.entity_id AS entity_id
         FROM civicrm_entity_tag et
-        LEFT JOIN $contact_table ct
-          ON ct.contact_id = et.entity_id
+        LEFT JOIN $source_table src
+          ON src.$entity_id_column = et.entity_id
           AND $exclude_clause
         WHERE
           et.entity_table = '$entity_table'
           AND et.tag_id = $tag_id
-          AND ct.contact_id IS NULL
+          AND src.$entity_id_column IS NULL
       ");
 
       while ($entities2untag->fetch()) {
         civicrm_api3('EntityTag', 'delete', [
-          'id'         => $entities2untag->id,
+          'tag_id'     => $entities2untag->tag_id,
           'contact_id' => $entities2untag->entity_id,
         ]);
       }
 
       // Tag all entities in the contact table that are not already tagged
       $entities2tag = CRM_Core_DAO::executeQuery("
-        SELECT DISTINCT ct.contact_id AS entity_id
-        FROM $contact_table ct
+        SELECT DISTINCT src.$entity_id_column AS entity_id
+        FROM $source_table src
         LEFT JOIN civicrm_entity_tag et
-          ON et.entity_id = ct.contact_id
+          ON et.entity_id = src.$entity_id_column
           AND et.entity_table = '$entity_table'
           AND et.tag_id = $tag_id
         WHERE
@@ -297,5 +305,13 @@ class CRM_Sqltasks_Action_SyncTag extends CRM_Sqltasks_Action_ContactSet {
     } else {
       return $table_name;
     }
+  }
+
+  private function getSourceTable() {
+    $table_name = trim($this->getConfigValue('source_table') ?? '');
+
+    return empty($table_name)
+      ? trim($this->getConfigValue('contact_table') ?? '')
+      : $table_name;
   }
 }
