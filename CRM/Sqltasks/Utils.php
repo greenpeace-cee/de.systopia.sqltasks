@@ -13,7 +13,7 @@ class CRM_Sqltasks_Utils {
     ]) == 1;
   }
 
-  public static function runSqlQuery($queryString) {
+  public static function runSqlQuery($queryString, $runAsStoredProcedure = FALSE) {
     $config = CRM_Core_Config::singleton();
     $dsn = $config->dsn;
     $errorScope = CRM_Core_TemporaryErrorScope::useException();
@@ -46,10 +46,28 @@ class CRM_Sqltasks_Utils {
 
     $queryString = CRM_Utils_File::stripComments($queryString);
 
-    $queries = preg_split('/;\s*$/m', $queryString);
-    foreach ($queries as $query) {
-      $query = trim($query);
-      if (!empty($query)) {
+    if ($runAsStoredProcedure) {
+      $procName = 'tmp_sqltasks_proc_' . bin2hex(random_bytes(4));
+
+      $db->query("DROP PROCEDURE IF EXISTS $procName;");
+
+      $db->query("
+        CREATE PROCEDURE $procName(IN input TEXT)
+            MODIFIES SQL DATA
+            SQL SECURITY INVOKER
+        BEGIN $queryString END;
+      ");
+
+      $db->query("CALL $procName(@input);");
+      $db->query("DROP PROCEDURE IF EXISTS $procName;");
+    } else {
+      $queries = preg_split('/;\s*$/m', $queryString);
+
+      foreach ($queries as $query) {
+        $query = trim($query);
+
+        if (empty($query)) continue;
+
         CRM_Core_Error::debug_query($query);
         $res = &$db->query($query);
       }

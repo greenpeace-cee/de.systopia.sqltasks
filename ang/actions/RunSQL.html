@@ -27,6 +27,12 @@
         <div class="sql-tasks">
             <action-additional-info model='model' fieldPrefix="'run_sql'" index='index'></action-additional-info>
 
+            <check-box
+                model="model['run_as_stored_procedure']"
+                fieldlabel="ts('Run as stored procedure')"
+                fieldid="'run_as_stored_procedure' + index">
+            </check-box>
+
             <text-area isrequired="getBooleanFromNumber(model['enabled'])" model="model['script']"
                 fieldlabel="ts('SQL Script')" fieldid="'sql_script' + index" rowsnumber='8' inputMaxWidth="'500px'"
                 helpaction='onInfoPress("SQL Script", "id-sql-script", "CRM\/Sqltasks\/Action\/RunSQL")'
