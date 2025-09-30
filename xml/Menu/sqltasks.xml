@@ -38,8 +38,8 @@
     <access_arguments>administer CiviCRM</access_arguments>
   </item>
   <item>
-    <path>civicrm/sqltasks/global-token-manager</path>
-    <page_callback>CRM_Sqltasks_Page_GlobalTokenManager</page_callback>
+    <path>civicrm/sqltasks/global-token/list</path>
+    <page_callback>CRM_Sqltasks_Page_GlobalTokenList</page_callback>
     <title>Global Token Manager</title>
     <access_arguments>administer CiviCRM</access_arguments>
   </item>
@@ -71,6 +71,12 @@
     <path>civicrm/sqltask/settings</path>
     <page_callback>CRM_Sqltasks_Form_SqltaskSettings</page_callback>
     <title>SQL Task Settings</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+  <item>
+    <path>civicrm/sqltasks/global-token</path>
+    <page_callback>CRM_Sqltasks_Form_GlobalToken</page_callback>
+    <title>GlobalTokenManage</title>
     <access_arguments>access CiviCRM</access_arguments>
   </item>
 </menu>

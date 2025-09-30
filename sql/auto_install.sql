@@ -20,9 +20,11 @@ SET FOREIGN_KEY_CHECKS=0;
 DROP TABLE IF EXISTS `civicrm_sqltasks_template`;
 DROP TABLE IF EXISTS `civicrm_sqltasks_execution`;
 DROP TABLE IF EXISTS `civicrm_sqltasks_action_template`;
+DROP TABLE IF EXISTS `civicrm_sqltasks_global_token`;
 DROP TABLE IF EXISTS `civicrm_sqltasks`;
 
 SET FOREIGN_KEY_CHECKS=1;
+
 -- /*******************************************************
 -- *
 -- * Create new tables
@@ -53,8 +55,23 @@ CREATE TABLE `civicrm_sqltasks` (
   `config` text NULL COMMENT 'Task configuration (JSON)',
   `abort_on_error` int unsigned NOT NULL DEFAULT 0 COMMENT 'Should task execution abort in case of an error?',
   `last_modified` datetime NULL COMMENT 'Date/time of the latest change to the task configuration',
-  PRIMARY KEY (`id`)
-)
+  PRIMARY KEY (`id`))
+ENGINE=InnoDB;
+
+-- /*******************************************************
+-- *
+-- * civicrm_sqltasks_global_token
+-- *
+-- * SqlTasks Global Token
+-- *
+-- *******************************************************/
+CREATE TABLE `civicrm_sqltasks_global_token` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT COMMENT 'Unique SqlTasks GlobalToken ID',
+  `token_name` varchar(255) NOT NULL COMMENT 'token name',
+  `data_type` int unsigned NOT NULL DEFAULT 1 COMMENT 'Token data type',
+  `token_value` longtext NULL COMMENT 'Token value (JSON)',
+  `description` text NULL COMMENT 'Token description',
+  PRIMARY KEY (`id`))
 ENGINE=InnoDB;
 
 -- /*******************************************************
@@ -70,8 +87,7 @@ CREATE TABLE `civicrm_sqltasks_action_template` (
   `type` varchar(255) NOT NULL COMMENT 'Action Template Type',
   `config` text NOT NULL COMMENT 'Action Template Configuration',
   PRIMARY KEY (`id`),
-  UNIQUE INDEX `index_unique_name_type`(name, type)
-)
+  UNIQUE INDEX `index_unique_name_type`(name, type))
 ENGINE=InnoDB;
 
 -- /*******************************************************
@@ -94,8 +110,7 @@ CREATE TABLE `civicrm_sqltasks_execution` (
   `created_id` int unsigned NULL COMMENT 'Contact ID of task executor',
   PRIMARY KEY (`id`),
   CONSTRAINT FK_civicrm_sqltasks_execution_sqltask_id FOREIGN KEY (`sqltask_id`) REFERENCES `civicrm_sqltasks`(`id`) ON DELETE SET NULL,
-  CONSTRAINT FK_civicrm_sqltasks_execution_created_id FOREIGN KEY (`created_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL
-)
+  CONSTRAINT FK_civicrm_sqltasks_execution_created_id FOREIGN KEY (`created_id`) REFERENCES `civicrm_contact`(`id`) ON DELETE SET NULL)
 ENGINE=InnoDB;
 
 -- /*******************************************************
@@ -111,6 +126,5 @@ CREATE TABLE `civicrm_sqltasks_template` (
   `description` text COMMENT 'template description',
   `config` text COMMENT 'configuration (JSON)',
   `last_modified` datetime COMMENT 'last time the template has been modified',
-  PRIMARY KEY (`id`)
-)
+  PRIMARY KEY (`id`))
 ENGINE=InnoDB;
