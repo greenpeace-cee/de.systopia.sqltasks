@@ -34,7 +34,7 @@ return [
       'version'         => 3,
       'option_group_id' => 'sqltasks_global_token_data_type',
       'value'           => 2,
-      'name'            => '',
+      'name'            => 'integer',
       'label'           => 'Integer',
       'is_active'       => 1,
     ],

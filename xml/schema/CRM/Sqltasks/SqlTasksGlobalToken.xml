@@ -50,9 +50,8 @@
     <title>Token value</title>
     <name>token_value</name>
     <type>longtext</type>
-    <serialize>JSON</serialize>
     <required>false</required>
-    <comment>Token value (JSON)</comment>
+    <comment>Token value</comment>
     <html>
       <type>TextArea</type>
       <rows>4</rows>

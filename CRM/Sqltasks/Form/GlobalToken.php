@@ -11,11 +11,11 @@ class CRM_Sqltasks_Form_GlobalToken extends CRM_Core_Form {
   public function preProcess() {
     $this->action = CRM_Utils_Request::retrieve('action', 'String', $this);
 
-    if (!in_array($this->action, [CRM_Core_Action::ADD, CRM_Core_Action::UPDATE, CRM_Core_Action::DELETE])) {
+    if (!in_array($this->action, [CRM_Core_Action::ADD, CRM_Core_Action::UPDATE])) {
       throw new Exception('Unknown action: ' . $this->action);
     }
 
-    if ($this->action == CRM_Core_Action::UPDATE || $this->action == CRM_Core_Action::DELETE) {
+    if ($this->action == CRM_Core_Action::UPDATE) {
       $this->tokenId = CRM_Utils_Request::retrieve('id', 'Positive', $this);
       if (!CRM_Sqltasks_BAO_SqlTasksGlobalToken::isTokenExistById($this->tokenId)) {
         throw new Exception('Unknown token: ' . $this->tokenId);
@@ -26,8 +26,6 @@ class CRM_Sqltasks_Form_GlobalToken extends CRM_Core_Form {
       $this->setTitle(E::ts('Add Global Token'));
     } elseif ($this->action == CRM_Core_Action::UPDATE) {
       $this->setTitle(E::ts('Update Global Token'));
-    } elseif ($this->action == CRM_Core_Action::DELETE) {
-      $this->setTitle(E::ts('Delete Global Token'));
     }
 
     CRM_Core_Resources::singleton()->addStyleFile('de.systopia.sqltasks', 'css/sqlTaskGeneral.css');
@@ -69,16 +67,16 @@ class CRM_Sqltasks_Form_GlobalToken extends CRM_Core_Form {
             break;
 
           case 'datetime':
+            $dateTameErrorMessage = 'Value must be a datetime(Y-m-d H:i:s). Example: 2025-11-01 22:55:44';
+
             if (is_string($tokenValue)) {
               $dateTime = DateTime::createFromFormat('Y-m-d H:i:s', $tokenValue);
 
-              if (empty($dateTime)) {
-                $errors['token_value'] = 'Value must be a datetime(Y-m-d H:i:s)';
-              } elseif ($dateTime->format('Y-m-d H:i:s') !== $tokenValue) {
-                $errors['token_value'] = 'Value must be a datetime(Y-m-d H:i:s)';
+              if (empty($dateTime) || $dateTime->format('Y-m-d H:i:s') !== $tokenValue) {
+                $errors['token_value'] = $dateTameErrorMessage;
               }
             } else {
-              $errors['token_value'] = 'Value must be a datetime(Y-m-d H:i:s)';
+              $errors['token_value'] = $dateTameErrorMessage;
             }
 
             break;
@@ -127,8 +125,6 @@ class CRM_Sqltasks_Form_GlobalToken extends CRM_Core_Form {
       $buttonName = E::ts('Add');
     } elseif ($this->action == CRM_Core_Action::UPDATE) {
       $buttonName = E::ts('Update');
-    } elseif ($this->action == CRM_Core_Action::DELETE) {
-      $buttonName = E::ts('Delete');
     }
 
     $this->addButtons([
@@ -190,12 +186,6 @@ class CRM_Sqltasks_Form_GlobalToken extends CRM_Core_Form {
         ->execute();
 
       CRM_Core_Session::setStatus(E::ts('Global Token is updated'), E::ts('Global Token'), 'success');
-    } elseif ($this->action == CRM_Core_Action::DELETE) {
-      SqlTasksGlobalToken::delete(TRUE)
-        ->addWhere('id', '=', $this->tokenId)
-        ->execute();
-
-      CRM_Core_Session::setStatus(E::ts('Global Token is deleted'), E::ts('Global Token'), 'success');
     }
 
     CRM_Utils_System::redirect(CRM_Utils_System::url('civicrm/sqltasks/global-token/list', http_build_query(['reset' => 1])));

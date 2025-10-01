@@ -27,13 +27,7 @@ class CRM_Sqltasks_BAO_SqlTasksGlobalToken extends CRM_Sqltasks_DAO_SqlTasksGlob
       ->execute();
 
     foreach ($sqlTasksGlobalTokens as $sqlTasksGlobalToken) {
-      if (is_array($sqlTasksGlobalToken['token_value']) && count($sqlTasksGlobalToken['token_value']) > 0) {
-        $tokenValue = array_shift($sqlTasksGlobalToken['token_value']);
-      } else {
-        $tokenValue = $sqlTasksGlobalToken['token_value'];
-      }
-
-      return $tokenValue;
+      return $sqlTasksGlobalToken['token_value'];
     }
 
     return '';
@@ -80,19 +74,19 @@ class CRM_Sqltasks_BAO_SqlTasksGlobalToken extends CRM_Sqltasks_DAO_SqlTasksGlob
 
   public static function getAllTokenFullData(): array {
     $sqlTasksGlobalTokens = SqlTasksGlobalToken::get(false)->execute();
+    $dataTypeOptions = CRM_Sqltasks_BAO_SqlTasksGlobalToken::getTokenDataTypeOptions();
 
     $tokensData = [];
     foreach ($sqlTasksGlobalTokens as $sqlTasksGlobalToken) {
-      if (is_array($sqlTasksGlobalToken['token_value']) && count($sqlTasksGlobalToken['token_value']) > 0) {
-        $tokenValue = array_shift($sqlTasksGlobalToken['token_value']);
-      } else {
-        $tokenValue = $sqlTasksGlobalToken['token_value'];
-      }
+      $dataTypeLabel = !empty($dataTypeOptions[$sqlTasksGlobalToken['data_type']]) ? $dataTypeOptions[$sqlTasksGlobalToken['data_type']] : 'Unknown';
 
       $tokensData[] = [
         'id' => $sqlTasksGlobalToken['id'],
-        'name' => $sqlTasksGlobalToken['token_name'],
-        'value' => $tokenValue,
+        'token_name' => $sqlTasksGlobalToken['token_name'],
+        'token_value' => $sqlTasksGlobalToken['token_value'],
+        'data_type' => $sqlTasksGlobalToken['data_type'],
+        'data_type_label' => $dataTypeLabel,
+        'description' => $sqlTasksGlobalToken['description'],
       ];
     }
 

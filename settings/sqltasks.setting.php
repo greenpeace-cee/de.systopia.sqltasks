@@ -1,5 +1,5 @@
 <?php
-
+// TODO: remove after migration on settings
 return [
   'sqltasks_global_tokens' => [
     'name'        => 'sqltasks_global_tokens',

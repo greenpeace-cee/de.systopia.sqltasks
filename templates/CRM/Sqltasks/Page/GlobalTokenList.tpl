@@ -29,6 +29,12 @@
               {ts}Value{/ts}
             </th>
             <th>
+              {ts}Data Type{/ts}
+            </th>
+            <th>
+              {ts}description{/ts}
+            </th>
+            <th>
               {ts}Actions{/ts}
             </th>
           </tr>
@@ -36,10 +42,16 @@
           {foreach from=$globalTokens item=globalToken}
             <tr class="stgt__token-row" data-token-id="{$globalToken.id}">
               <td>
-                {$globalToken.name}
+                {$globalToken.token_name}
               </td>
               <td>
-                {$globalToken.value}
+                {$globalToken.token_value}
+              </td>
+              <td>
+                <div>{$globalToken.data_type_label}<small> [{$globalToken.data_type}]</small></div>
+              </td>
+              <td>
+                {$globalToken.description}
               </td>
               <td>
                 <div class="st__flex st__gap-10 st__width-250">
@@ -77,8 +89,12 @@
         CRM.api4('SqlTasksGlobalToken', 'delete', {
           where: [["id", "=", tokenId]]
         }).then(function(results) {
-          CRM.alert(ts('Global token successfully deleted!'), ts("Deleting global token"), "success");
-          tokenRow.remove();
+          if (results.count > 0) {
+            CRM.alert(ts('Global token successfully deleted!'), ts("Deleting global token"), "success");
+            tokenRow.remove();
+          } else {
+            CRM.alert('Something went wrong', ts("Error deleting global token"), "error");
+          }
         }, function(failure) {
           CRM.alert(failure, ts("Error deleting global token"), "error");
         });
