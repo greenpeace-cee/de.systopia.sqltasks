@@ -1,5 +1,6 @@
 <?php
 
+use Civi\Api4;
 use Civi\Utils\Sqltasks\Settings;
 // phpcs:disable
 use CRM_Sqltasks_ExtensionUtil as E;
@@ -142,10 +143,11 @@ class CRM_Sqltasks_BAO_SqlTask extends CRM_Sqltasks_DAO_SqlTask {
     // Commit any pending transactions to ensure consistent behaviour
     CRM_Core_DAO::executeQuery("COMMIT");
 
-    $this->updateAttributes([
-      'last_execution' => date('Y-m-d H:i:s'),
-      'running_since'  => date('Y-m-d H:i:s'),
-    ], [ 'update_mod_timestamp' => FALSE ]);
+    Api4\SqlTask::update(FALSE)
+      ->addWhere('id', '=', $this->id)
+      ->addValue('last_execution', date('Y-m-d H:i:s'))
+      ->addValue('running_since', date('Y-m-d H:i:s'))
+      ->execute();
 
     $actions = CRM_Sqltasks_Action::getAllActiveActions($this);
 
@@ -192,10 +194,11 @@ class CRM_Sqltasks_BAO_SqlTask extends CRM_Sqltasks_DAO_SqlTask {
     $execution->logInfo("Finished task execution.");
     $execution->stop();
 
-    $this->updateAttributes([
-      'last_runtime'  => $execution->runtime,
-      'running_since' => NULL,
-    ], [ 'update_mod_timestamp' => FALSE ]);
+    Api4\SqlTask::update(FALSE)
+      ->addWhere('id', '=', $this->id)
+      ->addValue('last_runtime', $execution->runtime)
+      ->addValue('running_since', NULL)
+      ->execute();
 
     if (!$this->parallelExecAllowed()) {
       $lock->release();
