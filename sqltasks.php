@@ -15,7 +15,6 @@
 
 require_once 'sqltasks.civix.php';
 require_once 'CRM/Sqltasks/Config.php';
-use Civi\Api4;
 use CRM_Sqltasks_ExtensionUtil as E;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 
@@ -41,36 +40,20 @@ function sqltasks_civicrm_config(&$config) {
     );
 
     if ($match_result !== 1) return;
-
-    $task_class = new class($matches['task_id']) extends Civi\Sqltasks\Actions\RunSQLTask {
-      private static $inputSpec;
-      private static $taskId;
-
-      public function __construct($task_id = NULL) {
-        if (isset($task_id)) {
-          self::$taskId = $task_id;
-
-          $task = Api4\SqlTask::get(FALSE)
-            ->addSelect('input_spec')
-            ->addWhere('id', '=', $task_id)
-            ->setLimit(1)
-            ->execute()
-            ->first();
-
-          self::$inputSpec = json_decode($task['input_spec'], TRUE);
-        }
-      }
-
-      public function getTaskId() {
-        return self::$taskId;
-      }
-
-      public function getInputSpec() {
-        return self::$inputSpec;
-      }
-    };
-
-    class_alias(get_class($task_class), $class_name, FALSE);
+    $smarty = CRM_Core_Smarty::singleton();
+    $smarty->pushScope([
+      'id' => $matches['task_id']
+    ]);
+    $class_def = $smarty->fetch('Civi/Sqltasks/Actions/RunSQLTask.tpl');
+    /*
+     *  ___  ___  _ __ _ __ _   _
+     * / __|/ _ \| '__| '__| | | |
+     * \__ \ (_) | |  | |  | |_| |
+     * |___/\___/|_|  |_|   \__, |
+     *                       __/ |
+     *                      |___/
+     */
+    eval($class_def);
   });
 }
 
