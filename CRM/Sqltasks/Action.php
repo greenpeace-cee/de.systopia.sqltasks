@@ -198,7 +198,7 @@ abstract class CRM_Sqltasks_Action {
         }
 
         case 'config': {
-          $token_value = (CRM_Sqltasks_GlobalToken::singleton())->getValue($token_name);
+          $token_value = CRM_Sqltasks_BAO_SqlTasksGlobalToken::getTokenValue($token_name, $token_prop);
           break;
         }
       }

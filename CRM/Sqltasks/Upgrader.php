@@ -13,6 +13,7 @@
 | written permission from the original author(s).        |
 +--------------------------------------------------------*/
 
+use Civi\Sqltasks\Migration\SqlTasksGlobalTokenMigration;
 use CRM_Sqltasks_ExtensionUtil as E;
 
 /**
@@ -529,4 +530,17 @@ class CRM_Sqltasks_Upgrader extends CRM_Extension_Upgrader_Base {
       $logging->fixSchemaDifferences();
       return TRUE;
     }
+
+    /**
+     * Migrate from ‘sqltasks_global_tokens’ setting to ‘SqlTasksGlobalToken’ entity.
+     */
+    public function upgrade_0340() {
+      $this->ctx->log->info("Migrate from ‘sqltasks_global_tokens’ setting to ‘SqlTasksGlobalToken’ entity.");
+
+      $migration = new SqlTasksGlobalTokenMigration();
+      $migration->up();
+
+      return TRUE;
+    }
+
 }

@@ -230,7 +230,7 @@ function _sqltasks_add_admin_items(&$menu, $path) {
   _sqltasks_civix_insert_navigation_menu($menu, $path . '/sqltasks_manage', array(
     'label'      => E::ts('Global Token Manager'),
     'name'       => 'global_token_manager',
-    'url'        => 'civicrm/sqltasks/global-token-manager',
+    'url'        => 'civicrm/sqltasks/global-token/list',
     'permission' => 'administer CiviCRM',
     'operator'   => 'OR',
     'separator'  => 0,

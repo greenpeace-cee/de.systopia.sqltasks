@@ -306,7 +306,10 @@ class CRM_Sqltasks_Action_APIv4CallTest extends CRM_Sqltasks_Action_AbstractActi
     ];
 
     $randomChars = bin2hex(random_bytes(8));
-    CRM_Sqltasks_GlobalToken::singleton()->setValue('random_chars', $randomChars);
+    CRM_Sqltasks_BAO_SqlTasksGlobalToken::create([
+      'token_value' => $randomChars,
+      'token_name' => 'random_chars',
+    ]);
 
     $config = [
       'version' => CRM_Sqltasks_Config_Format::CURRENT,
