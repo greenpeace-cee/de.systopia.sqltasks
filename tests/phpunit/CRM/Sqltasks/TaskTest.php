@@ -412,6 +412,38 @@ class CRM_Sqltasks_TaskTest extends CRM_Sqltasks_AbstractTaskTest {
     $this->assertFileEquals(__DIR__ . '/../../../fixtures/csvexport_input_val.csv', $tmp);
   }
 
+  public function testGlobalTokensWithJson() {
+    $tokenValue = '{"one":"first","two":"second"}';
+    CRM_Sqltasks_BAO_SqlTasksGlobalToken::create([
+      'token_value' => $tokenValue,
+      'token_name' => 'numbers',
+    ]);
+
+    $this->assertEquals(
+      CRM_Sqltasks_BAO_SqlTasksGlobalToken::getTokenValue('numbers', 'one'),
+      'first',
+      'Global Token should return correct value from json'
+    );
+
+    $this->assertEquals(
+      CRM_Sqltasks_BAO_SqlTasksGlobalToken::getTokenValue('numbers', 'two'),
+      'second',
+      'Global Token should return correct value from json'
+    );
+
+    $this->assertEquals(
+      CRM_Sqltasks_BAO_SqlTasksGlobalToken::getTokenValue('numbers', 'not_exist_json_key'),
+      '',
+      'Global Token should return empty string when json key does not exist'
+    );
+
+    $this->assertEquals(
+      CRM_Sqltasks_BAO_SqlTasksGlobalToken::getTokenValue('numbers'),
+      $tokenValue,
+      'Global Token should return all string when json key does not provide'
+    );
+  }
+
   /**
    * Test that concurrent changes of task configurations are detected
    */

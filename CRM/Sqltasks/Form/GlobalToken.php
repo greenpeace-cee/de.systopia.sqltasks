@@ -43,6 +43,10 @@ class CRM_Sqltasks_Form_GlobalToken extends CRM_Core_Form {
   public static function validateTokenValue($fields) {
     $errors = [];
 
+    if (empty($fields['id']) && CRM_Sqltasks_BAO_SqlTasksGlobalToken::isTokenExist($fields['token_name'])) {
+      $errors['token_name'] = 'Token name already exists';
+    }
+
     if (isset($fields['data_type'])) {
       $dataTypeName = CRM_Sqltasks_BAO_SqlTasksGlobalToken::getDataTypeName($fields['data_type']);
       $tokenValue = $fields['token_value'];
@@ -67,12 +71,27 @@ class CRM_Sqltasks_Form_GlobalToken extends CRM_Core_Form {
             break;
 
           case 'datetime':
-            $dateTameErrorMessage = 'Value must be a datetime(Y-m-d H:i:s). Example: 2025-11-01 22:55:44';
+            $dateTameErrorMessage = 'Value must be a datetime(Y-m-d H:i:s). Example: 2025-11-21 22:55:44';
 
             if (is_string($tokenValue)) {
               $dateTime = DateTime::createFromFormat('Y-m-d H:i:s', $tokenValue);
 
               if (empty($dateTime) || $dateTime->format('Y-m-d H:i:s') !== $tokenValue) {
+                $errors['token_value'] = $dateTameErrorMessage;
+              }
+            } else {
+              $errors['token_value'] = $dateTameErrorMessage;
+            }
+
+            break;
+
+          case 'date':
+            $dateTameErrorMessage = 'Value must be a date(Y-m-d). Example: 2025-11-21';
+
+            if (is_string($tokenValue)) {
+              $dateTime = DateTime::createFromFormat('Y-m-d', $tokenValue);
+
+              if (empty($dateTime) || $dateTime->format('Y-m-d') !== $tokenValue) {
                 $errors['token_value'] = $dateTameErrorMessage;
               }
             } else {
@@ -89,18 +108,20 @@ class CRM_Sqltasks_Form_GlobalToken extends CRM_Core_Form {
             break;
 
           case 'json':
+            $exampleMessage = ' Example: {"fruit":"apple","vegetable":"potato"}';
+            $exampleMessage .= ' You can access: {config.put_current_token_name_here.fruit} {config.put_current_token_name_here.vegetable}';
             if (is_string($tokenValue)) {
               json_decode($tokenValue);
               if (!(json_last_error() === JSON_ERROR_NONE)) {
-                $errors['token_value'] = 'Value must be a json';
+                $errors['token_value'] = 'Value must be a JSON.'. $exampleMessage;
               }
             } else {
-              $errors['token_value'] = 'Value must be a json';
+              $errors['token_value'] = 'Value must be a JSON.'. $exampleMessage;
             }
             break;
 
           default:
-            $errors['data_type'] = 'Unknown data type';
+            $errors['data_type'] = 'Unknown data type.';
       }
     }
 
@@ -112,12 +133,12 @@ class CRM_Sqltasks_Form_GlobalToken extends CRM_Core_Form {
   }
 
   public function buildQuickForm() {
-    $dataTypeOptions = CRM_Sqltasks_BAO_SqlTasksGlobalToken::getTokenDataTypeOptions();
+    $dataTypeOptions = CRM_Sqltasks_BAO_SqlTasksGlobalToken::getTokenDataTypeSelect2Options();
 
     $this->add('hidden', 'id', $this->tokenId);
     $this->add('text', 'token_name', E::ts('Token name'), ['size' => 255], TRUE);
-    $this->add('text', 'token_value', E::ts('Token value'), ['size' => 255], TRUE);
-    $this->add('select', 'data_type', ts('Data type'), $dataTypeOptions, true, ['class' => 'huge']);
+    $this->add('textarea', 'token_value', E::ts('Token value'), ['rows' => 4, 'cols' => 50], TRUE);
+    $this->add('select2', 'data_type', ts('Data type'), $dataTypeOptions, true, ['class' => 'huge']);
     $this->add('textarea', 'description', E::ts('Description'), ['rows' => 4, 'cols' => 50]);
 
     $buttonName = '';

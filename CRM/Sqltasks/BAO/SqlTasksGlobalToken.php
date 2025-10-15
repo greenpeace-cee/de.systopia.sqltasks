@@ -20,13 +20,24 @@ class CRM_Sqltasks_BAO_SqlTasksGlobalToken extends CRM_Sqltasks_DAO_SqlTasksGlob
     return false;
   }
 
-  public static function getTokenValue($tokenName): string {
+  public static function getTokenValue($tokenName, $jsonKey = null): string {
     $sqlTasksGlobalTokens = SqlTasksGlobalToken::get(false)
       ->addWhere('token_name', '=', $tokenName)
       ->setLimit(1)
       ->execute();
 
     foreach ($sqlTasksGlobalTokens as $sqlTasksGlobalToken) {
+      if (!empty($jsonKey)) {
+        $decodedValue = json_decode($sqlTasksGlobalToken['token_value'], true);
+        if (!(json_last_error() === JSON_ERROR_NONE)) {
+          return '';
+        }
+
+        if (isset($decodedValue[$jsonKey])) {
+          return $decodedValue[$jsonKey];
+        }
+      }
+
       return $sqlTasksGlobalToken['token_value'];
     }
 
@@ -54,6 +65,22 @@ class CRM_Sqltasks_BAO_SqlTasksGlobalToken extends CRM_Sqltasks_DAO_SqlTasksGlob
 
     foreach ($optionValues as $optionValue) {
       $options[$optionValue['value']] = $optionValue['label'];
+    }
+
+    return $options;
+  }
+
+  public static function getTokenDataTypeSelect2Options(): array {
+    $options = [];
+    $optionValues = OptionValue::get(false)
+      ->addWhere('option_group_id:name', '=', 'sqltasks_global_token_data_type')
+      ->execute();
+
+    foreach ($optionValues as $optionValue) {
+      $options[] = [
+        'id' => $optionValue['value'],
+        'label' => $optionValue['label'],
+      ];
     }
 
     return $options;
