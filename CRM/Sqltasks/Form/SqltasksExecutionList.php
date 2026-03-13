@@ -52,6 +52,7 @@ class CRM_Sqltasks_Form_SqltasksExecutionList extends CRM_Core_Form {
     $this->addButtons([['type' => 'submit', 'name' => E::ts('Submit'), 'isDefault' => TRUE]]);
 
     CRM_Core_Resources::singleton()->addStyleFile('de.systopia.sqltasks', 'css/sqlTaskGeneral.css');
+    CRM_Core_Resources::singleton()->addStyleFile('de.systopia.sqltasks', 'css/sqltasksExecution.css');
     CRM_Core_Resources::singleton()->addScriptFile('de.systopia.sqltasks', 'js/AddBodyClass.js', 1000, 'html-header');
   }
 

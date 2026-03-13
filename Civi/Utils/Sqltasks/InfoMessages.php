@@ -5,6 +5,7 @@ namespace Civi\Utils\Sqltasks;
 use Civi;
 use Civi\Utils\CiviCRM_API3_Exception;
 use CRM_Utils_System;
+use CRM_Sqltasks_ExtensionUtil as E;
 
 class InfoMessages {
 
@@ -17,6 +18,7 @@ class InfoMessages {
    */
   public function getAll() {
     $this->prepareDispatcherMessages();
+    $this->addMessage($this->getCautionMessage(), 'help');
 
     return $this->infoMessages;
   }
@@ -29,7 +31,7 @@ class InfoMessages {
     }
 
     if ($dispatcherData['is_active'] != 1) {
-      $this->addMessage('The dispatcher is currently <strong>disabled</strong>, none of the tasks will be executed automatically.');
+      $this->addMessage('The dispatcher is currently <strong>disabled</strong>, none of the tasks will be executed automatically.', 'warning');
       return;
     }
 
@@ -47,15 +49,15 @@ class InfoMessages {
       $message = 'The dispatcher (and therefore all active tasks) will be triggered <strong>with every cron-run</strong>.';
       $message .= 'Ask your administrator how often that is, ';
       $message .= 'in order to know the effective maximum frequency these tasks are being executed with.';
-      $this->addMessage($message);
+      $this->addMessage($message, 'success');
     } elseif ($dispatcherData['run_frequency'] === 'Daily') {
       $message = 'The dispatcher is run <strong>every day</strong> after midnight.';
       $message .= 'This is effectively the maximum frequency these tasks are being executed with.';
-      $this->addMessage($message);
+      $this->addMessage($message, 'success');
     } elseif ($dispatcherData['run_frequency'] === 'Hourly') {
       $message = 'The dispatcher is run <strong>every hour</strong> on the hour.';
       $message .= 'This is effectively the maximum frequency these tasks are being executed with.';
-      $this->addMessage($message);
+      $this->addMessage($message, 'success');
     } else {
       $this->addMessage('Unexpected run frequency: ' . $dispatcherData['run_frequency'], 'error');
     }
@@ -80,15 +82,44 @@ class InfoMessages {
     return null;
   }
 
+  private function getCautionMessage() {
+    $message = '<strong>' . E::ts('Caution!') . '</strong>';
+    $message .= E::ts('Be aware that these tasks can execute arbitrary SQL statements, which');
+    $message .= '<i>' . E::ts('can potentially destroy your database') . '</i>';
+    $message .= E::ts('Only use this if you really know what you\'re doing, and always keep a backup of your database before experimenting.', ['domain' => 'de.systopia.sqltasks']);
+
+    return $message;
+  }
+
   /**
    * @param $message
    * @param $type
    * @return void
    */
   private function addMessage($message, $type = 'info') {
+    switch ($type) {
+      case "help":
+        $classes = 'help';
+        break;
+      case "info":
+        $classes = 'alert alert-info';
+        break;
+      case "error":
+        $classes = 'alert alert-danger';
+        break;
+      case "warning":
+        $classes = 'alert alert-warning';
+        break;
+      case "success":
+        $classes = 'alert alert-success';
+        break;
+      default:
+          $classes = 'help';
+    }
+
     $this->infoMessages[] = [
         'text' => $message,
-        'type' => $type,
+        'classes' => $classes,
     ];
   }
 

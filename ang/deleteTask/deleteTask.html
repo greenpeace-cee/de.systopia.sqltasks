@@ -1,9 +1,21 @@
-<div class="crm-form-block">
-  <div class="sql-task__form-wrap">
-    <h1 crm-page-title>{{ts('Delete Task') + ' "' + taskData.name + '"'}}</h1>
-    <div>
+<div id="bootstrap-theme">
+  <h1 crm-page-title>{{ts('Delete Task') + ' "' + taskData.name + '"'}}</h1>
 
-      <div class="sql-task-delete-page-content">
+  <div class="crm-form-block">
+    <div class="st__flex st__gap-10 st__pb-10">
+      <a class="btn btn-secondary" ng-href="#/sqltasks/manage" title="{{ts('Back to Manager')}}">
+        <i class="crm-i fa-list"></i>
+        <span>{{ts('Back to Manager')}}</span>
+      </a>
+
+      <a class="btn btn-secondary" ng-href="#/sqltasks/configure/{{taskId}}" title="{{ts('Configure task')}}" ng-show="task !== null">
+        <i class="crm-i fa-pencil"></i>
+        <span>{{ts('Configure task')}}</span>
+      </a>
+    </div>
+
+    <div>
+      <div class="help st__max-width-800">
         <p ng-if="taskData">
           {{ts('You are about to delete plugin')}} "{{taskData.name}}" [{{taskData.id}}]. {{ts('You should consider simply
           disabling it, since all data
@@ -14,20 +26,11 @@
         </p>
       </div>
 
-      <div class="sql-task__button-wrap">
-        <a class="sql-task__button sql-task__search-button crm-form-submit default crm-button crm-hover-button"
-           ng-click="onTaskDelete()"
-           href="javascript:;" title="{{ts('Delete')}}">
-          <span class="crm-i fa-trash"></span>
+      <div class="st__flex st__gap-10">
+        <button class="btn btn-primary" ng-click="onTaskDelete()" title="{{ts('Delete')}}">
+          <i class="crm-i fa-trash"></i>
           <span>{{ts('Delete')}}</span>
-        </a>
-
-        <a class="sql-task__button sql-task__search-button crm-form-submit default crm-button crm-hover-button"
-           ng-click="onBackPress()"
-           href="javascript:;" title="{{ts('Back')}}">
-          <span class="crm-i fa-list"></span>
-          <span>{{ts('Back')}}</span>
-        </a>
+        </button>
       </div>
     </div>
   </div>

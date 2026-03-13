@@ -1,0 +1,49 @@
+/*
+    Styles for all sqltask pages
+    Prefix: stgt__
+    (Sql Tasks Global Token)
+*/
+
+.stgt__view-mode {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stgt__edit-mode {
+  display: none;
+  align-items: center;
+  gap: 10px;
+}
+
+.stgt__row.edit-mode .stgt__edit-mode {
+  display: flex;
+}
+
+.stgt__row.edit-mode .stgt__view-mode {
+  display: none;
+}
+
+.stgt__table-template {
+  display: none !important;
+}
+
+.stgt__large-column {
+  width: 50%;
+}
+
+.stgt__token-value {
+  max-width: 600px;
+}
+
+.stgt__token-name {
+  max-width: 500px;
+}
+
+.stgt__page .stgt__add-new-token-row .stgt__create-token-value-input,
+.stgt__age .stgt__add-new-token-row .stgt__create-token-name-input ,
+.stgt__page .stgt__row .stgt__edit-token-name-input ,
+.stgt__page .stgt__row .stgt__edit-token-value-input {
+  width: 100%;
+  max-width: 100%;
+}
