@@ -14,6 +14,12 @@
 +--------------------------------------------------------*/
 
 require_once 'sqltasks.civix.php';
+$autoload = __DIR__ . '/vendor/autoload.php';
+
+if (file_exists($autoload)) {
+  require_once $autoload;
+}
+
 require_once 'CRM/Sqltasks/Config.php';
 use Civi\Api4;
 use CRM_Sqltasks_ExtensionUtil as E;
