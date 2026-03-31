@@ -405,6 +405,8 @@ class CRM_Sqltasks_BAO_SqlTask extends CRM_Sqltasks_DAO_SqlTask {
     }
 
     foreach ($tasks as $task) {
+      Civi::settings()->loadValues();
+
       if (
         Settings::isDispatcherDisabled()
         || !is_null($task->archive_date)
