@@ -126,7 +126,9 @@ class CRM_Sqltasks_BAO_SqlTask extends CRM_Sqltasks_DAO_SqlTask {
       return $execution->result();
     }
 
-    if (!$this->parallelExecAllowed()) {
+    $lock = NULL;
+
+    if (!$parallel_exec_allowed) {
       $lock = $this->acquireLock();
 
       if (!$lock->isAcquired()) {
@@ -197,7 +199,7 @@ class CRM_Sqltasks_BAO_SqlTask extends CRM_Sqltasks_DAO_SqlTask {
       'running_since' => NULL,
     ], [ 'update_mod_timestamp' => FALSE ]);
 
-    if (!$this->parallelExecAllowed()) {
+    if (!is_null($lock)) {
       $lock->release();
     }
 
