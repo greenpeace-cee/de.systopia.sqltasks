@@ -72,7 +72,7 @@ class CRM_Sqltasks_Action_RunSQL extends CRM_Sqltasks_Action {
     $this->resetHasExecuted();
     try {
       // prepare
-      $script = html_entity_decode($this->getConfigValue('script'));
+      $script = $this->getConfigValue('script');
       if (!empty($this->context['input_val'])) {
         $ctx_val = $this->context['input_val'];
 

@@ -75,7 +75,7 @@ class CRM_Sqltasks_Action_RunPHP extends CRM_Sqltasks_Action {
     // has_executed is always false for RunSQL
     $this->resetHasExecuted();
     try {
-      eval(html_entity_decode($this->getConfigValue('php_code')));
+      eval($this->getConfigValue('php_code'));
     }
     catch (Exception $e) {
       $this->log("PHP failed: " . $e->getMessage() . " - " . $e->getTraceAsString());

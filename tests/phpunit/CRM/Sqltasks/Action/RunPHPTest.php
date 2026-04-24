@@ -25,7 +25,8 @@ class CRM_Sqltasks_Action_RunPHPTest extends CRM_Sqltasks_Action_AbstractActionT
         [
           'type'     => 'CRM_Sqltasks_Action_RunPHP',
           'enabled'  => TRUE,
-          'php_code' => "CRM_Core_DAO::executeQuery('TRUNCATE TABLE tmp_test_action_php');"
+          // using &gt; to test HTML-decoding specialness
+          'php_code' => "if (2 &gt; 1) { CRM_Core_DAO::executeQuery('TRUNCATE TABLE tmp_test_action_php'); }"
         ],
       ]
     ];
