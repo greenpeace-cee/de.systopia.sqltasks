@@ -356,7 +356,7 @@ class CRM_Sqltasks_Action_SegmentationAssign extends CRM_Sqltasks_Action {
     $campaign = civicrm_api3('Campaign', 'getsingle', array(
       'id'     => $campaign_id,
       'return' => 'id,status_id'));
-    if ($campaign['status_id'] == 1) {
+    if ($campaign['status_id'] ?? NULL == 1) {
       return FALSE;
     } else {
       civicrm_api3('Campaign', 'create', array(

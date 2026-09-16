@@ -41,7 +41,8 @@ class CRM_Sqltasks_Page_Mytasks extends CRM_Core_Page {
 
     $this->assign('tasks', $allowed_tasks);
 
-    CRM_Core_Resources::singleton()->addStyleFile('de.systopia.sqltasks', 'css/sqltasks.css');
+    CRM_Core_Resources::singleton()->addStyleFile('de.systopia.sqltasks', 'css/sqlTaskGeneral.css');
+    CRM_Core_Resources::singleton()->addStyleFile('de.systopia.sqltasks', 'css/myTasks.css');
 
     parent::run();
   }

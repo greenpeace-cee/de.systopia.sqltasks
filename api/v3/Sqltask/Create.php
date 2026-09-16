@@ -10,6 +10,7 @@
  */
 function civicrm_api3_sqltask_create($params) {
   $task = new CRM_Sqltasks_BAO_SqlTask();
+  $isCreateAction = empty($params['id']);
 
   // Load task data if it is an update
   if (!empty($params['id'])) {
@@ -48,8 +49,17 @@ function civicrm_api3_sqltask_create($params) {
     unset($params['last_modified']);
   }
 
+  if ($isCreateAction) {
+    $taskOrder = CRM_Sqltasks_BAO_SqlTask::getTaskOrder();
+  }
+
   // Update the task
   $task->updateAttributes($params);
+
+  if ($isCreateAction) {
+    array_unshift($taskOrder , $task->id);
+    CRM_Sqltasks_BAO_SqlTask::updateTaskOrder($taskOrder);
+  }
 
   return civicrm_api3_create_success($task->exportData());
 }
