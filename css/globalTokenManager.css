@@ -4,10 +4,40 @@
     (Sql Tasks Global Token)
 */
 
-input {
-  display: block !important;
-  max-width: 100% !important;
-  box-sizing: border-box !important;
+.stgt__view-mode {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stgt__edit-mode {
+  display: none;
+  align-items: center;
+  gap: 10px;
+}
+
+.stgt__row.edit-mode .stgt__edit-mode {
+  display: flex;
+}
+
+.stgt__row.edit-mode .stgt__view-mode {
+  display: none;
+}
+
+.stgt__table-template {
+  display: none !important;
+}
+
+.stgt__large-column {
+  width: 50%;
+}
+
+.stgt__token-value {
+  max-width: 600px;
+}
+
+.stgt__token-name {
+  max-width: 500px;
 }
 
 .stgt__page .stgt__add-new-token-row .stgt__create-token-value-input,

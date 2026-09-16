@@ -43,6 +43,8 @@ abstract class CRM_Sqltasks_Action {
    */
   public function __construct(CRM_Sqltasks_BAO_SqlTask $task, array $config) {
     $this->task = $task;
+    // undo what CRM_Utils_API_HTMLInputCoder does to the config when it's persisted to DB
+    CRM_Utils_API_HTMLInputCoder::singleton()->decodeOutput($config);
     $this->config = $config;
     $this->has_executed = TRUE;
   }

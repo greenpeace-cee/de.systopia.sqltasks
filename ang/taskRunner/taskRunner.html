@@ -1,124 +1,84 @@
-<div class="str__sql-task-runner">
-  <div class="crm-form-block">
-      <div class="str__content-wrap">
-          <h1 crm-page-title>{{ts('Run SQL task:')}} {{task.name}}</h1>
+<div id="bootstrap-theme">
+  <h1 crm-page-title>{{ts('Run SQL task:')}} {{task.name}}</h1>
 
-      <div class="str__loader" ng-if="state === 'loading'">
-        loading ...
+  <div class="crm-form-block">
+    <div class="st__flex st__gap-10 st__pb-10">
+      <a class="btn btn-secondary" ng-href="#/sqltasks/manage" title="{{ts('Back to Manager')}}">
+        <i class="crm-i fa-list"></i>
+        <span>{{ts('Back to Manager')}}</span>
+      </a>
+
+      <a class="btn btn-secondary" ng-href="#/sqltasks/configure/{{taskId}}" title="{{ts('Configure task')}}" ng-show="task !== null">
+        <i class="crm-i fa-pencil"></i>
+        <span>{{ts('Configure task')}}</span>
+      </a>
+    </div>
+
+    <div class="st__max-width-800">
+      <div ng-if="state === 'loading'">
+        {{ts('loading ...')}}
       </div>
 
-      <div class="help str__no-margin" ng-if="state === 'loaded' || state === 'done'">
+      <div class="help st__m-0" ng-if="state === 'loaded' || state === 'done'">
         <span ng-if="state === 'loaded'">
           {{ts('Are you sure you want to execute "%1"?', {1: task.name})}}
         </span>
-
         <span ng-if="state === 'done'">
           {{ts('Task "%1" has been executed. Please use "Run again" below if you want to execute again.', {1: task.name})}}
         </span>
       </div>
 
-      <div
-        class="help str__no-margin"
-        ng-if="state === 'running'"
-        style="background-color:#ece7bc; border:solid 1px #cbbc44">
+      <div class="help st__m-0" ng-if="state === 'running'"
+           style="background-color:#ece7bc; border:solid 1px #cbbc44">
         <span>{{ts('Task "%1" is running ...', {1: task.name})}}</span>
       </div>
 
-      <div class="str__errors crm-error" ng-if="state === 'error'">
+      <div class="crm-error" ng-if="state === 'error'">
         <span ng-if="errors.length == 1">{{errors[0].message}}</span>
         <ul ng-if="errors.length > 1">
           <li ng-repeat="error in errors">{{error.message}}</li>
         </ul>
       </div>
 
-      <div class="str__input-value-wrap" ng-show="inputRequired">
+      <div class="st__p-20" ng-show="inputRequired">
         <div ng-show="inputParams.length < 1">
           <label>
             <span>{{ts('Input value:')}}</span>
             <span class="crm-marker" title="This field is required.">*</span>
             <input type="text" ng-model="inputValue">
           </label>
-
           <p>{{ts('This value will be passed to the @input variable in task.')}}</p>
         </div>
 
         <div ng-show="inputParams.length > 0">
           <div class="crm-section" ng-repeat="param in inputParams">
             <label>{{param.name}}:</label>
-
-            <input
-              class="crm-form-text"
-              id="param-{{param.name}}-string"
-              ng-model="inputParams[$index].value_string"
-              ng-show="!param.multiple && param.type === 'String'"
-              type="text"
-            />
-
-            <input
-              class="crm-form-text"
-              id="param-{{param.name}}-number"
-              ng-model="inputParams[$index].value_float"
-              ng-show="!param.multiple && param.type === 'Float'"
-              type="number"
-            />
-
-            <input
-              class="crm-form-checkbox"
-              id="param-{{param.name}}-boolean"
-              ng-model="inputParams[$index].value_boolean"
-              ng-show="!param.multiple && param.type === 'Boolean'"
-              type="checkbox"
-            />
-
-            <input
-              class="crm-form-text"
-              id="param-{{param.name}}-multiple"
-              ng-model="inputParams[$index].value_multiple"
-              ng-show="param.multiple"
-              type="text"
-            />
+            <input class="crm-form-text" id="param-{{param.name}}-string" ng-model="inputParams[$index].value_string"
+                   ng-show="!param.multiple && param.type === 'String'" type="text"/>
+            <input class="crm-form-text" id="param-{{param.name}}-number" ng-model="inputParams[$index].value_float"
+                   ng-show="!param.multiple && param.type === 'Float'" type="number"/>
+            <input class="crm-form-checkbox" id="param-{{param.name}}-boolean"
+                   ng-model="inputParams[$index].value_boolean" ng-show="!param.multiple && param.type === 'Boolean'" type="checkbox"/>
+            <input class="crm-form-text" id="param-{{param.name}}-multiple" ng-model="inputParams[$index].value_multiple"
+                   ng-show="param.multiple" type="text"/>
           </div>
         </div>
       </div>
 
-      <div class="str__logs" ng-if="logs.length > 0">
-        <div>
-          <p>{{ts('Logs:')}}</p>
-          <ul>
-            <li ng-repeat="log in logs track by $index">{{log}}</li>
-          </ul>
-        </div>
+      <div class="st__pr-10" ng-if="logs.length > 0">
+        <p>{{ts('Logs:')}}</p>
+        <ul>
+          <li ng-repeat="log in logs track by $index">{{log}}</li>
+        </ul>
       </div>
 
-      <div class="str__buttons-wrap crm-submit-buttons">
-        <a
-          class="button"
-          crm-icon="fa-list"
-          ng-href="#/sqltasks/manage"
-          title="{{ts('Back to Manager')}}">
-          {{ts('Back to Manager')}}
-        </a>
-
-        <a
-          class="button"
-          crm-icon="fa-play-circle"
-          ng-click='runTask()'
-          ng-disabled="!allowedToRun()"
-          ng-show="task !== null"
-          title="{{runButtonLabel}}">
-          {{runButtonLabel}}
-        </a>
-
-        <a
-          class="button"
-          crm-icon="fa-pencil"
-          ng-href="#/sqltasks/configure/{{taskId}}"
-          ng-show="task !== null"
-          title="{{ts('Configure task')}}">
-          {{ts('Configure task')}}
-        </a>
+      <div class="st__flex st__gap-10 st__pt-10">
+        <button class="btn btn-primary" ng-click='runTask()'
+                ng-disabled="!allowedToRun()" ng-show="task !== null" title="{{runButtonLabel}}">
+          <i class="crm-i fa-play-circle"></i>
+          <span>{{runButtonLabel}}</span>
+        </button>
       </div>
     </div>
   </div>
 </div>
-
