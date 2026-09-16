@@ -1,0 +1,26 @@
+div#sqltasks-templates *.hidden {
+  display: none;
+}
+
+div#sqltasks-templates td:nth-child(1) {
+  color: #0071bd;
+}
+
+div#sqltasks-templates td:nth-child(2) { min-width: 30px }
+div#sqltasks-templates td:nth-child(3) { min-width: 100px }
+div#sqltasks-templates td:nth-child(4) { min-width: 200px }
+div#sqltasks-templates td:nth-child(5) { min-width: 140px }
+div#sqltasks-templates td:nth-child(7) { min-width: 400px }
+
+div#sqltasks-templates td:last-child {
+  border:none;
+}
+
+div#sqltasks-templates form#new-template {
+  max-width: 400px;
+}
+
+div#sqltasks-templates form#new-template div.form-field {
+  display: flex;
+  flex-direction: column;
+}

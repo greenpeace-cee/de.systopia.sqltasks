@@ -126,7 +126,9 @@ class CRM_Sqltasks_BAO_SqlTask extends CRM_Sqltasks_DAO_SqlTask {
       return $execution->result();
     }
 
-    if (!$this->parallelExecAllowed()) {
+    $lock = NULL;
+
+    if (!$parallel_exec_allowed) {
       $lock = $this->acquireLock();
 
       if (!$lock->isAcquired()) {
@@ -197,7 +199,7 @@ class CRM_Sqltasks_BAO_SqlTask extends CRM_Sqltasks_DAO_SqlTask {
       'running_since' => NULL,
     ], [ 'update_mod_timestamp' => FALSE ]);
 
-    if (!$this->parallelExecAllowed()) {
+    if (!is_null($lock)) {
       $lock->release();
     }
 
@@ -329,7 +331,7 @@ class CRM_Sqltasks_BAO_SqlTask extends CRM_Sqltasks_DAO_SqlTask {
 
       $call_task_actions = array_filter($config['actions'], fn ($action) =>
         $action['type'] === 'CRM_Sqltasks_Action_CallTask'
-        && in_array($task_id, $action['tasks'])
+        && in_array($task_id, $action['tasks'] ?? [])
       );
 
       if (empty($call_task_actions)) continue;
@@ -405,6 +407,8 @@ class CRM_Sqltasks_BAO_SqlTask extends CRM_Sqltasks_DAO_SqlTask {
     }
 
     foreach ($tasks as $task) {
+      Civi::settings()->loadValues();
+
       if (
         Settings::isDispatcherDisabled()
         || !is_null($task->archive_date)
