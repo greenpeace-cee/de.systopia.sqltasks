@@ -82,7 +82,7 @@ class CRM_Sqltasks_Action_RunSQL extends CRM_Sqltasks_Action {
 
         $script = "SET @input = '$input_val'; \r\n" . $script;
       }
-      CRM_Sqltasks_Utils::runSqlQuery($script);
+      CRM_Sqltasks_Utils::runSqlQuery($script, (bool) $this->getConfigValue('run_as_stored_procedure'));
     }
     catch (Exception $e) {
       $message = $e->getMessage();

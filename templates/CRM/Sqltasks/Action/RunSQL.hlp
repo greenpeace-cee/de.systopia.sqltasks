@@ -18,3 +18,7 @@
   <p>{ts domain="de.systopia.sqltasks"}{/ts}</p>
   <p>{ts domain="de.systopia.sqltasks"}We recommend developing complex SQL scripts in an external editor, and simply copy/pasting it here.{/ts}</p>
 {/htxt}
+
+{htxt id='id-run_as_stored_procedure'}
+  <p>{ts domain="de.systopia.sqltasks"}Enabling this option will create and execute a temporary stored procedure with the provided code. This allows usage of SQL language features such as for loops that are not available in regular SQL queries.{/ts}</p>
+{/htxt}
