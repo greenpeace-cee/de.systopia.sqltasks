@@ -26,6 +26,10 @@
   width: 250px;
 }
 
+.st__width-100-p {
+  width: 100% !important;
+}
+
 .st__max-width-800 {
   max-width: 800px;
 }

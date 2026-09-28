@@ -27,15 +27,19 @@ class CRM_Sqltasks_BAO_SqlTasksGlobalToken extends CRM_Sqltasks_DAO_SqlTasksGlob
       ->execute();
 
     foreach ($sqlTasksGlobalTokens as $sqlTasksGlobalToken) {
-      if (!empty($jsonKey)) {
-        $decodedValue = json_decode($sqlTasksGlobalToken['token_value'], true);
-        if (!(json_last_error() === JSON_ERROR_NONE)) {
-          return '';
+      if (!is_null($jsonKey)) {
+        if (!empty($jsonKey)) {
+          $decodedValue = json_decode($sqlTasksGlobalToken['token_value'], true);
+          if (!(json_last_error() === JSON_ERROR_NONE)) {
+            return '';
+          }
+
+          if (isset($decodedValue[$jsonKey])) {
+            return $decodedValue[$jsonKey];
+          }
         }
 
-        if (isset($decodedValue[$jsonKey])) {
-          return $decodedValue[$jsonKey];
-        }
+        return '';
       }
 
       return $sqlTasksGlobalToken['token_value'];

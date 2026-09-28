@@ -30,7 +30,6 @@ class CRM_Sqltasks_Form_GlobalToken extends CRM_Core_Form {
 
     CRM_Core_Resources::singleton()->addStyleFile('de.systopia.sqltasks', 'css/sqlTaskGeneral.css');
     CRM_Core_Resources::singleton()->addScriptFile('de.systopia.sqltasks', 'js/AddBodyClass.js', 1000, 'html-header');
-    CRM_Core_Resources::singleton()->addStyleFile('de.systopia.sqltasks', 'css/globalTokenManager.css');
 
     $this->controller->setDestination(CRM_Utils_System::url('civicrm/sqltasks/global-token', http_build_query([
       'action' => $this->action,
@@ -136,7 +135,7 @@ class CRM_Sqltasks_Form_GlobalToken extends CRM_Core_Form {
     $dataTypeOptions = CRM_Sqltasks_BAO_SqlTasksGlobalToken::getTokenDataTypeSelect2Options();
 
     $this->add('hidden', 'id', $this->tokenId);
-    $this->add('text', 'token_name', E::ts('Token name'), ['size' => 255], TRUE);
+    $this->add('text', 'token_name', E::ts('Token name'), ['size' => 255, 'class' => 'st__width-100-p'], TRUE);
     $this->add('textarea', 'token_value', E::ts('Token value'), ['rows' => 4, 'cols' => 50], TRUE);
     $this->add('select2', 'data_type', ts('Data type'), $dataTypeOptions, true, ['class' => 'huge']);
     $this->add('textarea', 'description', E::ts('Description'), ['rows' => 4, 'cols' => 50]);
