@@ -1,0 +1,107 @@
+<?php
+
+return [
+  [
+    'name'    => 'sqltasks_global_token_data_type',
+    'entity'  => 'OptionGroup',
+    'cleanup' => 'never',
+    'params'  => [
+      'version'   => 3,
+      'name'      => 'sqltasks_global_token_data_type',
+      'title'     => 'SqlTasks Global Token Data Type',
+      'data_type' => 'Integer',
+      'is_active' => 1,
+    ],
+  ],
+  [
+    'name'    => 'string',
+    'entity'  => 'OptionValue',
+    'cleanup' => 'never',
+    'params'  => [
+      'version'         => 3,
+      'option_group_id' => 'sqltasks_global_token_data_type',
+      'value'           => 1,
+      'name'            => 'string',
+      'label'           => 'String',
+      'is_active'       => 1,
+    ],
+  ],
+  [
+    'name'    => 'integer',
+    'entity'  => 'OptionValue',
+    'cleanup' => 'never',
+    'params'  => [
+      'version'         => 3,
+      'option_group_id' => 'sqltasks_global_token_data_type',
+      'value'           => 2,
+      'name'            => 'integer',
+      'label'           => 'Integer',
+      'is_active'       => 1,
+    ],
+  ],
+  [
+    'name'    => 'decimal',
+    'entity'  => 'OptionValue',
+    'cleanup' => 'never',
+    'params'  => [
+      'version'         => 3,
+      'option_group_id' => 'sqltasks_global_token_data_type',
+      'value'           => 3,
+      'name'            => 'decimal',
+      'label'           => 'Decimal',
+      'is_active'       => 1,
+    ],
+  ],
+  [
+    'name'    => 'datetime',
+    'entity'  => 'OptionValue',
+    'cleanup' => 'never',
+    'params'  => [
+      'version'         => 3,
+      'option_group_id' => 'sqltasks_global_token_data_type',
+      'value'           => 4,
+      'name'            => 'datetime',
+      'label'           => 'Datetime(Y-m-d H:i:s)',
+      'is_active'       => 1,
+    ],
+  ],
+  [
+    'name'    => 'date',
+    'entity'  => 'OptionValue',
+    'cleanup' => 'never',
+    'params'  => [
+      'version'         => 3,
+      'option_group_id' => 'sqltasks_global_token_data_type',
+      'value'           => 5,
+      'name'            => 'date',
+      'label'           => 'Date(Y-m-d)',
+      'is_active'       => 1,
+    ],
+  ],
+  [
+    'name'    => 'boolean',
+    'entity'  => 'OptionValue',
+    'cleanup' => 'never',
+    'params'  => [
+      'version'         => 3,
+      'option_group_id' => 'sqltasks_global_token_data_type',
+      'value'           => 6,
+      'name'            => 'boolean',
+      'label'           => 'Boolean',
+      'is_active'       => 1,
+    ],
+  ],
+  [
+    'name'    => 'json',
+    'entity'  => 'OptionValue',
+    'cleanup' => 'never',
+    'params'  => [
+      'version'         => 3,
+      'option_group_id' => 'sqltasks_global_token_data_type',
+      'value'           => 7,
+      'name'            => 'json',
+      'label'           => 'JSON',
+      'is_active'       => 1,
+    ],
+  ],
+];
