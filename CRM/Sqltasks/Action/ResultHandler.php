@@ -138,6 +138,7 @@ abstract class CRM_Sqltasks_Action_ResultHandler extends CRM_Sqltasks_Action {
     }
     if (!$should_run) {
       $this->log("Skipping Success Handler, actions didn't do anything");
+      $this->dropErrorTable();
       return;
     }
 
