@@ -13,6 +13,7 @@
 | written permission from the original author(s).        |
 +--------------------------------------------------------*/
 
+use Civi\Sqltasks\Migration\SqlTasksGlobalTokenMigration;
 use CRM_Sqltasks_ExtensionUtil as E;
 
 /**
@@ -29,6 +30,7 @@ class CRM_Sqltasks_Upgrader extends CRM_Extension_Upgrader_Base {
   public function install() {
     $this->executeSqlFile('sql/civicrm_sqltasks.sql');
     $this->executeSqlFile('sql/civicrm_sqltasks_template.sql');
+    $this->executeSqlFile('sql/civicrm_sqltasks_global_token.sql');
     $this->installDefaultTemplate();
 
     // update rebuild log tables
@@ -529,4 +531,23 @@ class CRM_Sqltasks_Upgrader extends CRM_Extension_Upgrader_Base {
       $logging->fixSchemaDifferences();
       return TRUE;
     }
+
+  public function upgrade_0350() {
+    $this->ctx->log->info("Creating table 'civicrm_sqltasks_global_token'");
+    $this->executeSqlFile('sql/civicrm_sqltasks_global_token.sql');
+    $logging = new CRM_Logging_Schema();
+    $logging->fixSchemaDifferences();
+
+    return TRUE;
+  }
+
+  public function upgrade_0360() {
+    $this->ctx->log->info("Migrate from ‘sqltasks_global_tokens’ setting to ‘SqlTasksGlobalToken’ entity.");
+
+    $migration = new SqlTasksGlobalTokenMigration();
+    $migration->up();
+
+    return TRUE;
+  }
+
 }

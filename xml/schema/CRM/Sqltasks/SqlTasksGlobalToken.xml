@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="iso-8859-1" ?>
+
+<table>
+  <base>CRM/Sqltasks</base>
+  <class>SqlTasksGlobalToken</class>
+  <name>civicrm_sqltasks_global_token</name>
+  <comment>SqlTasks Global Token</comment>
+  <log>true</log>
+
+  <field>
+    <name>id</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Unique SqlTasks GlobalToken ID</comment>
+    <html>
+      <type>Number</type>
+    </html>
+  </field>
+  <primaryKey>
+    <name>id</name>
+    <autoincrement>true</autoincrement>
+  </primaryKey>
+
+  <field>
+    <title>Token name</title>
+    <name>token_name</name>
+    <type>varchar</type>
+    <length>255</length>
+    <comment>token name</comment>
+    <required>true</required>
+  </field>
+
+
+  <field>
+    <title>Token data type</title>
+    <name>data_type</name>
+    <type>int unsigned</type>
+    <required>true</required>
+    <comment>Token data type</comment>
+    <default>1</default>
+    <pseudoconstant>
+      <optionGroupName>sqltasks_global_token_data_type</optionGroupName>
+    </pseudoconstant>
+    <html>
+      <type>Select</type>
+    </html>
+  </field>
+
+  <field>
+    <title>Token value</title>
+    <name>token_value</name>
+    <type>longtext</type>
+    <required>false</required>
+    <comment>Token value</comment>
+    <html>
+      <type>TextArea</type>
+      <rows>4</rows>
+      <cols>60</cols>
+    </html>
+  </field>
+
+  <field>
+    <title>Token description</title>
+    <name>description</name>
+    <type>text</type>
+    <required>false</required>
+    <comment>Token description</comment>
+    <html>
+      <type>TextArea</type>
+      <rows>4</rows>
+      <cols>60</cols>
+    </html>
+  </field>
+</table>
