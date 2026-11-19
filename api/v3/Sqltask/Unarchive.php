@@ -11,7 +11,7 @@ function civicrm_api3_sqltask_unarchive($params) {
   $task = CRM_Sqltasks_BAO_SqlTask::findById($params['id']);
   $task->unarchive();
 
-  return civicrm_api3_create_success($task->exportData());
+  return CRM_Sqltasks_Utils::createTaskApiSuccess($task->exportData());
 }
 
 /**
