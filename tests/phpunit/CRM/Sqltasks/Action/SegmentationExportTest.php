@@ -88,7 +88,7 @@ class CRM_Sqltasks_Action_SegmentationExportTest extends CRM_Sqltasks_Action_Abs
           'filename'       => basename($tmp),
           'path'           => dirname($tmp),
           'email'          => '',
-          'email_template' => '1',
+          'email_template' => $this->createMessageTemplate(),
           'upload'         => '',
         ],
         [

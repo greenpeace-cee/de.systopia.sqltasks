@@ -41,7 +41,7 @@ class CRM_Sqltasks_Action_ResultHandlerTest extends CRM_Sqltasks_Action_Abstract
           'type'           => 'CRM_Sqltasks_Action_SuccessHandler',
           'enabled'        => TRUE,
           'email'          => 'successhandler@example.com',
-          'email_template' => '1'
+          'email_template' => $this->createMessageTemplate(),
         ],
       ],
     ];
@@ -90,7 +90,7 @@ class CRM_Sqltasks_Action_ResultHandlerTest extends CRM_Sqltasks_Action_Abstract
           'type'           => 'CRM_Sqltasks_Action_ErrorHandler',
           'enabled'        => TRUE,
           'email'          => 'errorhandler@example.com',
-          'email_template' => '1'
+          'email_template' => $this->createMessageTemplate(),
         ],
       ],
     ];
