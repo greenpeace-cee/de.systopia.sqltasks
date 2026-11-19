@@ -29,7 +29,7 @@ class CRM_Sqltasks_Action_CSVExportTest extends CRM_Sqltasks_Action_AbstractActi
           'filename'       => basename($tmp),
           'path'           => dirname($tmp),
           'email'          => '',
-          'email_template' => '1',
+          'email_template' => $this->createMessageTemplate(),
           'upload'         => '',
         ],
         [
@@ -79,7 +79,7 @@ class CRM_Sqltasks_Action_CSVExportTest extends CRM_Sqltasks_Action_AbstractActi
             "filename"       => basename($outputFilename),
             "path"           => dirname($outputFilename),
             "email"          => "",
-            "email_template" => "1",
+            "email_template" => $this->createMessageTemplate(),
             "upload"         => "",
           ],
           [
