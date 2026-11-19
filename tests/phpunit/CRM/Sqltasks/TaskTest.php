@@ -229,6 +229,47 @@ class CRM_Sqltasks_TaskTest extends CRM_Sqltasks_AbstractTaskTest {
   }
 
   /**
+   * Test that the API returns scripts containing \x01 unchanged
+   */
+  public function testApiKeepsValueSeparator() {
+    $script = "SELECT REPLACE(x, '\x01', ',')";
+    $task = civicrm_api3('Sqltask', 'create', [
+      'config' => [
+        'version' => 2,
+        'actions' => [
+          [
+            'type'    => 'CRM_Sqltasks_Action_RunSQL',
+            'script'  => $script,
+            'enabled' => TRUE,
+          ],
+        ],
+      ],
+    ]);
+
+    $result = civicrm_api3('Sqltask', 'get', ['id' => $task['id']]);
+    $this->assertSame($script, $result['values']['config']['actions'][0]['script']);
+  }
+
+  /**
+   * Test that a script split into an array is a configuration error
+   */
+  public function testSplitScriptIsConfigurationError() {
+    $config = [
+      'version' => 2,
+      'actions' => [
+        [
+          'type'    => 'CRM_Sqltasks_Action_RunSQL',
+          'script'  => ["SELECT REPLACE(x, '", "', ',');"],
+          'enabled' => TRUE,
+        ],
+      ],
+    ];
+
+    $this->createAndExecuteTask([ 'config' => $config ]);
+    $this->assertLogContains("Configuration Error 'Run SQL Script': SQL Script is not a string");
+  }
+
+  /**
    * Test that execution of the task stops if the "abort_on_error"-flag is set
    * and an error occurs
    */

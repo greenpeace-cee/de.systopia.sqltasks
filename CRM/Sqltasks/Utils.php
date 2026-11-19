@@ -5,6 +5,20 @@
  */
 class CRM_Sqltasks_Utils {
 
+  /**
+   * civicrm_api3_create_success() without splitting strings at
+   * CRM_Core_DAO::VALUE_SEPARATOR, which SQL scripts may contain.
+   *
+   * @param array $taskData
+   *
+   * @return array
+   */
+  public static function createTaskApiSuccess(array $taskData) {
+    $result = civicrm_api3_create_success($taskData);
+    $result['values'] = $taskData;
+    return $result;
+  }
+
   public static function isSegmentationInstalled() {
     // TODO: cache? but be aware, unit tests need this uncached atm
     return civicrm_api3('Extension', 'getcount', [

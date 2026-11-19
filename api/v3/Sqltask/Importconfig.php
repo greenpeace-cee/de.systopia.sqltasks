@@ -30,7 +30,7 @@ function civicrm_api3_sqltask_importconfig($params) {
 
   $task->updateAttributes($data);
 
-  return civicrm_api3_create_success($task->exportData());
+  return CRM_Sqltasks_Utils::createTaskApiSuccess($task->exportData());
 }
 
 /**

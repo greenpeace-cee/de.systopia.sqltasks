@@ -61,7 +61,7 @@ function civicrm_api3_sqltask_create($params) {
     CRM_Sqltasks_BAO_SqlTask::updateTaskOrder($taskOrder);
   }
 
-  return civicrm_api3_create_success($task->exportData());
+  return CRM_Sqltasks_Utils::createTaskApiSuccess($task->exportData());
 }
 
 /**
