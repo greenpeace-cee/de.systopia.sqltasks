@@ -41,6 +41,16 @@ abstract class CRM_Sqltasks_AbstractTaskTest extends TestCase implements Headles
     return array_merge($taskExecutionResult, [ 'task' => $task ]);
   }
 
+  protected function createMessageTemplate(): int {
+    return \Civi\Api4\MessageTemplate::create(FALSE)
+      ->addValue('msg_title', 'SQL Tasks Test')
+      ->addValue('msg_subject', 'SQL Tasks Test')
+      ->addValue('msg_text', 'SQL Tasks Test')
+      ->addValue('msg_html', '<p>SQL Tasks Test</p>')
+      ->execute()
+      ->single()['id'];
+  }
+
   protected function assertLogContains($expected, $message = '') {
     $this->assertStringContainsString($expected, implode("\n", $this->log), $message);
   }
