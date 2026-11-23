@@ -58,6 +58,9 @@ class CRM_Sqltasks_Action_RunSQL extends CRM_Sqltasks_Action {
    */
   public function checkConfiguration() {
     parent::checkConfiguration();
+    if (is_array($this->getConfigValue('script', FALSE))) {
+      throw new Exception('SQL Script is not a string', 1);
+    }
     $entity = $this->getConfigValue('script');
     if (empty($entity)) {
       throw new Exception('SQL Script not provided', 1);
